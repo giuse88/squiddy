@@ -5,6 +5,11 @@ var UPDATE  = "update";
 var INTERVAL = 10000;
 
 
+
+
+
+
+
 function initialization() {
 
   var peer = make_peer_id(SIZE_PEER_ID); 
