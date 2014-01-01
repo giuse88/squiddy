@@ -6,17 +6,34 @@
 <meta name="description" content="WebRTC Reference App" />
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1">
 
+<link rel="stylesheet" href="stylesheets/main.css" />
+
+<script type="text/javascript" src='socket.io/socket.io.js'></script>
+<script type="text/javascript" src="javascripts/adapter.js"></script>
+<script type="text/javascript" src="javascripts/main.js"></script>
+
 <title>WebRTC client</title>
 
 </head>
 
 <body>
 
-<script src='socket.io/socket.io.js'></script>
-<script src="javascripts/main.js"></script>
-<script> 
- initialization(); 
-</script> 
-
+<div id="container" ondblclick="enterFullScreen()">
+  <div id="card">
+    <div id="local">
+      <video id="localVideo" autoplay="autoplay" muted="true"/>
+    </div>
+    <div id="remote">
+      <video id="remoteVideo" autoplay="autoplay"></video>
+      <div id="mini">
+       <video id="miniVideo" autoplay="autoplay" muted="true"/>
+      </div>
+    </div>
+  </div>
+</div>
+<footer id="status">
+</footer>
+<div id="infoDiv"></div>
+<script type="text/javascript" > initialization(); </script> 
 </body>
 </html>
