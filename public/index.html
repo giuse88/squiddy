@@ -6,12 +6,15 @@
 <meta name="description" content="WebRTC Reference App" />
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1">
 
+<!--
 <link rel="stylesheet" href="stylesheets/main.css" />
+-->
 
 <script type="text/javascript" src='socket.io/socket.io.js'></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 <script type="text/javascript" src="http://apprtc.appspot.com/js/adapter.js"></script>
 <script type="text/javascript" src="javascripts/main.js"></script>
+<script type="text/javascript" src="javascripts/utils.js"></script>
 
 <title>WebRTC client</title>
 
@@ -19,22 +22,21 @@
 
 <body>
 
-<div id="container" ondblclick="enterFullScreen()">
-  <div id="card">
-    <div id="local">
-      <video id="localVideo" autoplay="autoplay" muted="true"/>
+<div style="height:300px" id="container">
+    <div style="width:300px;height:300px;float:left"></div>
+    <div style="width:300px;height:300px;float:left" >
+      <video  style="width:200px;height:200px;" id="localVideo" autoplay="autoplay"></video>
+      <p> Local Video </p> 
     </div>
-    <div id="remote">
-      <video id="remoteVideo" autoplay="autoplay"></video>
-      <div id="mini">
-       <video id="miniVideo" autoplay="autoplay" muted="true"/>
-      </div>
+    <div style="width:300px;height:300px;float:left"></div>
+    <div style="width:300px;height:300px;float:left">
+      <video  style="width:200px;height:200px;" id="remoteVideo" autoplay="autoplay"></video>
+      <p> Remote Video </p> 
     </div>
-  </div>
 </div>
-<footer id="status">
-</footer>
-<div id="infoDiv"></div>
+
+<footer id="status"> </footer>
+
 <script type="text/javascript" > initialization(); </script> 
 </body>
 </html>
