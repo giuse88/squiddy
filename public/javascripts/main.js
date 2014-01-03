@@ -10,13 +10,41 @@ var INTERVAL = 10000;
 
 var isInitiator = false; 
 var isConnected = false; 
+var isStarted   = false; 
+
 var room = ''; 
 var peer = ''; 
 var socket = null; 
 
+var offerConstraints = {"optional": [], "mandatory": {}};
+var mediaConstraints = { /*"audio": true ,*/ "video": true};
+var pcConfig = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
+// Types of gathered ICE Candidates.
+var gatheredIceCandidateTypes = { Local: {}, Remote: {} };
+var pcConstraints = {"optional": [{"DtlsSrtpKeyAgreement": true}]};
+var constraints = { mandatory : { OfferToReceiveAudio : true, 
+                                       OfferToReceiveVideo : true }}; 
+
+var localVideo = undefined; //dom 
+var localStream = undefined; 
+
+var remoteVideo = undefined; 
+var remoteStream = undefined;
+
+// What if there a mulitple peer
+var pc = null;  // peer Connection 
+
 function initialization() {
+
   setStatus("Initialization...");
+  // install signaling channel 
   openChannel();
+  // install local media
+  doGetUserMedia();
+  
+  // set local vido object 
+  localVideo = $('#localVideo')[0]; //dom  
+  remoteVideo = $('#remoteVideo')[0]; //dom 
 }
 
 function openChannel() {
@@ -74,85 +102,48 @@ function onJoin(data) {
 }
 
 function onMessage(data) {
+
   console.log("Peer " + data.peerId + " : " + data.roomId + " " + data.msg);
+  var message = data.msg; 
+
+  if (message.type === 'candidate') {
+    var candidate = new RTCIceCandidate({sdpMLineIndex: message.label,
+                                         candidate: message.candidate});
+    noteIceCandidate("Remote", iceCandidateType(message.candidate));
+    pc.addIceCandidate(candidate);
+  }
+  else if ( message.type === 'offer') { 
+    pc.setRemoteDescription( new RTCSessionDescription(message));
+    doAnswer();
+  } else if ( message.type === 'answer') {
+    pc.setRemoteDescription( new RTCSessionDescription(message));
+  } else {
+    console.log("Unknow message");
+  }
+
 }
 
 function start() {
-  var msg  = "The current time is :  " + get_time(); 
-  // socket emit ( this event is brocasted to all the peers in the room )  
- 
-  if (isConnected)  
-  setInterval(function () {
-                            socket.emit(MESSAGE, 
-                          {   
-                            roomId  : room, 
-                            peerId  : peer,  
-                            msg : msg
-                          })
-                          },INTERVAL);
-}
 
+  if (!isStarted && typeof localStream != 'undefined' && isConnected) {
+    
+    // Create peer connection  
+    createPeerConnection();
+    pc.addStream(localStream);
+    isStarted = true;
 
-function maybeRequestTurn() {
-
-  // Skipping TURN Http request for Firefox version <=22.
-  // Firefox does not support TURN for version <=22.
-  if (webrtcDetectedBrowser === 'firefox' && webrtcDetectedVersion <=22) {
-    turnDone = true;
-    return;
+    if (isInitiator) 
+      doOffer();
   }
+   else 
+     console.log("Error during start function"); 
 
-  for (var i = 0, len = pcConfig.iceServers.length; i < len; i++) {
-    if (pcConfig.iceServers[i].url.substr(0, 5) === 'turn:') {
-      turnDone = true;
-      return;
-    }
-  }
-
-  var currentDomain = document.domain;
-  if (currentDomain.search('localhost') === -1 &&
-      currentDomain.search('apprtc') === -1) {
-    // Not authorized domain. Try with default STUN instead.
-    turnDone = true;
-    return;
-  }
-
-  // No TURN server. Get one from computeengineondemand.appspot.com.
-  xmlhttp = new XMLHttpRequest();
-  xmlhttp.onreadystatechange = onTurnResult;
-  xmlhttp.open('GET', turnUrl, true);
-  xmlhttp.send();
-}
-
-function onTurnResult() {
-  if (xmlhttp.readyState !== 4)
-    return;
-
-  if (xmlhttp.status === 200) {
-    var turnServer = JSON.parse(xmlhttp.responseText);
-    for (i = 0; i < turnServer.uris.length; i++) {
-      // Create a turnUri using the polyfill (adapter.js).
-      var iceServer = createIceServer(turnServer.uris[i],
-                                      turnServer.username,
-                                      turnServer.password);
-      if (iceServer !== null) {
-        pcConfig.iceServers.push(iceServer);
-      }
-    }
-  } else {
-    console.log('Request for TURN server failed.');
-  }
-  // If TURN request failed, continue the call with default STUN.
-  turnDone = true;
-  //maybeRequest(); TODO 
 }
 
 
 function doGetUserMedia() {
-  // Call into getUserMedia via the polyfill (adapter.js).
   try {
-    getUserMedia(mediaConstraints, onUserMediaSuccess,
-                 onUserMediaError);
+    getUserMedia(mediaConstraints, onUserMediaSuccess,onUserMediaError);
     console.log('Requested access to local media with mediaConstraints:\n' +
                 '  \'' + JSON.stringify(mediaConstraints) + '\'');
   } catch (e) {
@@ -164,76 +155,122 @@ function doGetUserMedia() {
 
 function onUserMediaSuccess(stream) {
   console.log('User has granted access to local media.');
-  // Call the polyfill wrapper to attach the media stream to this element.
   attachMediaStream(localVideo, stream);
   localVideo.style.opacity = 1;
   localStream = stream;
-  // Caller creates PeerConnection.
-  //maybeStart();
+  start();
 }
 
 function onUserMediaError(error) {
-  console.log('Failed to get access to local media. Error code was ' +
-              error.code);
-  alert('Failed to get access to local media. Error code was ' +
-        error.code + '.');
-}
-
-
-function get_room_id_from_url() {
-  return get_url_values()["roomid"]; 
-}
-
-function get_url_values(){
-    var vars = [], hash;
-    var hashes = window.location.href.slice(window.location.href.indexOf('?')
-                   + 1).split('&');
-    for(var i = 0; i < hashes.length; i++)
-    {
-        hash = hashes[i].split('=');
-        vars.push(hash[0]);
-        vars[hash[0]] = hash[1];
-    }
-    return vars;
-}
-
-function make_peer_id(length){
-   var text = "";
-   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-   for( var i=0; i < length; i++ )
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-   return text;
-}
-
-function get_time() {
-    var d = new Date();
-    return d.getTime();
-}
-
-
-function maybeStart() {
-  if (!isStarted && typeof localStream != 'undefined' && isChannelReady) {
-    createPeerConnection();
-    pc.addStream(localStream);
-    isStarted = true;
-    console.log('isInitiator', isInitiator);
-    if (isInitiator) {
-      doCall();
-    }
-  }
+  console.log('Failed to get access to local media. Error code was ' + error.code);
+  alert('Failed to get access to local media. Error code was ' + error.code + '.');
 }
 
 function createPeerConnection() {
-  try {
-    pc = new webkitRTCPeerConnection(null);
-    pc.onicecandidate = handleIceCandidate;
-    pc.onaddstream = handleRemoteStreamAdded;
-    pc.onremovestream = handleRemoteStreamRemoved;
-    console.log('Created RTCPeerConnnection');
+  
+  try{ 
+  pc = new RTCPeerConnection(pcConfig, pcConstraints);
+  pc.onicecandidate = onIceCandidate;
+  console.log('Created RTCPeerConnnection with:\n' +
+              'config: \'' + JSON.stringify(pcConfig) + '\';\n' +
+              'constraints: \'' + JSON.stringify(pcConstraints) + '\'.');
   } catch (e) {
     console.log('Failed to create PeerConnection, exception: ' + e.message);
-    alert('Cannot create RTCPeerConnection object.');
-      return;
+    alert('Cannot create RTCPeerConnection object; \n WebRTC is not supported by this browser.');
+    return;
+  }
+  pc.onaddstream = onRemoteStreamAdded;
+  pc.onremovestream = onRemoteStreamRemoved;
+ // pc.onsignalingstatechange = onSignalingStateChanged;
+  pc.oniceconnectionstatechange = onIceConnectionStateChanged;
+  
+}
+
+
+function onRemoteStreamRemoved() {
+}
+
+function onRemoteStreamAdded(event) {
+  remoteStream=event.stream;
+  attachMediaStream(remoteVideo, remoteStream);
+}
+
+function iceCandidateType(candidateSDP) {
+  if (candidateSDP.indexOf("typ relay ") >= 0)
+    return "TURN";
+  if (candidateSDP.indexOf("typ srflx ") >= 0)
+    return "STUN";
+  if (candidateSDP.indexOf("typ host ") >= 0)
+    return "HOST";
+  return "UNKNOWN";
+}
+
+function onIceCandidate(event) {
+  if (event.candidate) {
+    sendMessage({type: 'candidate',
+                 label: event.candidate.sdpMLineIndex,
+                 id: event.candidate.sdpMid,
+                 candidate: event.candidate.candidate});
+    noteIceCandidate("Local", iceCandidateType(event.candidate.candidate));
+  } else {
+    console.log('End of candidates.');
   }
 }
 
+
+function noteIceCandidate(location, type) {
+  if (gatheredIceCandidateTypes[location][type])
+    return;
+  gatheredIceCandidateTypes[location][type] = 1;
+  updateInfoDiv();
+}
+
+function getInfoDiv() {
+  return document.getElementById("info");
+}
+
+function updateInfoDiv() {
+  var contents = "<pre>Gathered ICE Candidates\n";
+  for (var endpoint in gatheredIceCandidateTypes) {
+    contents += endpoint + ":\n";
+    for (var type in gatheredIceCandidateTypes[endpoint])
+      contents += "  " + type + "\n";
+  }
+  if (pc != null) {
+    contents += "Gathering: " + pc.iceGatheringState + "\n";
+    contents += "</pre>\n";
+    contents += "<pre>PC State:\n";
+    contents += "Signaling: " + pc.signalingState + "\n";
+    contents += "ICE: " + pc.iceConnectionState + "\n";
+  }
+  var div = getInfoDiv();
+  div.innerHTML = contents + "</pre>";
+}
+
+
+function onIceConnectionStateChanged(event) {
+  updateInfoDiv();
+}
+
+function sendMessage(data) {
+  var message = { 
+    peerId : peer, 
+    roomId : room, 
+    msg :  data 
+  };
+  socket.emit(MESSAGE, message); 
+}
+
+function doOffer() {
+  pc.createOffer(gotDescriptor, function() {}, constraints);  
+}
+
+function doAnswer() {
+  pc.createAnswer(gotDescriptor, function() {}, constraints);   
+}
+
+function gotDescriptor(localDescriptor) {
+  pc.setLocalDescription(localDescriptor); 
+  sendMessage(localDescriptor); 
+  console.log("I have got : " + localDescriptor);
+}
