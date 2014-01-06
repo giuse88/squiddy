@@ -75,6 +75,8 @@ function onDisconnect(){
   LOGGER.trace("Peer %s has been disconnected", this.peerId); 
 }
 
+/******** Utility functions ******/
+
 //Verify if a room already exists
 function doesRoomExist(roomId) {
   if(!roomId)
@@ -85,15 +87,15 @@ function doesRoomExist(roomId) {
 }
 
 function createNewRoomID() {
-  var roomId = make_id(SIZE_ID);
+  var roomId = makeRoomId(SIZE_ID);
   var rooms = _.keys(io.sockets.manager.rooms);
   // In case of collisions
   while(rooms.indexOf(roomId) > -1)
-    roomId = make_id(SIZE_ID);
+    roomId = makeRoomId(SIZE_ID);
   return roomId; 
 }
 
-function make_id(length){
+function makeRoomId(length){
  var text = "";
  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
  for( var i=0; i < length; i++ )
