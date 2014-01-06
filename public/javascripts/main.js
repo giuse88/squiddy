@@ -24,14 +24,17 @@ var gatheredIceCandidateTypes = { Local: {}, Remote: {} };
 var pcConstraints = {"optional": [{"DtlsSrtpKeyAgreement": true}]};
 var constraints = { mandatory : { OfferToReceiveAudio : true, 
                                        OfferToReceiveVideo : true }}; 
+var msgQueue = []; 
 
-var localVideo = undefined; //dom 
-var localStream = undefined; 
+// Dom objects
+var localVideo    = undefined; 
+var localStream   = undefined; 
 
-var remoteVideo = undefined; 
-var remoteStream = undefined;
+// stream objects
+var remoteVideo   = undefined; 
+var remoteStream  = undefined;
 
-// What if there a mulitple peer
+// What if there a mulitple peer? this should a list :D 
 var pc = null;  // peer Connection 
 
 function initialization() {
@@ -106,6 +109,14 @@ function onMessage(data) {
   console.log("Peer " + data.peerId + " : " + data.roomId + " " + data.msg);
   var message = data.msg; 
 
+  if (isStarted)  
+    processMessage(message);
+  else 
+    msgQueue.push(message); 
+
+}
+
+function processMessage(message) { 
   if (message.type === 'candidate') {
     var candidate = new RTCIceCandidate({sdpMLineIndex: message.label,
                                          candidate: message.candidate});
@@ -123,6 +134,16 @@ function onMessage(data) {
 
 }
 
+/* the function start is the most important function. 
+ * This function starts the coommunication with the other peer only if the following 
+ * conditions are satisfied 
+ *
+ * - localStream != null, we have got the local media resource
+ * - isStarted we are not connected to any peer yet through the webRTC 
+ * - isConnected,  we are connected to the other peer via the signaling protocol  
+ *
+ */
+
 function start() {
 
   if (!isStarted && typeof localStream != 'undefined' && isConnected) {
@@ -130,6 +151,9 @@ function start() {
     // Create peer connection  
     createPeerConnection();
     pc.addStream(localStream);
+    
+    // there may some messages in the queue 
+    processQueue();
     isStarted = true;
 
     if (isInitiator) 
@@ -140,6 +164,10 @@ function start() {
 
 }
 
+function processQueue() {
+  while(msgQueue.length > 0)
+    processMessage(msgQueue.shift());     
+}
 
 function doGetUserMedia() {
   try {

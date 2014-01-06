@@ -16,6 +16,10 @@ I want to augment the apprtc prototype with the following feautures :
 
 The project is under development and at the current stage the major feautures are not implemented yet. 
 
+
+Todo : 
+  Signal when a peer close the browser. In this case the signal bye should 
+  be sent. 
  
 ### License
 
