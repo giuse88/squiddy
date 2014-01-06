@@ -26,33 +26,37 @@ server.listen(app.get('port'), function(){
 io.sockets.on('connection', function (socket) {
     
    socket.on(REQUEST, function (data) {
-     var peer = data.peerId;
-     var room = data.roomId; 
-     var isInitiator = !doesRoomExist(room);  
-      
+     socket.peerId = data.peerId;
+     socket.roomId = data.roomId; 
+     var isInitiator = !doesRoomExist(socket.roomId);  
+     
      if (isInitiator) 
-        createNewRoom(socket, peer);     
+        createNewRoom(socket);     
      else 
-        joinRoom(socket, peer, room); 
+        joinRoom(socket); 
    });
 
+   socket.on("disconnect", onDisconnect); 
    socket.on(MESSAGE, function (data) {onMessage(socket, data)});
    socket.on(BYE, function(data){onBye(socket, data)});
 });
 
 
-function joinRoom(socket, peer, room) {
+function joinRoom(socket) {
+  var peer = socket.peerId;
+  var room = socket.roomId; 
   socket.join(room);
   socket.emit(JOINED, {roomId : room});
   socket.broadcast.to(room).emit(JOIN, {roomId : room, peerId : peer}); 
   LOGGER.trace("Peer %s has joined room %s", peer, room); 
 }
 
-function createNewRoom(socket, peer){
+function createNewRoom(socket){
   var newRoomId = createNewRoomID(); 
+  socket.roomId = newRoomId;
   socket.join(newRoomId);
-  socket.emit(CREATED, {roomId : newRoomId});
-  LOGGER.trace("Peer %s has created room %s", peer, newRoomId); 
+  socket.emit(CREATED, {roomId : socket.roomId});
+  LOGGER.trace("Peer %s has created room %s", socket.peerId, socket.roomId); 
 }
 
 function onMessage(socket, data) {
@@ -61,8 +65,14 @@ function onMessage(socket, data) {
 }
 
 function onBye(socket, data) {
-  socket.broadcast.to(data.roomId).emit(MESSAGE, data);
+  socket.broadcast.to(data.roomId).emit(BYE, data);
+  socket.leave(socket.roomId);
   LOGGER.trace("Received BYE message from %s. Brodcasted to the room %s", data.peerId, data.roomId); 
+}
+
+function onDisconnect(){
+  onBye(this, {peerId : this.peerId, roomId : this.roomId }); 
+  LOGGER.trace("Peer %s has been disconnected", this.peerId); 
 }
 
 //Verify if a room already exists

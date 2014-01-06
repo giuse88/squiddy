@@ -77,7 +77,15 @@ function openChannel() {
 
   // log  
   socket.on(MESSAGE,onMessage); 
+
+  // Peer disconnection 
+  socket.on(BYE, onBye); 
 }
+
+function onBye(data) {
+  console.log("Peer " + data.peerId + " has been disconnected ( ROOM : " + data.roomId + " ) " );  
+}
+
 
 function onJoined(data) {
   setStatus("Connected");
