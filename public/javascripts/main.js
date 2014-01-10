@@ -37,32 +37,39 @@ var remoteStream  = undefined;
 // What if there a mulitple peer? this should a list :D 
 var pc = null;  // peer Connection 
 
+var session =null;
+
 function initialization() {
 
-  setStatus("Initialization...");
+
+ session = new app.PeerSession(); 
+ 
+ console.log("Peer id " + session.getPeerId());  
+ console.log("Room id " + session.getRoomId());  
+
   // install signaling channel 
   openChannel();
   // install local media
-  doGetUserMedia();
-  
+//  doGetUserMedia();T
+ 
+  setInterval(function() { console.log("Is session ready : " + session.isSessionReady())}, 1000); 
   // set local vido object 
-  localVideo = $('#localVideo')[0]; //dom  
-  remoteVideo = $('#remoteVideo')[0]; //dom 
+//  localVideo = $('#localVideo')[0]; //dom  
+//  remoteVideo = $('#remoteVideo')[0]; //dom 
 }
 
 function openChannel() {
 
-  peer = make_peer_id(SIZE_PEER_ID); 
-  var room = get_room_id_from_url() || ''; 
-
   var roomRequest = {
-                  peerId : peer, 
-                  roomId : room
+                  peerId : session.getPeerId(), 
+                  roomId : session.getRoomId()
                 }; 
 
   //connect to the remote server throug a web socket
-  socket = io.connect();
- 
+  session.setSocket(io.connect());
+
+  var socket = session.getSocket(); 
+
   //request for joining a room  
   socket.emit(REQUEST, roomRequest);  
  
@@ -88,28 +95,31 @@ function onBye(data) {
 
 
 function onJoined(data) {
-  setStatus("Connected");
+//  setStatus("Connected");
   room = data.roomId; 
-  isInitiator=false; 
-  isConnected=true; 
+//  isInitiator=false; 
+//  isConnected=true; 
   console.log("Joined room " + room); 
-  start();
+  session.setConnected();
+ // start();
+ // I should create a model
 }
 
 function onCreated(data) {
-  //set status waiting  
-  setStatus("Waiting");
-  room = data.roomId; 
-  isInitiator=true; 
-  isConnected=false; 
-  console.log("Created room " + room); 
+  session.setRoomId(data.roomId); 
+  session.setAsInitiator(); 
+  session.setConnected(); 
+ // isConnected=false; 
+  console.log("Created room " + session.getRoomId()); 
 }
 
 function onJoin(data) {
-  setStatus("Connected"); 
+  //setStatus("Connected"); 
   console.log("Peer " + data.peerId + " joined room " + data.roomId); 
-  isConnected = true; 
-  start();
+  session.add(new app.PeerConnection(data.peerId)); 
+ // isConnected = true; 
+ // start();
+ // I should create a model
 }
 
 function onMessage(data) {
@@ -175,26 +185,6 @@ function start() {
 function processQueue() {
   while(msgQueue.length > 0)
     processMessage(msgQueue.shift());     
-}
-
-function doGetUserMedia() {
-  try {
-    getUserMedia(mediaConstraints, onUserMediaSuccess,onUserMediaError);
-    console.log('Requested access to local media with mediaConstraints:\n' +
-                '  \'' + JSON.stringify(mediaConstraints) + '\'');
-  } catch (e) {
-    alert('getUserMedia() failed. Is this a WebRTC capable browser?');
-    console.log('getUserMedia failed with exception: ' + e.message);
-  }
-}
-
-
-function onUserMediaSuccess(stream) {
-  console.log('User has granted access to local media.');
-  attachMediaStream(localVideo, stream);
-  localVideo.style.opacity = 1;
-  localStream = stream;
-  start();
 }
 
 function onUserMediaError(error) {

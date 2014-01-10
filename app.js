@@ -59,6 +59,14 @@ function createNewRoom(socket){
   LOGGER.trace("Peer %s has created room %s", socket.peerId, socket.roomId); 
 }
 
+/* Message should be extended to support broacasting and signlecasting 
+ * data.msg = message 
+ * data.roomId = chat room
+ * data.from   = sender 
+ * data.to     = reeiver ( this can a peerId or all) 
+ * if peerId we shoudl verify the correct id 
+ */  
+
 function onMessage(socket, data) {
   socket.broadcast.to(data.roomId).emit(MESSAGE, data);
   LOGGER.trace("Received message from %s. Brodcasted to the room %s", data.peerId, data.roomId); 
