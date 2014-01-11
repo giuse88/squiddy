@@ -68,6 +68,10 @@ function initialization() {
   session.on('remove', function(peer) {
     console.log("removed peer : " + peer.getPeerId()); 
   }); 
+
+  session.on('ready', function() {
+    console.log("Session Ready");     
+  });
 }
 
 function openChannel() {
@@ -117,7 +121,6 @@ function onJoined(data) {
   console.log("Joined room " + room); 
   session.setConnected();
  // start();
- // I should create a model
 }
 
 function onCreated(data) {
@@ -131,7 +134,7 @@ function onCreated(data) {
 function onJoin(data) {
   //setStatus("Connected"); 
   console.log("Peer " + data.peerId + " joined room " + data.roomId); 
-  session.add(new app.PeerConnection(data.peerId)); 
+  session.add(new app.PeerConnection(data.peerId, session)); 
  // isConnected = true; 
  // start();
  // I should create a model

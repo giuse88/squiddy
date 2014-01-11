@@ -16,12 +16,19 @@ app.PeerConnection = Backbone.Model.extend({
     status : this.UNKNOWN, 
     isStarted   : false,  
     msgQueue : [],  
+    session : null,
     peerId : '', 
     remoteStream  : undefined, 
   }, 
 
-  initialize: function(id) {
+  initialize: function(id, session) {
     this.attributes.peerId = id;
+    this.attributes.session = session; 
+    if (session.isReady())
+      _start(); 
+    else 
+      session.on('ready', _start()); 
+    
     console.log("Creating Peer Connection");  
   },
 
@@ -36,7 +43,7 @@ app.PeerConnection = Backbone.Model.extend({
   _createRemoteConnection: function (){}, 
   
   addMessage : function(msg) {
-        this.msgQueue.push(msg); 
+        this.attributes.msgQueue.push(msg); 
   }, 
   
   getMessage: function() {

@@ -17,6 +17,9 @@ app.PeerSession = Backbone.Collection.extend({
   
   initialize: function() {
     this._attributes = {}
+    // Move these values to the attributes object
+    // and make it public to hava a consiste interface 
+    // to the model object
     this._sessionId = make_peer_id(SIZE_PEER_ID);
     this._roomId = get_room_id_from_url() || ''; 
     this._isInitiator=false;
@@ -33,6 +36,12 @@ app.PeerSession = Backbone.Collection.extend({
 
   setSocket:function(socket) {
     this._socket=socket; 
+    this._triggerSessionReadyEvent(); 
+  }, 
+
+  _triggerSessionReadyEvent: function () {
+    if (this.isSessionReady())
+      this.trigger('ready', this); 
   }, 
 
   getSocket: function() {
@@ -45,6 +54,7 @@ app.PeerSession = Backbone.Collection.extend({
 
   setConnected : function () {
     this._connected = true;
+    this._triggerSessionReadyEvent(); 
   }, 
 
   isConnected : function () {
@@ -69,7 +79,6 @@ app.PeerSession = Backbone.Collection.extend({
 
   setAsInitiator: function(){
     this._isInitiator=true; 
-  //  window.location = window.location.pathname + "?roomid=" + this._roomId; 
   },
 
   getPeer : function(id) {
@@ -91,6 +100,7 @@ app.PeerSession = Backbone.Collection.extend({
     function onUserMediaSuccess (stream) {
       console.log('User has granted access to local media.');
       self._localStream = stream;
+      self._triggerSessionReadyEvent(); 
     };
   
     function onUserMediaError (error) {
