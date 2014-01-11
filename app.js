@@ -19,6 +19,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 var server = http.createServer(app);  
 var io = require('socket.io').listen(server, {log: false}); 
+var peers = {}; 
+
 server.listen(app.get('port'), function(){ 
   LOGGER.trace('Express server listening on port ' + app.get('port')); 
 }); 
@@ -28,6 +30,7 @@ io.sockets.on('connection', function (socket) {
    socket.on(REQUEST, function (data) {
      socket.peerId = data.peerId;
      socket.roomId = data.roomId; 
+     addPeerClient(socket); 
      var isInitiator = !doesRoomExist(socket.roomId);  
      
      if (isInitiator) 
@@ -59,22 +62,22 @@ function createNewRoom(socket){
   LOGGER.trace("Peer %s has created room %s", socket.peerId, socket.roomId); 
 }
 
-/* Message should be extended to support broacasting and signlecasting 
- * data.msg = message 
- * data.roomId = chat room
- * data.from   = sender 
- * data.to     = reeiver ( this can a peerId or all) 
- * if peerId we shoudl verify the correct id 
- */  
-
 function onMessage(socket, data) {
-  socket.broadcast.to(data.roomId).emit(MESSAGE, data);
-  LOGGER.trace("Received message from %s. Brodcasted to the room %s", data.peerId, data.roomId); 
+  if(!data.to) {
+    socket.broadcast.to(data.roomId).emit(MESSAGE, data);
+    LOGGER.trace("Received message from %s. Brodcasted to the room %s", data.from, data.roomId); 
+  } else {
+    peers[data.to].emit(MESSAGE,data); 
+    LOGGER.trace("Received message from %s. Brodcasted to peer %s. Room %s", data.from, data.to,
+                 data.roomId); 
+  }
 }
 
 function onBye(socket, data) {
+  console.log(data);
   socket.broadcast.to(data.roomId).emit(BYE, data);
   socket.leave(socket.roomId);
+  removePeerClient(socket.peerId); 
   LOGGER.trace("Received BYE message from %s. Brodcasted to the room %s", data.peerId, data.roomId); 
 }
 
@@ -84,6 +87,14 @@ function onDisconnect(){
 }
 
 /******** Utility functions ******/
+
+function addPeerClient(socket) {
+  peers[socket.peerId] = socket; 
+}
+
+function removePeerClient(id) {
+  delete peers[id];
+}
 
 //Verify if a room already exists
 function doesRoomExist(roomId) {
