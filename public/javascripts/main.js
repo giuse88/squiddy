@@ -33,7 +33,6 @@ var localStream   = undefined;
 // stream objects
 var remoteVideo   = undefined; 
 var remoteStream  = undefined;
-
 // What if there a mulitple peer? this should a list :D 
 var pc = null;  // peer Connection 
 
@@ -55,8 +54,8 @@ function initialization() {
  
   //setInterval(function() { console.log("Is session ready : " + session.isSessionReady())}, 1000); 
   // set local vido object 
-//  localVideo = $('#localVideo')[0]; //dom  
-//  remoteVideo = $('#remoteVideo')[0]; //dom 
+  localVideo = $('#localVideo')[0]; //dom  
+  remoteVideo = $('#remoteVideo')[0]; //dom 
 
   // debug info  
   
@@ -69,8 +68,9 @@ function initialization() {
     console.log("removed peer : " + peer.getPeerId()); 
   }); 
 
-  session.on('ready', function() {
-    console.log("Session Ready");     
+  session.on('ready', function(session) {
+    console.log("Session Ready");  
+    attachMediaStream(localVideo, session.getLocalStream());
   });
 }
 
@@ -135,39 +135,22 @@ function onJoin(data) {
   //setStatus("Connected"); 
   console.log("Peer " + data.peerId + " joined room " + data.roomId); 
   session.add(new app.PeerConnection(data.peerId, session)); 
- // isConnected = true; 
- // start();
- // I should create a model
+  //session.getPeer(data.peerId).doOffer(); 
 }
 
 function onMessage(data) {
 
-  console.log("Peer " + data.peerId + " : " + data.roomId + " " + data.msg);
+  // TODO
+  // peerId must change to from 
+  console.log("Peer " + data.from + " : " + data.roomId + " " + data.msg);
+  var id = data.from; 
+
+  if (!session.getPeer(id))
+    session.add( new app.PeerConnection(id, session)); 
+  
+  var newPeer = session.getPeer(id);  
   var message = data.msg; 
-
-  if (isStarted)  
-    processMessage(message);
-  else 
-    msgQueue.push(message); 
-
-}
-
-function processMessage(message) { 
-  if (message.type === 'candidate') {
-    var candidate = new RTCIceCandidate({sdpMLineIndex: message.label,
-                                         candidate: message.candidate});
-    noteIceCandidate("Remote", iceCandidateType(message.candidate));
-    pc.addIceCandidate(candidate);
-  }
-  else if ( message.type === 'offer') { 
-    pc.setRemoteDescription( new RTCSessionDescription(message));
-    doAnswer();
-  } else if ( message.type === 'answer') {
-    pc.setRemoteDescription( new RTCSessionDescription(message));
-  } else {
-    console.log("Unknow message");
-  }
-
+  newPeer.dispatchMessage(message); 
 }
 
 /* the function start is the most important function. 
@@ -180,25 +163,7 @@ function processMessage(message) {
  *
  */
 
-function start() {
-
-  if (!isStarted && typeof localStream != 'undefined' && isConnected) {
-    
-    // Create peer connection  
-    createPeerConnection();
-    pc.addStream(localStream);
-    
-    // there may some messages in the queue 
-    processQueue();
-    isStarted = true;
-
-    if (isInitiator) 
-      doOffer();
-  }
-   else 
-     console.log("Error during start function"); 
-
-}
+/*
 
 function processQueue() {
   while(msgQueue.length > 0)
@@ -318,3 +283,5 @@ function gotDescriptor(localDescriptor) {
   sendMessage(localDescriptor); 
   console.log("I have got : " + localDescriptor);
 }
+
+*/

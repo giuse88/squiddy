@@ -17,6 +17,7 @@ app.PeerSession = Backbone.Collection.extend({
   
   initialize: function() {
     this._attributes = {}
+    // TODO 
     // Move these values to the attributes object
     // and make it public to hava a consiste interface 
     // to the model object
@@ -30,6 +31,17 @@ app.PeerSession = Backbone.Collection.extend({
     console.log("Initialized Session"); 
   },
  
+  //TODO abstract from the socket.io interface  
+  send: function (destination, data) {
+    var message = { 
+      to     : destination, 
+      from   : this._sessionId,  
+      roomId : this._roomId, 
+      msg    : data 
+    };
+    this._socket.emit(MESSAGE, message); 
+  },
+
   isSessionReady: function() {
    return (this._socket != null) && (this._localStream != null) && this._connected; 
   }, 
