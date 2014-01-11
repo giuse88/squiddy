@@ -89,8 +89,9 @@ app.PeerConnection = Backbone.Model.extend({
   }, 
 
   onRemoteStreamAdded : function (event) {
-  remoteStream=event.stream;
-  attachMediaStream(remoteVideo, remoteStream);
+  this.set('remoteStream', event.stream);
+  this.get('session').trigger('peer:ready', this);
+  //attachMediaStream(remoteVideo, remoteStream);
   }, 
 
   iceCandidateType: function(candidateSDP) {
@@ -162,8 +163,8 @@ app.PeerConnection = Backbone.Model.extend({
     alert('Cannot create RTCPeerConnection object; \n WebRTC is not supported by this browser.');
     return;
   }
- // pc.onaddstream = this.onRemoteStreamAdded;
- // pc.onremovestream = this.onRemoteStreamRemoved;
+  pc.onaddstream = function(e) { self.onRemoteStreamAdded(e);};
+  //pc.onremovestream = this.onRemoteStreamRemoved;
   
 } 
 

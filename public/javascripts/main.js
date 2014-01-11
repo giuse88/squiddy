@@ -72,6 +72,11 @@ function initialization() {
     console.log("Session Ready");  
     attachMediaStream(localVideo, session.getLocalStream());
   });
+
+  session.on('peer:ready', function(peer) {
+    console.log("Peer Ready");
+    attachMediaStream(remoteVideo, peer.get('remoteStream'))
+  });
 }
 
 function openChannel() {

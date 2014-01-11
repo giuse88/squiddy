@@ -29,6 +29,10 @@ app.PeerSession = Backbone.Collection.extend({
     this._connected = false; 
     this._doGetUserMedia();
     console.log("Initialized Session"); 
+
+    //temporaney
+
+    
   },
  
   //TODO abstract from the socket.io interface  
