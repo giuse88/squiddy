@@ -17,7 +17,7 @@ app.PeerSession = Backbone.Collection.extend({
   
   initialize: function() {
     this._attributes = {}
-    this._peerId = make_peer_id(SIZE_PEER_ID);
+    this._sessionId = make_peer_id(SIZE_PEER_ID);
     this._roomId = get_room_id_from_url() || ''; 
     this._isInitiator=false;
     this._socket = null; 
@@ -55,8 +55,8 @@ app.PeerSession = Backbone.Collection.extend({
    this._roomId = roomId; 
   }, 
 
-  getPeerId: function() {
-   return this._peerId; 
+  getSessionId: function() {
+   return this._sessionId; 
   },
              
   isInitiator: function() {
@@ -71,6 +71,10 @@ app.PeerSession = Backbone.Collection.extend({
     this._isInitiator=true; 
   //  window.location = window.location.pathname + "?roomid=" + this._roomId; 
   },
+
+  getPeer : function(id) {
+    return this.findWhere({ peerId : id });  
+  }, 
 
   attr: function(prop, value) {
     if (value === undefined)

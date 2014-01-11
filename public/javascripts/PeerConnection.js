@@ -16,13 +16,17 @@ app.PeerConnection = Backbone.Model.extend({
     status : this.UNKNOWN, 
     isStarted   : false,  
     msgQueue : [],  
-    _remotPeerId : '', 
+    peerId : '', 
     remoteStream  : undefined, 
   }, 
 
-  initialize: function(remotePeerId) {
-    this._remotePeerId = remotePeerId;
+  initialize: function(id) {
+    this.attributes.peerId = id;
     console.log("Creating Peer Connection");  
+  },
+
+  getPeerId: function () {
+    return this.attributes.peerId; 
   }, 
   
   makeOffer: function() {}, 

@@ -38,13 +38,14 @@ var remoteStream  = undefined;
 var pc = null;  // peer Connection 
 
 var session =null;
+var object = {};
 
 function initialization() {
 
 
  session = new app.PeerSession(); 
  
- console.log("Peer id " + session.getPeerId());  
+ console.log("Session id " + session.getSessionId());  
  console.log("Room id " + session.getRoomId());  
 
   // install signaling channel 
@@ -52,16 +53,27 @@ function initialization() {
   // install local media
 //  doGetUserMedia();T
  
-  setInterval(function() { console.log("Is session ready : " + session.isSessionReady())}, 1000); 
+  //setInterval(function() { console.log("Is session ready : " + session.isSessionReady())}, 1000); 
   // set local vido object 
 //  localVideo = $('#localVideo')[0]; //dom  
 //  remoteVideo = $('#remoteVideo')[0]; //dom 
+
+  // debug info  
+  
+
+  session.on("add", function(peer) {
+    console.log("added Peer : " + peer.getPeerId());
+  });
+  
+  session.on('remove', function(peer) {
+    console.log("removed peer : " + peer.getPeerId()); 
+  }); 
 }
 
 function openChannel() {
 
   var roomRequest = {
-                  peerId : session.getPeerId(), 
+                  peerId : session.getSessionId(), 
                   roomId : session.getRoomId()
                 }; 
 
@@ -90,6 +102,9 @@ function openChannel() {
 }
 
 function onBye(data) {
+  var m = session.getPeer(data.peerId); 
+  console.log(m);
+  session.remove(m); 
   console.log("Peer " + data.peerId + " has been disconnected ( ROOM : " + data.roomId + " ) " );  
 }
 
