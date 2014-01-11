@@ -29,21 +29,12 @@
 
 <h1> WebRTC chat </h1> 
 
-to do : 
-  introduce listeners for events occuring on the model and on the collection :D
-  k
-<div style="height:300px" id="container">
-    <div style="width:300px;height:300px;float:left"></div>
-    <div style="width:300px;height:300px;float:left" >
-      <video  style="width:200px;height:200px;" id="localVideo" autoplay="autoplay"></video>
+<div id="container">
+    <div id="local_video_container" >
+      <video id="localVideo" autoplay="autoplay"></video>
       <p> Local Video </p> 
     </div>
-    <div style="width:300px;height:300px;float:left"></div>
-    <div style="width:300px;height:300px;float:left">
-      <video  style="width:200px;height:200px;" id="remoteVideo" autoplay="autoplay"></video>
-      <p> Remote Video </p> 
-    </div>
-    <div style="clear:both" id="info"></div>
+    <div id='remote_videos'> </div> 
 </div>
 
 <footer id="status"> </footer>

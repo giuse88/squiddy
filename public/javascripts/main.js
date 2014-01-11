@@ -55,10 +55,9 @@ function initialization() {
   //setInterval(function() { console.log("Is session ready : " + session.isSessionReady())}, 1000); 
   // set local vido object 
   localVideo = $('#localVideo')[0]; //dom  
-  remoteVideo = $('#remoteVideo')[0]; //dom 
 
   // debug info  
-  
+  var number = 1;  
 
   session.on("add", function(peer) {
     console.log("added Peer : " + peer.getPeerId());
@@ -75,7 +74,12 @@ function initialization() {
 
   session.on('peer:ready', function(peer) {
     console.log("Peer Ready");
+    var localId = "remoteVideo_" + number; 
+    var htmlString = "<video id='" + localId +"' autoplay='autoplay'></video>";
+    $('#remote_videos').append(htmlString); 
+    remoteVideo = $('#'+localId)[0]; //dom 
     attachMediaStream(remoteVideo, peer.get('remoteStream'))
+    number++; 
   });
 }
 
