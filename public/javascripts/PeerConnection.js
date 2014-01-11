@@ -49,17 +49,22 @@ app.PeerConnection = Backbone.Model.extend({
    this.set('isStarted', true); 
 
    if (this.get('session').isInitiator())
-     this.doOffer(); 
-   // processQueue();
+     this.doOffer();
+   
+   this.processQueue();
   }, 
   
   _addLocalStream: function() {
    this.attributes.remoteConnection.addStream(this.attributes.session.getLocalStream()); 
   },  
 
+  isStarted: function() {
+   return this.get('isStarted'); 
+  }, 
+
   processQueue: function () {
-  while(msgQueue.length > 0)
-    processMessage(msgQueue.shift());     
+  while(this.attributes.msgQueue.length > 0)
+    this.processMessage(this.attributes.msgQueue.shift());     
   }, 
 
   onUserMediaError: function (error) {
@@ -139,16 +144,20 @@ app.PeerConnection = Backbone.Model.extend({
 
   dispatchMessage : function (msg) {
     // only if started
-    this.processMessage(msg);
+    if(this.isStarted())
+      this.processMessage(msg);
+    else 
+      this.attributes.msgQueue.push(msg);
   }, 
-  
+
+/*  
   getMessage: function() {
     if ( msg.length < 1) 
       return null; 
     else 
      return  this.mswQueue.shift(); 
   }, 
-
+*/
  _createPeerConnection: function() {
   var self = this;  
   try{ 
