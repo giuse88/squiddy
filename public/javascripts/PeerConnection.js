@@ -15,7 +15,7 @@ app.PeerConnection = Backbone.Model.extend({
   defaults: {
     status : this.UNKNOWN, 
     isStarted   : false,  
-    msgQueue : [],  
+    msgQueue : null,  
     session : null,
     peerId : '', 
     remoteStream  : null, 
@@ -26,7 +26,8 @@ app.PeerConnection = Backbone.Model.extend({
 
   initialize: function(id, session, isInitiator) {
     var self=this; 
-
+    
+    this.attributes.msgQueue = new Array(); 
     this.attributes.peerId = id;
     this.attributes.session = session; 
     
@@ -36,7 +37,7 @@ app.PeerConnection = Backbone.Model.extend({
     if (session.isSessionReady())
       this._start(); 
     else 
-      session.on('ready', function() {self._start()}); 
+      session.on('ready', function() { console.log("Session ready" + self.getPeerId()); self._start()}); 
 
     console.log("Creating Peer Connection");  
   },
@@ -56,16 +57,17 @@ app.PeerConnection = Backbone.Model.extend({
 */
   _start: function() { 
     console.log("START");
-
+    console.log("Messages pending in the queue : " + this.attributes.msgQueue.length); 
    this._createPeerConnection();
    this._addLocalStream(); 
    this.set('isStarted', true); 
    console.log("Is initiator : " + this.isInitiator()); 
 
+   this.processQueue();
+   
    if (this.isInitiator())
      this.doOffer();
    
-   this.processQueue();
   }, 
   
   _addLocalStream: function() {
@@ -144,7 +146,7 @@ app.PeerConnection = Backbone.Model.extend({
   
   doAnswer : function () {
     var self = this; 
-    console.log("Creting answer");
+    console.log("Creting answer" + this.getPeerId());
     this.attributes.remoteConnection.createAnswer(function(localDescriptor) { 
                                                  self.gotDescriptor(localDescriptor)}, 
                                                  function() {}, constraints);  
@@ -157,6 +159,7 @@ app.PeerConnection = Backbone.Model.extend({
   }, 
 
   dispatchMessage : function (msg) {
+    console.log("Adding message  : " + this.getPeerId()); 
     // only if started
     if(this.isStarted())
       this.processMessage(msg);

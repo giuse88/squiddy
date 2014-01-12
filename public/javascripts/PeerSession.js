@@ -47,7 +47,7 @@ app.PeerSession = Backbone.Collection.extend({
   },
 
   isSessionReady: function() {
-   return (this._socket != null) && (this._localStream != null) && this._connected; 
+   return (this._socket != null)  && (this._localStream  != null)  && this._connected; 
   }, 
 
   setSocket:function(socket) {
