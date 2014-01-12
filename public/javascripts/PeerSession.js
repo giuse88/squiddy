@@ -23,7 +23,7 @@ app.PeerSession = Backbone.Collection.extend({
     // to the model object
     this._sessionId = make_peer_id(SIZE_PEER_ID);
     this._roomId = get_room_id_from_url() || ''; 
-    this._isInitiator=false;
+//    this._isInitiator=false;
     this._socket = null; 
     this._localStream = null;
     this._connected = false; 
@@ -84,19 +84,22 @@ app.PeerSession = Backbone.Collection.extend({
   getSessionId: function() {
    return this._sessionId; 
   },
-             
+
+  /*  
   isInitiator: function() {
     return this._isInitiator; 
   },
 
+  */ 
   getLocalStream: function() {
     return this._localStream;
   },
 
+  /*
   setAsInitiator: function(){
     this._isInitiator=true; 
   },
-
+*/
   getPeer : function(id) {
     return this.findWhere({ peerId : id });  
   }, 

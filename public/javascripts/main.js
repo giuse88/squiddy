@@ -134,7 +134,7 @@ function onJoined(data) {
 
 function onCreated(data) {
   session.setRoomId(data.roomId); 
-  session.setAsInitiator(); 
+  //session.setAsInitiator(); 
   session.setConnected(); 
  // isConnected=false; 
   console.log("Created room " + session.getRoomId()); 
@@ -143,8 +143,9 @@ function onCreated(data) {
 function onJoin(data) {
   //setStatus("Connected"); 
   console.log("Peer " + data.peerId + " joined room " + data.roomId); 
-  session.add(new app.PeerConnection(data.peerId, session)); 
-  //session.getPeer(data.peerId).doOffer(); 
+  var newPeer = new app.PeerConnection(data.peerId, session, true); 
+  console.log("Is initiator : " + newPeer.isInitiator()); 
+  session.add(newPeer); 
 }
 
 function onMessage(data) {

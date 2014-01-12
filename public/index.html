@@ -27,14 +27,19 @@
 
 <body>
 
+
 <h1> WebRTC chat </h1> 
+TODO : MUST : The connection is opening only if the the peer is the initiator.. buuuuuuuu :P
+I need to meve the initiator attribto to the peer connection model
+The are problems in the message process function when the number of peer is bigger than two
+What about a deploy attemp? 
 
 <div id="container">
+    <div id='remote_videos'> </div> 
     <div id="local_video_container" >
       <video id="localVideo" autoplay="autoplay"></video>
       <p> Local Video </p> 
     </div>
-    <div id='remote_videos'> </div> 
 </div>
 
 <footer id="status"> </footer>

@@ -19,15 +19,19 @@ app.PeerConnection = Backbone.Model.extend({
     session : null,
     peerId : '', 
     remoteStream  : null, 
+    isInitiator : false, 
     isStarted : false, 
     remoteConnection : null, 
   }, 
 
-  initialize: function(id, session) {
+  initialize: function(id, session, isInitiator) {
     var self=this; 
 
     this.attributes.peerId = id;
     this.attributes.session = session; 
+    
+    if(isInitiator) 
+      this.set('isInitiator', true);  
 
     if (session.isSessionReady())
       this._start(); 
@@ -40,15 +44,25 @@ app.PeerConnection = Backbone.Model.extend({
   getPeerId: function () {
     return this.attributes.peerId; 
   }, 
-  
+
+  isInitiator : function() {
+    return this.get('isInitiator'); 
+  }, 
+
+  /* 
+  setAsInitiator : function() {
+    this.set('isInitiator', true); 
+  }, 
+*/
   _start: function() { 
     console.log("START");
 
    this._createPeerConnection();
    this._addLocalStream(); 
    this.set('isStarted', true); 
+   console.log("Is initiator : " + this.isInitiator()); 
 
-   if (this.get('session').isInitiator())
+   if (this.isInitiator())
      this.doOffer();
    
    this.processQueue();
