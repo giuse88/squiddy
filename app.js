@@ -1,8 +1,8 @@
-var express = require('express');
-var http = require('http');
-var path = require('path');
-var _=require('underscore');
-var log4js = require('log4js');
+var express   = require('express');
+var http      = require('http');
+var path      = require('path');
+var _         = require('underscore');
+var log4js    = require('log4js');
 
 var LOGGER = log4js.getLogger('app.js');
 var SIZE_ID = 20; 
@@ -13,17 +13,37 @@ var CREATED = "created";
 var JOIN    = "join"; 
 var BYE     = "bye";
 
+
 var app = express();
+
+// settings 
 app.set('port', process.env.PORT || 3000);
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
+// 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded());
+app.use(app.router);
+
+// route 
+app.get('/',function(req, res) {
+  res.redirect('/' + createNewRoomID());
+});
+
+app.get('/:roomIdentifier', function( req, res) {
+  res.render("chatRoomView", { "roomId" : req.path } );
+}); 
+//
 
 var server = http.createServer(app);  
 var io = require('socket.io').listen(server, {log: false}); 
-var peers = {}; 
+var peers = {};
 
 server.listen(app.get('port'), function(){ 
   LOGGER.trace('Express server listening on port ' + app.get('port')); 
-}); 
+});
+
+/* Socket request */ 
 
 io.sockets.on('connection', function (socket) {
     
@@ -121,4 +141,6 @@ function makeRoomId(length){
     text += possible.charAt(Math.floor(Math.random() * possible.length));
  return text;
 }
+
+// Room view 
 

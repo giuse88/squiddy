@@ -1,0 +1,32 @@
+doctype html
+html(lang="en")
+  head
+    meta("keywords", "WebRTC, HTML5, JavaScript") 
+    meta("name", "description" content="WebRTC Reference App")
+    meta("viewport", "width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1")
+
+    title Web RTC Test video chat ( developement) 
+
+    script(src="socket.io/socket.io.js")
+    script(src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js")
+    script(src="http://apprtc.appspot.com/js/adapter.js")
+    script(src="javascripts/lib/underscore-min.js")
+    script(src="javascripts/lib/backbone-min.js")
+    script(src="javascripts/lib/log4js.js")
+    script(src="javascripts/PeerConnection.js")
+    script(src="javascripts/PeerSession.js")
+    script(src="javascripts/utils.js")
+    script(src="javascripts/main.js") 
+    script(type='text/javascript').
+      var LOGGER = Log4js.getLogger("webRTC-chat"); 
+      LOGGER.log("Logger loaded");
+  body 
+    h1 Welcome to Room #{roomId}
+    #container
+      #romote_videos
+      #local_video_container
+        video(autoplay='autoplay')#localVideo
+        p Local Video
+    #status
+    script(type='text/javascript').
+      initialization();  
