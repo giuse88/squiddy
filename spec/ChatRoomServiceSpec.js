@@ -83,11 +83,50 @@ describe("Test Chat Room Service ", function() {
             roomServiceUnderTest.removePeerFromRoom(roomId, "Peer2");
             roomServiceUnderTest.removePeerFromRoom(roomId, "Peer1");
         } catch(e) {
-        expect(false).toBe(true);
-    }
+            console.log("Message : " + e.message);
+            expect(false).toBe(true);
+        }
 
         expect(roomServiceUnderTest.isRoomEmpty(roomId)).toBeTruthy();
 
+    });
+
+    it("Test removing peers from an empty room cause an exception", function() {
+
+        var roomId =  roomServiceUnderTest.createNewRoom();
+        expect(roomId).toBeDefined();
+        expect(roomId).not.toBeNull();
+        expect(roomServiceUnderTest.doesRoomExist(roomId)).toBeTruthy();
+        expect(roomServiceUnderTest.isRoomEmpty(roomId)).toBeTruthy();
+
+        try {
+            roomServiceUnderTest.removePeerFromRoom(roomId, "Peer3");
+            roomServiceUnderTest.removePeerFromRoom(roomId, "Peer1");
+        } catch(e) {
+            expect(e.name).toEqual("EmptyRoomException");
+        }
+    });
+
+    it("Test that if a non empty room cannot be removed ", function() {
+
+        var roomId =  roomServiceUnderTest.createNewRoom();
+        expect(roomId).toBeDefined();
+        expect(roomId).not.toBeNull();
+        expect(roomServiceUnderTest.doesRoomExist(roomId)).toBeTruthy();
+        expect(roomServiceUnderTest.isRoomEmpty(roomId)).toBeTruthy();
+        try {
+            roomServiceUnderTest.addPeerToRoom(roomId, "Peer1");
+        } catch(e) {
+            expect(false).toBe(true);
+        }
+
+        expect(roomServiceUnderTest.isRoomEmpty(roomId)).toBeFalsy();
+
+        try {
+            roomServiceUnderTest.removeRoom(roomId);
+        } catch(e) {
+            expect(e.name).toEqual("RoomNotEmptyException");
+        }
     });
 
 });
