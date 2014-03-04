@@ -23,11 +23,12 @@ var server = http.createServer(app);
 // create the socket io
 var io = require('socket.io').listen(server, {log: false});
 
-// kick off the signaling service
-//var singalingService = require('./socket/SignalingProtocol').start(io, roomService, LOGGER);
-
 // create the room service
 var roomService = require('./lib/ChatRoomService').getRoomService(LOGGER);
+
+// kick off the signaling service
+require('./socket/SignalingProtocol').start(io, roomService, LOGGER);
+
 
 //=================================
 //          INDEX PAGE

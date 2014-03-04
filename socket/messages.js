@@ -1,6 +1,14 @@
-var REQUEST = "request";
-var JOINED  = "joined";
-var MESSAGE = "message";
-var CREATED = "created";
-var JOIN    = "join";
-var BYE     = "bye";
+
+function define(name, value) {
+    Object.defineProperty(exports, name, {
+        value:      value,
+        enumerable: true
+    });
+}
+
+define("REQUEST", "request");
+define("JOINED",  "joined");
+define("MESSAGE", "message");
+define("CREATED", "created");
+define("JOIN",    "join");
+define("BYE",     "bye");
