@@ -6,21 +6,16 @@
  * To change this template use File | Settings | File Templates.
  */
 
+var messages = require("./messages");
 
-module.exports = function() {
-
-    return {
-        start: function(io, chatRoomService, logger) {
+exports.start = function(io, chatRoomService, logger) {
             "use strict";
+            console.log("Signaling");
 
-            if ( !io || !chatRoomService || logger)
-                throw "Illegal Argument";
+           // if ( !io || !chatRoomService || logger)
+            //    throw "Illegal Argument";
 
-
-            logger.trace("Test");
-
-        }
-    };
+            logger.trace(messages.REQUEST);
 }
 
 /*
