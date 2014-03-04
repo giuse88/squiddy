@@ -27,7 +27,7 @@ var io = require('socket.io').listen(server, {log: false});
 var roomService = require('./lib/ChatRoomService').getRoomService(LOGGER);
 
 // kick off the signaling service
-require('./socket/SignalingProtocol').start(io, roomService, LOGGER);
+require('./socket/SignalingService').initialize(io, roomService, LOGGER);
 
 
 //=================================
