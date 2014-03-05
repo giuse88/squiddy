@@ -42,10 +42,10 @@ var object = {};
 function initialization() {
 
 
- session = new app.PeerSession(); 
+ session = new app.PeerSession();
  
- console.log("Session id " + session.getSessionId());  
- console.log("Room id " + session.getRoomId());  
+ console.log("Session id " + session.getSessionId());
+ console.log("Room id " + session.getRoomId());
 
   // install signaling channel 
   openChannel();
@@ -85,19 +85,25 @@ function initialization() {
 
 function openChannel() {
 
-  var roomRequest = {
-                  peerId : session.getSessionId(), 
-                  roomId : session.getRoomId()
-                }; 
 
   //connect to the remote server throug a web socket
-  session.setSocket(io.connect());
 
-  var socket = session.getSocket(); 
+  var socket = io.connect();
 
-  //request for joining a room  
-  socket.emit(REQUEST, roomRequest);  
- 
+  session.setSocket(socket);
+
+  socket.on("connected" , function(data) {
+      "use strict";
+      console.log("Received peer id : %s", data.peerId);
+      session.setSessionId(data.peerId);
+      //request for joining a room
+      var roomRequest = {
+          peerId : session.getSessionId(),
+          roomId : session.getRoomId()
+      };
+      socket.emit(REQUEST, roomRequest);
+  });
+
   // callback when this peer joins a room 
   socket.on(JOINED, onJoined); 
 

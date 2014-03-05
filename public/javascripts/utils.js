@@ -5,7 +5,7 @@ function setStatus(status) {
 }
 
 function get_room_id_from_url() {
-  return get_url_values()["roomid"]; 
+  return window.location.pathname.replace('/', '');
 }
 
 function get_url_values(){

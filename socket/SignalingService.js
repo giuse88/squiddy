@@ -28,9 +28,8 @@ SignalingService.prototype.onConnect = function()  {
     var self = this;
 
     this.io.sockets.on("connection",  function (socket) {
-        this.logger && this.logger.trace("Peer %s is connected", socket.id);
+        self.logger && self.logger.trace("Peer %s is connected", socket.id);
         socket.emit(events.CONNECTED, {peerId : socket.id});
-        // setting the other listeners
         socket.on(events.REQUEST, function (data) {self.onRequest(socket, data)});
         socket.on(events.MESSAGE, function (data) {self.onMessage(socket, data)});
         socket.on(events.BYE,     function (data) {self.onBye(socket, data)});
@@ -47,14 +46,15 @@ SignalingService.prototype.onRequest = function(socket, data) {
         this.joinRoom(socket, data.peerId, data.roomId);
         //
     } catch (e){
-        this.logger && this.logger.error("NAME : " +e.name +  "MSG : " + e.message);
+        socket.disconnect();
+        this.logger && this.logger.error("NAME : " +e.name +  " MSG : " + e.message);
     }
 }
 
 SignalingService.prototype.joinRoom = function (socket, peer, room) {
     socket.join(room);
-    socket.emit(msg.JOINED, {roomId : room});
-    socket.broadcast.to(room).emit(msg.JOIN, {roomId : room, peerId : peer});
+    socket.emit(events.JOINED, {roomId : room});
+    socket.broadcast.to(room).emit(events.JOIN, {roomId : room, peerId : peer});
     this.logger && this.logger.trace("Peer %s has joined room %s", peer, room);
 }
 
@@ -69,23 +69,41 @@ SignalingService.prototype.joinRoom = function (socket, peer, room) {
 
 SignalingService.prototype.onMessage = function (socket, data) {
     if(!data.to) {
-        socket.broadcast.to(data.roomId).emit(msg.MESSAGE, data);
-        this.logger && this.logger.trace("Received message from %s. Brodcasted to the room %s", data.from, data.roomId);
+        socket.broadcast.to(data.roomId).emit(events.MESSAGE, data);
+        this.logger && this.logger.trace("Received message from %s. Broadcasted to the room %s", data.from, data.roomId);
     } else {
-        io.sockets.socket(msg.to).emit(msg.MESSAGE,data);
+        this.io.sockets.socket(data.to).emit(events.MESSAGE,data);
         this. logger && this.logger.trace("[ Room %s ] : Message from %s has been sent to peer %s. Room %s", data.from, data.to, data.roomId);
     }
 }
 
 SignalingService.prototype.onBye = function(socket, data) {
-    socket.broadcast.to(data.roomId).emit(msg.BYE, data);
+    socket.broadcast.to(data.roomId).emit(events.BYE, data);
     socket.leave(socket.roomId);
-    this.chatRoomService.removePeerFromRoom(data.roomId, data.peerId);
-    this.logger && this.logger.trace("Received BYE message from %s. Brodcasted to the room %s", data.peerId, data.roomId);
+
+    var chatRoomService = this.chatRoomService;
+    try {
+        //
+        chatRoomService.removePeerFromRoom(data.roomId, data.peerId);
+        //
+        if (chatRoomService.isRoomEmpty(data.roomId)) {
+           // Timer to allow page refresh
+           setTimeout(function() {
+               if(chatRoomService.isRoomEmpty(data.roomId))
+                   chatRoomService.removeRoom(data.roomId);
+           }, 5000);
+           //
+           }
+        //
+    } catch (e){
+        socket.disconnect();
+        this.logger && this.logger.error("NAME : " +e.name +  " MSG : " + e.message);
+    }
+    this.logger && this.logger.trace("Received BYE message from %s. Broadcasted to the room %s", data.peerId, data.roomId);
 }
 
 SignalingService.prototype.onDisconnect = function (socket){
-    this.onBye(socket, {peerId : socket.peerId, roomId : socket.roomId });
-    this.logger && this.logger.trace("Peer %s has been disconnected", socket.peerId);
+    this.onBye(socket, {peerId : socket.id, roomId : socket.roomId });
+    this.logger && this.logger.trace("Peer %s has been disconnected", socket.id);
 }
 

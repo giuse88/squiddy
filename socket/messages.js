@@ -10,6 +10,6 @@ define("REQUEST", "request");
 define("JOINED",  "joined");
 define("MESSAGE", "message");
 define("CREATED", "created");
-define("CONNECTED", "created");
+define("CONNECTED", "connected");
 define("JOIN",    "join");
 define("BYE",     "bye");

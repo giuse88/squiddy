@@ -21,7 +21,7 @@ app.PeerSession = Backbone.Collection.extend({
     // Move these values to the attributes object
     // and make it public to hava a consiste interface 
     // to the model object
-    this._sessionId = make_peer_id(SIZE_PEER_ID);
+    this._sessionId = ''; // make_peer_id(SIZE_PEER_ID);
     this._roomId = get_room_id_from_url() || ''; 
 //    this._isInitiator=false;
     this._socket = null; 
@@ -85,6 +85,9 @@ app.PeerSession = Backbone.Collection.extend({
    return this._sessionId; 
   },
 
+   setSessionId: function(sessionId) {
+        this._sessionId = sessionId;
+   },
   /*  
   isInitiator: function() {
     return this._isInitiator; 
@@ -94,6 +97,7 @@ app.PeerSession = Backbone.Collection.extend({
   getLocalStream: function() {
     return this._localStream;
   },
+
 
   /*
   setAsInitiator: function(){
