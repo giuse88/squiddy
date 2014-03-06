@@ -16,7 +16,7 @@
 //      EXCEPTIONS
 //======================
 
-function InvalidValue(msg) {
+function InvalidValueException(msg) {
     this.name = "InvalidValueException";
     this.message = msg;
 }
@@ -32,7 +32,7 @@ function SignalingService (){
 SignalingService.prototype.connect = function(callBackOnConnected){
     //
     if (io)
-        throw new InvalidValue("The module io has not been initialized.");
+        throw new InvalidValueException("The module io has not been initialized.");
     //
     this.socket = io.connect();
     this._checkSocket();
@@ -45,7 +45,7 @@ SignalingService.prototype.getSocket = function() {
 
 SignalingService.prototype.send = function (eventType, payload) {
     if (!eventType || !payload)
-        throw InvalidValue("Specified an incorrect argument");
+        throw InvalidValueException("Specified an incorrect argument");
     this._checkEventType(eventType);
     this._checkSocket();
     this.socket.emit(eventType, payload);
@@ -71,18 +71,18 @@ SignalinService.prototype.setHandlerForJoinedEvent = function(handler){
 
 SignalingService.prototype._checkSocket = function(){
     if (this.socket)
-        throw new InvalidValue("Invalid socket.io.");
+        throw new InvalidValueException("Invalid socket.io.");
 }
 
 SignalingService.prototype._checkEventType = function (new_event) {
     if ( new_event !== events.CONNECTION_REQUEST  ||
          new_event !== events.MESSAGE)
-    throw new InvalidValue("The event " + new_event + " specified is unknown.");
+    throw new InvalidValueException("The event " + new_event + " specified is unknown.");
 }
 
 SignalingService.prototype._setHandlerFor= function (new_event, handler) {
     if (!handler)
-        throw new InvalidValue("The handler :  " + handler + "is invalid.");
+        throw new InvalidValueException("The handler :  " + handler + "is invalid.");
     this._checkSocket();
     socket.on(new_event, hanlder);
 }
