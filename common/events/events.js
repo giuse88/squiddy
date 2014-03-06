@@ -11,13 +11,14 @@
         });
     }
 
-    define("CONNECTION_REQUEST", "request");
-    define("JOINED",  "joined");
-    define("MESSAGE", "message");
-    define("CREATED", "created");
-    define("CONNECTED", "connected");
-    define("JOIN",    "join");
-    define("BYE",     "bye");
+    define("REQUEST",       "request");
+    define("MESSAGE",       "message");
+    define("CONNECTION", "connection");
+    define("CONNECTED" ,  "connected");
+    define("DISCONNECT", "disconnect");
+    define("JOIN",             "join");
+    define("JOINED",         "joined");
+    define("BYE",               "bye");
 
 })(typeof exports === 'undefined'? this['events']={}: exports);
 

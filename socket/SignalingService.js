@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-var events = require("./../common/events");
+var events = require("./../common/events/events");
 
 exports.initialize = function(io, chatRoomService, logger) {
     return new SignalingService(io, chatRoomService, logger);
@@ -27,13 +27,13 @@ SignalingService.prototype.onConnect = function()  {
 
     var self = this;
 
-    this.io.sockets.on("connection",  function (socket) {
+    this.io.sockets.on(events.CONNECTION,  function (socket) {
         self.logger && self.logger.trace("Peer %s is connected", socket.id);
         socket.emit(events.CONNECTED, {peerId : socket.id});
         socket.on(events.REQUEST, function (data) {self.onRequest(socket, data)});
         socket.on(events.MESSAGE, function (data) {self.onMessage(socket, data)});
         socket.on(events.BYE,     function (data) {self.onBye(socket, data)});
-        socket.on("disconnect",   function    ()  {self.onDisconnect(socket)});
+        socket.on(events.DISCONNECT,   function    ()  {self.onDisconnect(socket)});
     });
 
 }
