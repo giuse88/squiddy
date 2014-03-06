@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-var events = require("./messages");
+var events = require("./../common/events");
 
 exports.initialize = function(io, chatRoomService, logger) {
     return new SignalingService(io, chatRoomService, logger);
