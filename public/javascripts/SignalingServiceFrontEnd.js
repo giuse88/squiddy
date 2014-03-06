@@ -17,7 +17,7 @@
 //======================
 
 function InvalidValue(msg) {
-    this.name = "ValueUndefinied";
+    this.name = "InvalidValueException";
     this.message = msg;
 }
 
