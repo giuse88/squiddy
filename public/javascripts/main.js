@@ -1,10 +1,5 @@
 var SIZE_PEER_ID = 10;
-var REQUEST = "request"; 
-var JOINED  = "joined"; 
-var MESSAGE = "message"; 
-var CREATED = "created"; 
-var JOIN    = "join"; 
-var BYE     = "bye";
+
 var INTERVAL = 10000;
 
 
@@ -169,6 +164,54 @@ function onMessage(data) {
   newPeer.dispatchMessage(message); 
 }
 
+function onBye(data) {
+    var m = session.getPeer(data.peerId);
+    console.log(m);
+    session.remove(m);
+    console.log("Peer " + data.peerId + " has been disconnected ( ROOM : " + data.roomId + " ) " );
+}
+
+
+function onJoined(data) {
+//  setStatus("Connected");
+    room = data.roomId;
+//  isInitiator=false;
+//  isConnected=true;
+    console.log("Joined room " + room);
+    session.setConnected();
+    // start();
+}
+
+function onCreated(data) {
+    session.setRoomId(data.roomId);
+    //session.setAsInitiator();
+    session.setConnected();
+    // isConnected=false;
+    console.log("Created room " + session.getRoomId());
+}
+
+function onJoin(data) {
+    //setStatus("Connected");
+    console.log("Peer " + data.peerId + " joined room " + data.roomId);
+    var newPeer = new app.PeerConnection(data.peerId, session, true);
+    console.log("Is initiator : " + newPeer.isInitiator());
+    session.add(newPeer);
+}
+
+function onMessage(data) {
+
+    // TODO
+    // peerId must change to from
+    console.log("Peer " + data.from + " : " + data.roomId + " " + data.msg);
+    var id = data.from;
+
+    if (!session.getPeer(id))
+        session.add( new app.PeerConnection(id, session));
+
+    var newPeer = session.getPeer(id);
+    var message = data.msg;
+    newPeer.dispatchMessage(message);
+}
 /* the function start is the most important function. 
  * This function starts the coommunication with the other peer only if the following 
  * conditions are satisfied 
