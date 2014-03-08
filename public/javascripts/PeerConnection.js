@@ -17,11 +17,11 @@ app.PeerConnection = Backbone.Model.extend({
     isStarted   : false,  
     msgQueue : null,  
     session : null,
-    peerId : '', 
+    peerId : '',
     remoteStream  : null, 
     isInitiator : false, 
     isStarted : false, 
-    remoteConnection : null, 
+    remoteConnection : null
   }, 
 
   initialize: function(id, session, isInitiator) {
@@ -80,7 +80,7 @@ app.PeerConnection = Backbone.Model.extend({
 
   processQueue: function () {
   while(this.attributes.msgQueue.length > 0)
-    this.processMessage(this.attributes.msgQueue.shift());     
+    this.processMessage(this.attributes.msgQueue.shift());
   }, 
 
   onUserMediaError: function (error) {
@@ -192,7 +192,7 @@ app.PeerConnection = Backbone.Model.extend({
   pc.onaddstream = function(e) { self.onRemoteStreamAdded(e);};
   //pc.onremovestream = this.onRemoteStreamRemoved;
   
-} 
+  }
 
 });
 

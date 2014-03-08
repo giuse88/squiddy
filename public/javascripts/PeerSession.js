@@ -27,7 +27,7 @@ app.PeerSession = Backbone.Collection.extend({
     this._socket = null; 
     this._localStream = null;
     this._connected = false; 
-    this._doGetUserMedia();
+   // this._doGetUserMedia();
     console.log("Initialized Session"); 
 
     //temporaney

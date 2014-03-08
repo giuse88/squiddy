@@ -26,10 +26,10 @@ var server = http.createServer(app);
 var io = require('socket.io').listen(server, {log: false});
 
 // create the room service
-var roomService = require('./lib/ChatRoomService').getRoomService(LOGGER);
+var roomService = require('./services/ChatRoomService').getRoomService(LOGGER);
 
 // kick off the signaling service
-require('./socket/SignalingService').initialize(io, roomService, LOGGER);
+    require('./services/SignalingService').initialize(io, roomService, LOGGER);
 
 
 //=================================

@@ -5,7 +5,7 @@ describe("Test Chat Room Service ", function() {
     var roomServiceUnderTest;
 
     beforeEach(function() {
-        roomServiceUnderTest = require('../lib/ChatRoomService').getRoomService();
+        roomServiceUnderTest = require('services/ChatRoomService').getRoomService();
     });
 
     it("Test the creation of a new room", function() {

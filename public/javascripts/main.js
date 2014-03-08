@@ -12,7 +12,7 @@ var peer = '';
 var socket = null; 
 
 var offerConstraints = {"optional": [], "mandatory": {}};
-var mediaConstraints = { /*"audio": true ,*/ "video": true};
+var mediaConstraints = { "audio": true , "video": true };
 var pcConfig = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
 // Types of gathered ICE Candidates.
 var gatheredIceCandidateTypes = { Local: {}, Remote: {} };
@@ -44,8 +44,9 @@ function initialization() {
 
   // install signaling channel 
   openChannel();
+  createPeerConnection();
   // install local media
-//  doGetUserMedia();T
+ // doGetUserMedia();
  
   //setInterval(function() { console.log("Is session ready : " + session.isSessionReady())}, 1000); 
   // set local vido object 
@@ -78,11 +79,32 @@ function initialization() {
   });
 }
 
+function createPeerConnection() {
+
+    try{
+        pc = new RTCPeerConnection(pcConfig, pcConstraints);
+        pc.onicecandidate = onIceCandidate;
+        console.log('Created RTCPeerConnnection with:\n' +
+            'config: \'' + JSON.stringify(pcConfig) + '\';\n' +
+            'constraints: \'' + JSON.stringify(pcConstraints) + '\'.');
+    } catch (e) {
+        console.log('Failed to create PeerConnection, exception: ' + e.message);
+        alert('Cannot create RTCPeerConnection object; \n WebRTC is not supported by this browser.');
+        return;
+    }
+//    pc.onaddstream = onRemoteStreamAdded;
+//    pc.onremovestream = onRemoteStreamRemoved;
+    // pc.onsignalingstatechange = onSignalingStateChanged;
+    pc.oniceconnectionstatechange = onIceConnectionStateChanged;
+
+}
+
 function openChannel() {
 
 
   //connect to the remote server throug a web socket
 
+  /*
   var socket = io.connect();
 
   session.setSocket(socket);
@@ -112,7 +134,8 @@ function openChannel() {
   socket.on(MESSAGE,onMessage); 
 
   // Peer disconnection 
-  socket.on(BYE, onBye); 
+  socket.on(BYE, onBye);
+  */
 }
 
 function onBye(data) {
@@ -234,25 +257,6 @@ function onUserMediaError(error) {
   alert('Failed to get access to local media. Error code was ' + error.code + '.');
 }
 
-function createPeerConnection() {
-  
-  try{ 
-  pc = new RTCPeerConnection(pcConfig, pcConstraints);
-  pc.onicecandidate = onIceCandidate;
-  console.log('Created RTCPeerConnnection with:\n' +
-              'config: \'' + JSON.stringify(pcConfig) + '\';\n' +
-              'constraints: \'' + JSON.stringify(pcConstraints) + '\'.');
-  } catch (e) {
-    console.log('Failed to create PeerConnection, exception: ' + e.message);
-    alert('Cannot create RTCPeerConnection object; \n WebRTC is not supported by this browser.');
-    return;
-  }
-  pc.onaddstream = onRemoteStreamAdded;
-  pc.onremovestream = onRemoteStreamRemoved;
- // pc.onsignalingstatechange = onSignalingStateChanged;
-  pc.oniceconnectionstatechange = onIceConnectionStateChanged;
-  
-}
 
 
 function onRemoteStreamRemoved() {
