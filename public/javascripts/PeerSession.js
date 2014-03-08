@@ -14,28 +14,44 @@ var app = app || {};
 
 app.PeerSession = Backbone.Collection.extend({
   model: app.PeerConnection,
-  
+
   initialize: function() {
-    this._attributes = {}
-    // TODO 
-    // Move these values to the attributes object
-    // and make it public to hava a consiste interface 
-    // to the model object
-    this._sessionId = ''; // make_peer_id(SIZE_PEER_ID);
-    this._roomId = get_room_id_from_url() || ''; 
-//    this._isInitiator=false;
-    this._socket = null; 
+    //
+    this._attributes = {
+        audio : true,
+        video : true,
+        data  : false,
+        screen : false
+    };
+    //
     this._localStream = null;
-    this._connected = false; 
-   // this._doGetUserMedia();
-    console.log("Initialized Session"); 
-
-    //temporaney
-
-    
+    this._connected = false;
+    //
+    this._sessionId = get_room_id_from_url() || '';
+    this._roomId    = this._sessionId;
+    this._signalingService = new SignalingService();
+    this._setOnConnectHandler();
+    //
+    log("Session " + this._sessionId +  " initialized");
   },
- 
-  //TODO abstract from the socket.io interface  
+
+  _setOnConnectHandler : function(){
+      //
+      this._signalingService.connect( function(data) {
+
+      if (!data){
+          error("PeerId not received from the server.", data);
+          return;
+      }
+
+      self._peerId = data.peerId;
+      log("Got Peer Id : " + self._peerId +  ".");
+      self._connected = true;
+      log("Peer " + self._peerId + " connected.");
+      });
+      //
+  },
+
   send: function (destination, data) {
     var message = { 
       to     : destination, 
@@ -43,16 +59,11 @@ app.PeerSession = Backbone.Collection.extend({
       roomId : this._roomId, 
       msg    : data 
     };
-    this._socket.emit(MESSAGE, message); 
+    this._signalingService.send(events.MESSAGE, message);
   },
 
   isSessionReady: function() {
-   return (this._socket != null)  && (this._localStream  != null)  && this._connected; 
-  }, 
-
-  setSocket:function(socket) {
-    this._socket=socket; 
-    this._triggerSessionReadyEvent(); 
+   return (this._localStream  != null)  && this._connected;
   }, 
 
   _triggerSessionReadyEvent: function () {
@@ -85,25 +96,10 @@ app.PeerSession = Backbone.Collection.extend({
    return this._sessionId; 
   },
 
-   setSessionId: function(sessionId) {
-        this._sessionId = sessionId;
-   },
-  /*  
-  isInitiator: function() {
-    return this._isInitiator; 
-  },
-
-  */ 
   getLocalStream: function() {
     return this._localStream;
   },
 
-
-  /*
-  setAsInitiator: function(){
-    this._isInitiator=true; 
-  },
-*/
   getPeer : function(id) {
     return this.findWhere({ peerId : id });  
   }, 

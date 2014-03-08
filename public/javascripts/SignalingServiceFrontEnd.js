@@ -52,16 +52,16 @@ SignalingService.prototype.send = function (eventType, payload) {
 
 }
 
-SignalinService.prototype.setHandlerForByeEvent = function(handler){
+SignalingService.prototype.setHandlerForByeEvent = function(handler){
     this._setHandlerFor(events.BYE, handler);
 }
-SignalinService.prototype.setHandlerForMessageEvent = function(handler){
+SignalingService.prototype.setHandlerForMessageEvent = function(handler){
     this._setHandlerFor(events.MESSAGE, handler);
 }
-SignalinService.prototype.setHandlerForJoinEvent = function(handler){
+SignalingService.prototype.setHandlerForJoinEvent = function(handler){
     this._setHandlerFor(events.JOIN, handler);
 }
-SignalinService.prototype.setHandlerForJoinedEvent = function(handler){
+SignalingService.prototype.setHandlerForJoinedEvent = function(handler){
     this._setHandlerFor(events.JOINED, handler);
 }
 
@@ -75,7 +75,7 @@ SignalingService.prototype._checkSocket = function(){
 }
 
 SignalingService.prototype._checkEventType = function (new_event) {
-    if ( new_event !== events.CONNECTION_REQUEST  ||
+    if ( new_event !== events.REQUEST  ||
          new_event !== events.MESSAGE)
     throw new InvalidValueException("The event " + new_event + " specified is unknown.");
 }
