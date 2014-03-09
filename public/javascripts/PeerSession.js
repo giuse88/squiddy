@@ -33,7 +33,7 @@ app.PeerSession = Backbone.Collection.extend({
     // User Media
     this._doGetUserMedia();
 
-    log.info("Session " + this._sessionId +  " initialized");
+    LOG.info("Session " + this._sessionId +  " initialized");
   },
 
   _setOnConnectHandler : function(){
@@ -48,9 +48,9 @@ app.PeerSession = Backbone.Collection.extend({
       }
 
       self._peerId = data.peerId;
-      log.info("Got Peer Id : " + self._peerId +  ".");
+      LOG.info("Got Peer Id : " + self._peerId +  ".");
       self._connected = true;
-      log.info("Peer " + self._peerId + " connected.");
+      LOG.info("Peer " + self._peerId + " connected.");
       //
       self._triggerSessionReadyEvent();
       //
@@ -128,13 +128,13 @@ app.PeerSession = Backbone.Collection.extend({
     var self = this; 
     
     function onUserMediaSuccess (stream) {
-      log.info('User has granted access to local media.');
+      LOG.info('User has granted access to local media.');
       self._localStream = stream;
       self._triggerSessionReadyEvent(); 
     };
   
     function onUserMediaError (error) {
-      log.error('Failed to get access to local media. Error code was ' + error.code);
+      LOG.error('Failed to get access to local media. Error code was ' + error.code);
       alert('Failed to get access to local media. Error code was ' + error.code + '.');
     };
 
@@ -143,11 +143,11 @@ app.PeerSession = Backbone.Collection.extend({
       //
       webkitMediaStream(mediaConstraints, onUserMediaSuccess, onUserMediaError);
       //
-      log.info('Requested access to local media with mediaConstraints:\n' +
+      LOG.info('Requested access to local media with mediaConstraints:\n' +
                   '  \'' + JSON.stringify(mediaConstraints) + '\'');
     } catch (e) {
       alert('getUserMedia() failed. Is this a WebRTC capable browser?');
-      log.error('getUserMedia failed with exception: ' + e.message);
+      LOG.error('getUserMedia failed with exception: ' + e.message);
     }
   } 
 

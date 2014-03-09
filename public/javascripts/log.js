@@ -1,4 +1,4 @@
-(function() {
+LOG = (function(console) {
     "use strict";
 
     var LOG =   " INF ";
@@ -7,7 +7,7 @@
 
     function _log(type, msg, values) {
         if (values)
-            console.log("[" + type + "] " +  msg + " Values : " + values);
+            console.log("[" + type + "] " +  msg + " Values : " + JSON.stringify(values));
         else
             console.log("[" + type + "] " +  msg );
     }
@@ -20,19 +20,18 @@
         _log(ERROR, msg, values);
     }
 
-    function trace (msg) {
-        _log(TRACE, msg);
+    function trace (msg, values) {
+        _log(TRACE, msg, values);
     }
 
     // ===========================
     //      PUBLIC INTERFACE
     //============================
 
-    var log =  {
+    return  {
         info  : info,
         error : error,
         trace : trace
     };
 
-    window.log = log;
-})();
+})(console);
