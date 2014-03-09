@@ -31,7 +31,7 @@ function SignalingService (){
 
 SignalingService.prototype.connect = function(callBackOnConnected){
     //
-    if (io)
+    if (!io)
         throw new InvalidValueException("The module io has not been initialized.");
     //
     this.socket = io.connect();
@@ -70,12 +70,12 @@ SignalingService.prototype.setHandlerForJoinedEvent = function(handler){
 //============================================//
 
 SignalingService.prototype._checkSocket = function(){
-    if (this.socket)
+    if (!this.socket)
         throw new InvalidValueException("Invalid socket.io.");
 }
 
 SignalingService.prototype._checkEventType = function (new_event) {
-    if ( new_event !== events.REQUEST  ||
+    if ( new_event !== events.REQUEST  &&
          new_event !== events.MESSAGE)
     throw new InvalidValueException("The event " + new_event + " specified is unknown.");
 }

@@ -1,12 +1,12 @@
 (function() {
     "use strict";
 
-    var LOG =   "INFO ";
+    var LOG =   " INF ";
     var TRACE = "TRACE"
     var ERROR = "ERROR"
 
     function _log(type, msg, values) {
-        if (!values)
+        if (values)
             console.log("[" + type + "] " +  msg + " Values : " + values);
         else
             console.log("[" + type + "] " +  msg );
@@ -28,10 +28,11 @@
     //      PUBLIC INTERFACE
     //============================
 
-    return {
+    var log =  {
         info  : info,
         error : error,
         trace : trace
     };
 
-})()
+    window.log = log;
+})();

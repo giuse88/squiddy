@@ -16,9 +16,7 @@ var mediaConstraints = { "audio": true , "video": true };
 var pcConfig = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
 // Types of gathered ICE Candidates.
 var gatheredIceCandidateTypes = { Local: {}, Remote: {} };
-var pcConstraints = {"optional": [{"DtlsSrtpKeyAgreement": true}]};
-var constraints = { mandatory : { OfferToReceiveAudio : true, 
-                                       OfferToReceiveVideo : true }}; 
+
 var msgQueue = []; 
 
 // Dom objects

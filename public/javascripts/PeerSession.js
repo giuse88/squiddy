@@ -18,26 +18,29 @@ app.PeerSession = Backbone.Collection.extend({
   initialize: function() {
     //
     this._attributes = {
-        audio : true,
-        video : true,
-        data  : false,
-        screen : false
+       pcConstraints    : {"optional": [{"DtlsSrtpKeyAgreement": true}]},
+       constraints      : { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }}
     };
     //
     this._localStream = null;
     this._connected = false;
-    //
+    // room Id
     this._sessionId = get_room_id_from_url() || '';
     this._roomId    = this._sessionId;
+    // Signaling
     this._signalingService = new SignalingService();
     this._setOnConnectHandler();
-    //
-    log("Session " + this._sessionId +  " initialized");
+    // User Media
+    this._doGetUserMedia();
+
+    log.info("Session " + this._sessionId +  " initialized");
   },
 
   _setOnConnectHandler : function(){
       //
-      this._signalingService.connect( function(data) {
+      var self = this;
+
+      self._signalingService.connect( function(data) {
 
       if (!data){
           error("PeerId not received from the server.", data);
@@ -45,9 +48,12 @@ app.PeerSession = Backbone.Collection.extend({
       }
 
       self._peerId = data.peerId;
-      log("Got Peer Id : " + self._peerId +  ".");
+      log.info("Got Peer Id : " + self._peerId +  ".");
       self._connected = true;
-      log("Peer " + self._peerId + " connected.");
+      log.info("Peer " + self._peerId + " connected.");
+      //
+      self._triggerSessionReadyEvent();
+      //
       });
       //
   },
@@ -102,7 +108,12 @@ app.PeerSession = Backbone.Collection.extend({
 
   getPeer : function(id) {
     return this.findWhere({ peerId : id });  
-  }, 
+  },
+
+  getMyPeerId : function() {
+      "use strict";
+      return this._peerId;
+  },
 
   attr: function(prop, value) {
     if (value === undefined)
@@ -117,23 +128,26 @@ app.PeerSession = Backbone.Collection.extend({
     var self = this; 
     
     function onUserMediaSuccess (stream) {
-      console.log('User has granted access to local media.');
+      log.info('User has granted access to local media.');
       self._localStream = stream;
       self._triggerSessionReadyEvent(); 
     };
   
     function onUserMediaError (error) {
-      console.log('Failed to get access to local media. Error code was ' + error.code);
+      log.error('Failed to get access to local media. Error code was ' + error.code);
       alert('Failed to get access to local media. Error code was ' + error.code + '.');
     };
 
     try {
-      getUserMedia(mediaConstraints, onUserMediaSuccess, onUserMediaError);
-      console.log('Requested access to local media with mediaConstraints:\n' +
+      var mediaConstraints = self.attr('constraints');
+      //
+      webkitMediaStream(mediaConstraints, onUserMediaSuccess, onUserMediaError);
+      //
+      log.info('Requested access to local media with mediaConstraints:\n' +
                   '  \'' + JSON.stringify(mediaConstraints) + '\'');
     } catch (e) {
       alert('getUserMedia() failed. Is this a WebRTC capable browser?');
-      console.log('getUserMedia failed with exception: ' + e.message);
+      log.error('getUserMedia failed with exception: ' + e.message);
     }
   } 
 
