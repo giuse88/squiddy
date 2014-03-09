@@ -50,16 +50,11 @@ app.PeerConnection = Backbone.Model.extend({
     return this.get('isInitiator'); 
   }, 
 
-  /* 
-  setAsInitiator : function() {
-    this.set('isInitiator', true); 
-  }, 
-*/
-  _start: function() { 
+  _start: function() {
     console.log("START");
     console.log("Messages pending in the queue : " + this.attributes.msgQueue.length); 
    this._createPeerConnection();
-   this._addLocalStream(); 
+   //this._addLocalStream();
    this.set('isStarted', true); 
    console.log("Is initiator : " + this.isInitiator()); 
 
@@ -137,8 +132,9 @@ app.PeerConnection = Backbone.Model.extend({
   }, 
 
   doOffer : function () {
-    console.log("Creating offer"); 
-    var self = this; 
+    console.log("Creating offer");
+    var  constraints =  { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }};
+    var self = this;
     this.attributes.remoteConnection.createOffer(function(localDescriptor) {
                                                  self.gotDescriptor(localDescriptor)}, 
                                                  function() {}, constraints);  

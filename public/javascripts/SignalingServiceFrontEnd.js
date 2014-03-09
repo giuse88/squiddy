@@ -61,6 +61,7 @@ SignalingService.prototype.setHandlerForMessageEvent = function(handler){
 SignalingService.prototype.setHandlerForNewPeerEvent = function(handler){
     this._setHandlerFor(events.NEW_PEER, handler);
 }
+/* Depprected */
 SignalingService.prototype.setHandlerForJoinEvent = function(handler){
     this._setHandlerFor(events.JOIN, handler);
 }

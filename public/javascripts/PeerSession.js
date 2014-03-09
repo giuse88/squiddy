@@ -70,17 +70,31 @@ app.PeerSession = Backbone.Collection.extend({
       this._signalingService.send(events.JOIN, request);
       LOG.info("Peer " + this._peerId + " has sent request to join room " + this._roomId + ".");
   },
-  _setOnMessageHandler : function() {},
-  _setOnByeHandler : function() {},
+  _setOnMessageHandler : function() {
+      var self = this;
+      self._signalingService.setHandlerForMessageEvent(function(data){
+         Log.info("Received message. ", data);
+      });
+  },
+  _setOnByeHandler : function() {
+      var self = this;
+      self._signalingService.setHandlerForByeEvent(function(data){
+         //
+          LOG.info("Closing connection with peer '" +  data.peerId +"' .", data);
+          //self.remove
+          LOG.info("Connection with peer '"+ data.peerId + " closed.");
+         //
+      });
+  },
 
   _setOnNewPeerHandler : function() {
-     // when another peer connect
       var self = this;
       self._signalingService.setHandlerForNewPeerEvent(function(data){
           //
-            LOG.info("New peer has connected", data);
-            var newPeer = new app.PeerConnection(data.peerId, self, true);
-            self.add(newPeer);
+            LOG.info("Connecting to peer " +  data.peerId +".", data);
+            //var newPeer = new app.PeerConnection(data.peerId, self, true);
+            //self.add(newPeer);
+            LOG.info("Connected to peer "+ data.peerId +" completed.");
           //
       });
   },
@@ -90,19 +104,24 @@ app.PeerSession = Backbone.Collection.extend({
       self._signalingService.setHandlerForJoinedEvent(function(data){
           if ( data.roomId  !== self._roomId)
                 LOG.error("Received invalid roomId from the server.",data);
-          self._connected = true;
+          self.setConnected();
           LOG.info("Peer " + self._peerId + " joined  room  " + data.roomId +" .");
       });
   },
 
-  send: function (destination, data) {
+  send: function (destination, data, type) {
     var message = { 
       to     : destination, 
       from   : this._sessionId,  
-      roomId : this._roomId, 
+      roomId : this._roomId,
       msg    : data 
     };
+    //
+     if (type)
+        message.type = type;
+    //
     this._signalingService.send(events.MESSAGE, message);
+    // TODO info
   },
 
   isSessionReady: function() {
@@ -160,7 +179,8 @@ app.PeerSession = Backbone.Collection.extend({
         this.trigger('change:' + prop, value);
     }
   }, 
-  
+
+   // THis should go to an indipendent  module
   _doGetUserMedia: function() {
     var self = this; 
     

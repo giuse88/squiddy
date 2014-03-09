@@ -37,7 +37,6 @@ SignalingService.prototype.onConnect = function()  {
     });
 
 }
-//TODO this method should be called on JOin no request
 SignalingService.prototype.onJoin = function(socket, data) {
     this.logger && this.logger.trace("Received request from peer %s to join room %s.", data.peerId, data.roomId);
     try {
