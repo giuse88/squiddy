@@ -31,8 +31,12 @@ app.PeerSession = Backbone.Collection.extend({
     // Signaling
     this._signalingService = new SignalingService();
     this._setOnConnectHandler();
+    this._setOnMessageHandler();
+    this._setOnByeHandler();
+    this._setOnJoinHandler();
+    this._setOnJoinedHandler();
     // User Media
-    this._doGetUserMedia();
+    //this._doGetUserMedia();
     //
     LOG.info("Session " + this._sessionId +  " initialized");
   },
@@ -50,13 +54,29 @@ app.PeerSession = Backbone.Collection.extend({
 
       self._peerId = data.peerId;
       LOG.info("Got Peer Id : " + self._peerId +  ".");
-      self._connected = true;
-      LOG.info("Peer " + self._peerId + " connected.");
       //
       self._triggerSessionReadyEvent();
       //
       });
       //
+  },
+
+  _setOnMessageHandler : function() {},
+  _setOnByeHandler : function() {},
+  _setOnJoinHandler : function() {
+
+      // is there the possibility that a peer connect when the session is not ready?
+
+  },
+
+  _setOnJoinedHandler : function() {
+      var self = this;
+      self._signalingService.setHandlerForJoinedEvent(function(data){
+          if ( data.roomId  !== self._roomId)
+                LOG.error("Received invalid roomId from the server.",data);
+          self._connected = true;
+          LOG.info("Peer " + self._peerId + " connected to room  " + data.roomId +" .");
+      });
   },
 
   send: function (destination, data) {

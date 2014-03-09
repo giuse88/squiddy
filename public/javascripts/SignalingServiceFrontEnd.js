@@ -71,7 +71,7 @@ SignalingService.prototype.setHandlerForJoinedEvent = function(handler){
 
 SignalingService.prototype._checkSocket = function(){
     if (!this.socket)
-        throw new InvalidValueException("Invalid socket.io.");
+        throw new InvalidValueException("Invalid socket.io .");
 }
 
 SignalingService.prototype._checkEventType = function (new_event) {
@@ -84,7 +84,7 @@ SignalingService.prototype._setHandlerFor= function (new_event, handler) {
     if (!handler)
         throw new InvalidValueException("The handler :  " + handler + "is invalid.");
     this._checkSocket();
-    socket.on(new_event, hanlder);
+    this.socket.on(new_event, hanlder);
 }
 
 SignalingService.prototype._checkEventConstants= function(){
