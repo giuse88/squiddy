@@ -16,6 +16,7 @@
     define("CONNECTION", "connection");
     define("CONNECTED" ,  "connected");
     define("DISCONNECT", "disconnect");
+    define("NEW_PEER",     "new_peer");
     define("JOIN",             "join");
     define("JOINED",         "joined");
     define("BYE",               "bye");

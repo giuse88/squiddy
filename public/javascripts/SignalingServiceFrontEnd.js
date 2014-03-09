@@ -58,6 +58,9 @@ SignalingService.prototype.setHandlerForByeEvent = function(handler){
 SignalingService.prototype.setHandlerForMessageEvent = function(handler){
     this._setHandlerFor(events.MESSAGE, handler);
 }
+SignalingService.prototype.setHandlerForNewPeerEvent = function(handler){
+    this._setHandlerFor(events.NEW_PEER, handler);
+}
 SignalingService.prototype.setHandlerForJoinEvent = function(handler){
     this._setHandlerFor(events.JOIN, handler);
 }
@@ -75,7 +78,7 @@ SignalingService.prototype._checkSocket = function(){
 }
 
 SignalingService.prototype._checkEventType = function (new_event) {
-    if ( new_event !== events.REQUEST  &&
+    if ( new_event !== events.JOIN  &&
          new_event !== events.MESSAGE)
     throw new InvalidValueException("The event " + new_event + " specified is unknown.");
 }
@@ -84,7 +87,7 @@ SignalingService.prototype._setHandlerFor= function (new_event, handler) {
     if (!handler)
         throw new InvalidValueException("The handler :  " + handler + "is invalid.");
     this._checkSocket();
-    this.socket.on(new_event, hanlder);
+    this.socket.on(new_event, handler);
 }
 
 SignalingService.prototype._checkEventConstants= function(){

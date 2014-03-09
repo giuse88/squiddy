@@ -30,15 +30,16 @@ SignalingService.prototype.onConnect = function()  {
     this.io.sockets.on(events.CONNECTION,  function (socket) {
         self.logger && self.logger.trace("Peer %s is connected", socket.id);
         socket.emit(events.CONNECTED, {peerId : socket.id});
-        socket.on(events.REQUEST, function (data) {self.onRequest(socket, data)});
+        socket.on(events.JOIN, function (data) {self.onJoin(socket, data)});
         socket.on(events.MESSAGE, function (data) {self.onMessage(socket, data)});
         socket.on(events.BYE,     function (data) {self.onBye(socket, data)});
         socket.on(events.DISCONNECT,   function    ()  {self.onDisconnect(socket)});
     });
 
 }
-
-SignalingService.prototype.onRequest = function(socket, data) {
+//TODO this method should be called on JOin no request
+SignalingService.prototype.onJoin = function(socket, data) {
+    this.logger && this.logger.trace("Received request from peer %s to join room %s.", data.peerId, data.roomId);
     try {
         //
         this.chatRoomService.addPeerToRoom(data.roomId, data.peerId);
@@ -54,8 +55,8 @@ SignalingService.prototype.onRequest = function(socket, data) {
 SignalingService.prototype.joinRoom = function (socket, peer, room) {
     socket.join(room);
     socket.emit(events.JOINED, {roomId : room});
-    socket.broadcast.to(room).emit(events.JOIN, {roomId : room, peerId : peer});
-    this.logger && this.logger.trace("Peer %s has joined room %s", peer, room);
+    socket.broadcast.to(room).emit(events.NEW_PEER, {roomId : room, peerId : peer});
+    this.logger && this.logger.trace("Peer %s has joined room %s.", peer, room);
 }
 
 /*

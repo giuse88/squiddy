@@ -33,7 +33,7 @@ app.PeerSession = Backbone.Collection.extend({
     this._setOnConnectHandler();
     this._setOnMessageHandler();
     this._setOnByeHandler();
-    this._setOnJoinHandler();
+    this._setOnNewPeerHandler();
     this._setOnJoinedHandler();
     // User Media
     //this._doGetUserMedia();
@@ -51,31 +51,47 @@ app.PeerSession = Backbone.Collection.extend({
           error("PeerId not received from the server.", data);
           return;
       }
-
+      //
       self._peerId = data.peerId;
       LOG.info("Got Peer Id : " + self._peerId +  ".");
+      LOG.info("Peer " + self._peerId + " is connected to the remote server.");
       //
-      self._triggerSessionReadyEvent();
+      self._sendJoinRequest();
       //
       });
       //
   },
 
+  _sendJoinRequest : function() {
+      var request ={
+          peerId : this._peerId,
+          roomId : this._roomId
+      };
+      this._signalingService.send(events.JOIN, request);
+      LOG.info("Peer " + this._peerId + " has sent request to join room " + this._roomId + ".");
+  },
   _setOnMessageHandler : function() {},
   _setOnByeHandler : function() {},
-  _setOnJoinHandler : function() {
 
-      // is there the possibility that a peer connect when the session is not ready?
-
+  _setOnNewPeerHandler : function() {
+     // when another peer connect
+      var self = this;
+      self._signalingService.setHandlerForNewPeerEvent(function(data){
+          //
+            LOG.info("New peer has connected", data);
+            var newPeer = new app.PeerConnection(data.peerId, self, true);
+            self.add(newPeer);
+          //
+      });
   },
-
   _setOnJoinedHandler : function() {
+      // TODO is there the possibility that a peer connect when the session is not ready?
       var self = this;
       self._signalingService.setHandlerForJoinedEvent(function(data){
           if ( data.roomId  !== self._roomId)
                 LOG.error("Received invalid roomId from the server.",data);
           self._connected = true;
-          LOG.info("Peer " + self._peerId + " connected to room  " + data.roomId +" .");
+          LOG.info("Peer " + self._peerId + " joined  room  " + data.roomId +" .");
       });
   },
 
