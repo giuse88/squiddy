@@ -12,8 +12,8 @@ LOG = (function(console) {
             console.log("[" + type + "] " +  msg );
     }
 
-    function info (msg) {
-        _log(LOG, msg );
+    function info (msg, values) {
+        _log(LOG, msg, values);
     }
 
     function error (msg, values) {

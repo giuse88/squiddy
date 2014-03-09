@@ -19,7 +19,8 @@ app.PeerSession = Backbone.Collection.extend({
     //
     this._attributes = {
        pcConstraints    : {"optional": [{"DtlsSrtpKeyAgreement": true}]},
-       constraints      : { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }}
+       constraints      : { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }},
+       mediaConstraints : { "audio": true , "video": true }
     };
     //
     this._localStream = null;
@@ -32,7 +33,7 @@ app.PeerSession = Backbone.Collection.extend({
     this._setOnConnectHandler();
     // User Media
     this._doGetUserMedia();
-
+    //
     LOG.info("Session " + this._sessionId +  " initialized");
   },
 
@@ -69,7 +70,7 @@ app.PeerSession = Backbone.Collection.extend({
   },
 
   isSessionReady: function() {
-   return (this._localStream  != null)  && this._connected;
+   return this._connected;
   }, 
 
   _triggerSessionReadyEvent: function () {
@@ -139,9 +140,10 @@ app.PeerSession = Backbone.Collection.extend({
     };
 
     try {
-      var mediaConstraints = self.attr('constraints');
+      var mediaConstraints = self.attr('mediaConstraints');
+      LOG.info("MediaConstraints - ", mediaConstraints);
       //
-      webkitMediaStream(mediaConstraints, onUserMediaSuccess, onUserMediaError);
+      getUserMedia(mediaConstraints, onUserMediaSuccess, onUserMediaError);
       //
       LOG.info('Requested access to local media with mediaConstraints:\n' +
                   '  \'' + JSON.stringify(mediaConstraints) + '\'');

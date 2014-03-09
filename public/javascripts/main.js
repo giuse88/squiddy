@@ -12,7 +12,7 @@ var peer = '';
 var socket = null; 
 
 var offerConstraints = {"optional": [], "mandatory": {}};
-var mediaConstraints = { "audio": true , "video": true };
+
 var pcConfig = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
 // Types of gathered ICE Candidates.
 var gatheredIceCandidateTypes = { Local: {}, Remote: {} };
