@@ -91,6 +91,7 @@ SignalingService.prototype._setHandlerFor= function (new_event, handler) {
     this.socket.on(new_event, handler);
 }
 
+/* THIS MUST BE UPDATED/REMOVED */
 SignalingService.prototype._checkEventConstants= function(){
     "use strict";
     if(!events.REQUEST)
