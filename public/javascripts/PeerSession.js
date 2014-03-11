@@ -72,8 +72,19 @@ app.PeerSession = Backbone.Collection.extend({
   },
   _setOnMessageHandler : function() {
       var self = this;
-      self._signalingService.setHandlerForMessageEvent(function(data){
-         Log.info("Received message. ", data);
+      self._signalingService.setHandlerForMessageEvent(function(message){
+          LOG.info("Received message from peer " + message.from +". ", message);
+          var id = message.from;
+
+          // Is this always true?
+          // what about the ICE_CANDIDATE
+          if (!self.getPeer(id) && message.type === "OFFER")
+              self.add( new app.PeerConnection(id, self));
+          else if ( !self.getPeer(id))
+               LOG.error("Received an unknown message", message);
+
+          var newPeer = self.getPeer(id);
+          newPeer.dispatchMessage(message);
       });
   },
   _setOnByeHandler : function() {
@@ -81,7 +92,8 @@ app.PeerSession = Backbone.Collection.extend({
       self._signalingService.setHandlerForByeEvent(function(data){
          //
           LOG.info("Closing connection with peer '" +  data.peerId +"' .", data);
-          //self.remove
+        //  self.remove(peer)
+          // TODO
           LOG.info("Connection with peer '"+ data.peerId + " closed.");
          //
       });
@@ -92,8 +104,8 @@ app.PeerSession = Backbone.Collection.extend({
       self._signalingService.setHandlerForNewPeerEvent(function(data){
           //
             LOG.info("Connecting to peer " +  data.peerId +".", data);
-            //var newPeer = new app.PeerConnection(data.peerId, self, true);
-            //self.add(newPeer);
+            var newPeer = new app.PeerConnection(data.peerId, self, true);
+            self.add(newPeer);
             LOG.info("Connected to peer "+ data.peerId +" completed.");
           //
       });
@@ -112,7 +124,7 @@ app.PeerSession = Backbone.Collection.extend({
   send: function (destination, data, type) {
     var message = { 
       to     : destination, 
-      from   : this._sessionId,  
+      from   : this._peerId,
       roomId : this._roomId,
       msg    : data 
     };
@@ -121,7 +133,7 @@ app.PeerSession = Backbone.Collection.extend({
         message.type = type;
     //
     this._signalingService.send(events.MESSAGE, message);
-    // TODO info
+    LOG.info("Sent message to " + destination + ".", data);
   },
 
   isSessionReady: function() {
@@ -165,6 +177,10 @@ app.PeerSession = Backbone.Collection.extend({
   getPeer : function(id) {
     return this.findWhere({ peerId : id });  
   },
+
+   printPeers : function(id) {
+        return this.each(function(peer) { console.log(peer._peerId)});
+    },
 
   getMyPeerId : function() {
       "use strict";

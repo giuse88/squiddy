@@ -70,7 +70,7 @@ SignalingService.prototype.joinRoom = function (socket, peer, room) {
 SignalingService.prototype.onMessage = function (socket, data) {
     if(!data.to) {
         socket.broadcast.to(data.roomId).emit(events.MESSAGE, data);
-        this.logger && this.logger.trace("Received message from %s. Broadcasted to the room %s", data.from, data.roomId);
+        this.logger && this.logger.trace("[ Room %s] Received message from %s. Broadcasted to the room %s", data.from, data.roomId);
     } else {
         this.io.sockets.socket(data.to).emit(events.MESSAGE,data);
         this. logger && this.logger.trace("[ Room %s ] : Message from %s has been sent to peer %s. Room %s", data.from, data.to, data.roomId);

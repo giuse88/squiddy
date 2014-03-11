@@ -12,13 +12,6 @@ html(lang="en")
     script(src="javascripts/lib/adapter.js")
     script(src="javascripts/lib/underscore-min.js")
     script(src="javascripts/lib/backbone-min.js")
-    script(src="javascripts/PeerConnection.js")
-    script(src="javascripts/SignalingServiceFrontEnd.js")
-    script(src="javascripts/PeerSession.js")
-    script(src="javascripts/utils.js")
-    script(src="javascripts/log.js")
-    script(src="javascripts/singleUserChat.js")
-    script(src="events/events.js")
 
   body
     h1 Welcome to Room #{roomId}
@@ -28,5 +21,20 @@ html(lang="en")
         video(autoplay='autoplay')#localVideo
         p Local Video
     #status
+    #peers
+      ul#peerList
+
+    script(type="text/template")#peer-template
+        <div class="peer"><p> Peer : <strong><%=peerId %> </strong> Status : <strong> <%=status %> </strong> Streams : <%=streams %></p></div>
+
+    script(src="javascripts/PeerConnection.js")
+    script(src="javascripts/PeerSession.js")
+    script(src="javascripts/PeerView.js")
+    script(src="javascripts/SignalingServiceFrontEnd.js")
+    script(src="javascripts/utils.js")
+    script(src="javascripts/log.js")
+    script(src="javascripts/singleUserChat.js")
+    script(src="events/events.js")
+
     script(type='text/javascript').
-    //    new app.PeerSession();
+         new app.PeerSession();
