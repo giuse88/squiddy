@@ -16,15 +16,15 @@ app.PeerView = Backbone.View.extend({
         //
         // Listeners
       //  this.listenTo(app.PeerSession, 'add',   this.addPeer);
-       // this.listenTo(this.model, 'change', this.changePeer);
-     //   this.listenTo(app.PeerSession, 'remove', this.removePeer);
+       this.listenTo(this.model, 'change', this.changePeer);
+   //    this.listenTo(app.PeerSession, 'remove', this.removePeer);
     },
 
     // Re-renders the titles of the todo item.
     render: function() {
         this.$el.html( this.template( this.model ));
         return this;
-    }
+    },
     /*
     addPeer: function(peerConnection) {
         LOG.info ("< View > New peer " + peerConnection.getPeer());
@@ -37,7 +37,10 @@ app.PeerView = Backbone.View.extend({
 
     },
     removePeer: function() {},
-    changePeer: function() {}
-    */
+     */
+    changePeer: function( peerConnection) {
+        "use strict";
+        LOG.info("Change in the connection");
+    }
     });
 }())
