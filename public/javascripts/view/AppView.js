@@ -16,6 +16,7 @@ var app = app || {};
         el: "#peers",
 
         // Cache the template function for a single item.
+        // TODO the tamplate should be called statusj
         template: _.template( $('#localPeer-template').html() ),
 
         initialize: function() {
@@ -33,7 +34,7 @@ var app = app || {};
         // Re-renders the titles of the todo item.
         render: function() {
             // LOGIC for the all app view goes here
-            this.$localPeer.append(this.template({
+            this.$localPeer.html(this.template({
                peerId : this.peerSession.getMyPeerId(),
                connectedPeers : this.peerSession.size(),
                streams : "None"
@@ -42,15 +43,17 @@ var app = app || {};
         },
 
         addPeer: function(peerConnection) {
+            var view = new app.PeerView({ model: peerConnection });
+            this.$peerList.append( view.render().el );
             LOG.info ("< AppView > New peer " + peerConnection.getPeerId());
-             var view = new app.PeerView({ model: peerConnection });
-             this.$peerList.append( view.render().el );
+            // update appView
+            this.render();
          },
-         removePeer: function(peerConnection) {
-             LOG.info ("< AppView > Removed peer : " + peerConnection);
-             //
-             this.$("#" + peerConnection.getPeerId()).remove();
-             //
-         }
+        removePeer: function(peerConnection) {
+            this.$("#" + peerConnection.getPeerId()).remove();
+            LOG.info ("< AppView > Removed peer : " + peerConnection);
+            // update appView
+            this.render();
+        }
     });
 }())
