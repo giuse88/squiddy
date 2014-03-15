@@ -93,9 +93,11 @@ app.PeerSession = Backbone.Collection.extend({
       self._signalingService.setHandlerForByeEvent(function(data){
          //
           LOG.info("Closing connection with peer '" +  data.peerId +"' .", data);
-        //  self.remove(peer)
-          // TODO
+          // TODO create a method in the session whihc provicdes this functionality
+          var peerToBeRemoved = self.getPeer(data.peerId);
+          self.remove(peerToBeRemoved);
           LOG.info("Connection with peer '"+ data.peerId + " closed.");
+          LOG.info("Removed model for  peer '"+ peerToBeRemoved.getPeerId() + " closed.");
          //
       });
   },
