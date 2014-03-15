@@ -1,12 +1,3 @@
-/**
- * Created with JetBrains WebStorm.
- * User: giuseppe
- * Date: 12/03/2014
- * Time: 07:46
- * To change this template use File | Settings | File Templates.
- */
-
-
 var app = app || {};
 
 (function() {
