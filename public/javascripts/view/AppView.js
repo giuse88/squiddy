@@ -15,21 +15,29 @@ var app = app || {};
 
         el: "#peers",
 
+        // Cache the template function for a single item.
+        template: _.template( $('#localPeer-template').html() ),
+
         initialize: function() {
             // we create the session
-            this.peerCollection = new app.PeerSession();
+            this.peerSession = new app.PeerSession();
             // binding to HTML elements
             this.$peerList= this.$("#peerList");
+            this.$localPeer= this.$("#localPeer");
             // Listeners
-            this.listenTo(this.peerCollection, 'add',   this.addPeer);
-            this.listenTo(this.peerCollection, 'remove', this.removePeer);
+            this.listenTo(this.peerSession, 'ready', this.render);
+            this.listenTo(this.peerSession, 'add',   this.addPeer);
+            this.listenTo(this.peerSession, 'remove', this.removePeer);
         },
 
         // Re-renders the titles of the todo item.
         render: function() {
-            "use strict";
             // LOGIC for the all app view goes here
-            LOG.info("rendering view");
+            this.$localPeer.append(this.template({
+               peerId : this.peerSession.getMyPeerId(),
+               streams : "None"
+            }));
+            LOG.info("Rendering view for peer " + this.peerSession.getMyPeerId() +  ".");
         },
 
         addPeer: function(peerConnection) {
@@ -39,8 +47,8 @@ var app = app || {};
             // TODO move this to the peerConnection object
             var peerTemplate = {
                 peerId : peerConnection.getPeerId(),
-                status : "",
-                streams : ""
+                status : "None",
+                streams : "None"
             };
              var view = new app.PeerView({ model: peerTemplate });
              this.$peerList.append( view.render().el );

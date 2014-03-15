@@ -22,10 +22,14 @@ html(lang="en")
         p Local Video
     #status
     #peers
+      #localPeer
       ul#peerList
 
     script(type="text/template")#peer-template
         <div class="peer"><p> Peer : <strong><%=peerId %> </strong> Status : <strong> <%=status %> </strong> Streams : <%=streams %></p></div>
+
+    script(type="text/template")#localPeer-template
+          <div class="localPeer"><p> Session initialized. Local peer  has received the following id : <strong><%=peerId %> </strong> Streams : <%=streams %></p></div>
 
     script(src="javascripts/PeerConnection.js")
     script(src="javascripts/PeerSession.js")
