@@ -16,11 +16,13 @@ var app = app || {};
         el: "#peers",
 
         initialize: function() {
-            //
+            // we create the session
+            this.peerCollection = new app.PeerSession();
+            // binding to HTML elements
             this.$peerList= this.$("#peerList");
             // Listeners
-            this.listenTo(app.PeerSession, 'add',   this.addPeer);
-            this.listenTo(app.PeerSession, 'remove', this.removePeer);
+            this.listenTo(this.peerCollection, 'add',   this.addPeer);
+            this.listenTo(this.peerCollection, 'remove', this.removePeer);
         },
 
         // Re-renders the titles of the todo item.
@@ -31,16 +33,21 @@ var app = app || {};
         },
 
         addPeer: function(peerConnection) {
-            LOG.info ("< AppView > New peer " + peerConnection.getPeer());
+            console.log(peerConnection);
+            LOG.info ("< AppView > New peer " + peerConnection.getPeerId());
+
             // TODO move this to the peerConnection object
             var peerTemplate = {
-                peerId : peerConnection.getPeer(),
-                status : peerConnection.status(),
+                peerId : peerConnection.getPeerId(),
+                status : "",
                 streams : ""
             };
              var view = new app.PeerView({ model: peerTemplate });
              this.$peerList.append( view.render().el );
          },
-         removePeer: function() {}
+         removePeer: function(peerConnection) {
+             LOG.info ("< AppView > Removed peer : " + peerConnection);
+             //
+         }
     });
 }())

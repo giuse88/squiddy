@@ -16,7 +16,7 @@ app.PeerView = Backbone.View.extend({
         //
         // Listeners
       //  this.listenTo(app.PeerSession, 'add',   this.addPeer);
-       this.listenTo(this.model, 'change', this.changePeer);
+    //   this.listenTo(this.model, 'change', this.changePeer);
    //    this.listenTo(app.PeerSession, 'remove', this.removePeer);
     },
 

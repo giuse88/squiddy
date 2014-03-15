@@ -12,6 +12,7 @@ var app = app || {};
 
 (function() {
 
+
 app.PeerSession = Backbone.Collection.extend({
   model: app.PeerConnection,
 
