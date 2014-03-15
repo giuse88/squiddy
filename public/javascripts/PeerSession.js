@@ -21,7 +21,7 @@ app.PeerSession = Backbone.Collection.extend({
     this._attributes = {
        pcConstraints    : {"optional": [{"DtlsSrtpKeyAgreement": true}]},
        constraints      : { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }},
-       mediaConstraints : { "audio": true , "video": true }
+       mediaConstraints : { /*"audio": true ,*/ "video": true }
     };
     //
     this._localStream = null;
@@ -37,7 +37,7 @@ app.PeerSession = Backbone.Collection.extend({
     this._setOnNewPeerHandler();
     this._setOnJoinedHandler();
     // User Media
-    //this._doGetUserMedia();
+    this._doGetUserMedia();
     //
     LOG.info("Session " + this._sessionId +  " initialized");
   },
@@ -206,12 +206,11 @@ app.PeerSession = Backbone.Collection.extend({
     function onUserMediaSuccess (stream) {
       LOG.info('User has granted access to local media.');
       self._localStream = stream;
-      self._triggerSessionReadyEvent(); 
+      self.trigger('localStream', stream);
     };
   
     function onUserMediaError (error) {
       LOG.error('Failed to get access to local media. Error code was ' + error.code);
-      alert('Failed to get access to local media. Error code was ' + error.code + '.');
     };
 
     try {

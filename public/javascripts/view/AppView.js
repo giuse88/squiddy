@@ -16,9 +16,14 @@ var app = app || {};
             // binding to HTML elements
             this.$peerList= this.$("#peerList");
             this.$localPeer= this.$("#localPeer");
+            this.$localStreamContainer= this.$("#localStreamContainer");
+            // I would like to use a jquery object
+            this.localVideo = $('#localVideo')[0]; //dom
             // Listeners
             this.listenTo(this.peerSession, 'ready', this.render);
             this.listenTo(this.peerSession, 'add',   this.addPeer);
+            this.listenTo(this.peerSession, 'localStream', this.addLocalStream);
+            this.listenTo(this.peerSession, 'removedStream', this.removeLocalStream);
             this.listenTo(this.peerSession, 'remove', this.removePeer);
         },
 
@@ -45,6 +50,15 @@ var app = app || {};
             LOG.info ("< AppView > Removed peer : " + peerConnection);
             // update appView
             this.render();
+        },
+
+        addLocalStream: function(stream) {
+            LOG.info("< AppView > Local stream added", stream);
+            attachMediaStream(this.localVideo, stream);
+        },
+
+        removeLocalStream: function(stream) {
+            LOG.info("< AppViw > Local stream removed");
         }
     });
 }())

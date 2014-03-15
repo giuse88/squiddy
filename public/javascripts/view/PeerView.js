@@ -36,7 +36,7 @@ app.PeerView = Backbone.View.extend({
     //
     changePeer: function( peerConnection) {
         "use strict";
-        LOG.info("Change in status of the connection to peer " + peerConnection.peerId());
+        LOG.info("Change in status of the connection to peer " + peerConnection.getPeerId());
     }
     //
     });

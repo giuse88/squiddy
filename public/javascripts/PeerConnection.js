@@ -65,9 +65,6 @@ var app = app || {};
    
   }, 
   
-  _addLocalStream: function() {
-   this.attributes.remoteConnection.addStream(this.attributes.session.getLocalStream()); 
-  },  
 
   isStarted: function() {
    return this.get('isStarted'); 
@@ -76,11 +73,6 @@ var app = app || {};
   processQueue: function () {
   while(this.attributes.msgQueue.length > 0)
     this.processMessage(this.attributes.msgQueue.shift());
-  }, 
-
-  onUserMediaError: function (error) {
-  console.log('Failed to get access to local media. Error code was ' + error.code);
-  alert('Failed to get access to local media. Error code was ' + error.code + '.');
   }, 
 
   processMessage: function (message) {
@@ -99,15 +91,7 @@ var app = app || {};
   }
   },
 
-  onRemoteStreamRemoved: function () {
-    console.log("Stream Removed"); 
-  }, 
 
-  onRemoteStreamAdded : function (event) {
-  this.set('remoteStream', event.stream);
-  this.get('session').trigger('peer:ready', this);
-  //attachMediaStream(remoteVideo, remoteStream);
-  },
 
   addRemoteIceCandidate : function (message) {
         var candidate = new RTCIceCandidate(message);
@@ -128,8 +112,8 @@ var app = app || {};
   _sendIceCandidate : function( candidate ) {
       this.attributes.session.send(this.attributes.peerId, candidate,  "ICE_CANDIDATE");
   },
+
   _setRemoteDescriptor : function (remoteSDP) {
-      "use strict";
   },
 
   _setLocalDescriptor : function (localSDP) {
@@ -154,8 +138,6 @@ var app = app || {};
         LOG.info("End gathering LOCAL Ice candidates." + " Status : " + status + ".");
     }
   },
-
-
 
   doOffer : function () {
     //
@@ -197,23 +179,12 @@ var app = app || {};
     //
   },
 
-  /*
-  doAnswer : function () {
-    var self = this; 
-    console.log("Creting answer" + this.getPeerId());
-    this.attributes.remoteConnection.createAnswer(function(localDescriptor) {
-                                                 self.gotDescriptor(localDescriptor)},
-                                                 function() {}, constraints);
+  _addLocalStream: function(stream) {
+    this.set('localStream', stream);
+    this.attributes.remoteConnection.addStream(stream);
+    LOG.info("Added local stream to peer connection : " + this.getPeerId());
   },
 
-  gotDescriptor : function(localDescription) {
-
-    this.get('remoteConnection').setLocalDescription(localDescription); 
-    this.get('session').send(this.getPeerId(), localDescription);
-    console.log("I have got : " + localDescription);
-  }, 
-
-   */
   dispatchMessage : function (msg) {
     LOG.info("Dispatched message to Peer " + this.getPeerId() + ". ", msg);
     if(this.isStarted())
@@ -222,14 +193,27 @@ var app = app || {};
       this.attributes.msgQueue.push(msg);
   }, 
 
-/*  
-  getMessage: function() {
-    if ( msg.length < 1) 
-      return null; 
-    else 
-     return  this.mswQueue.shift(); 
-  }, 
-*/
+  handleLocalStreams : function() {
+
+    var localStream = this.attributes.session.getLocalStream();
+    var self = this;
+
+    if (localStream) {
+        this._addLocalStream(localStream);
+    }else {
+      this.attributes.session.on('localStream', function(stream) {self._addLocalStream(stream)});
+      LOG.info("Local stream is not ready yet");
+    }
+  },
+
+  onRemoteStreamRemoved: function (stream) {
+    LOG.info(this.getPeerId() + "Remote stream removed", stream);
+  },
+
+   onRemoteStreamAdded : function (stream) {
+    LOG.info(this.getPeerId() + "Remote stream added", stream);
+  },
+
  _createPeerConnection: function() {
   var self = this;
   var pcConfig = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]}
@@ -249,9 +233,12 @@ var app = app || {};
     alert('Cannot create RTCPeerConnection object; \n WebRTC is not supported by this browser.');
     return;
   }
-  //pc.onaddstream = function(e) { self.onRemoteStreamAdded(e);};
- // pc.onremovestream = this.onRemoteStreamRemoved;
-  
+  // handle local stream
+  this.handleLocalStreams();
+  // remote streams
+  pc.onaddstream = function(stream) { self.onRemoteStreamAdded(stream);};
+  pc.onremovestream = function(stream) { self.onRemoteStreamRemoved(stream);};
+  //
   }
 
 });
