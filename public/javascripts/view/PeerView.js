@@ -5,7 +5,6 @@ var app = app || {};
 
 app.PeerView = Backbone.View.extend({
 
-    //... is a list tag.
     tagName: 'li',
 
     // Cache the template function for a single item.
