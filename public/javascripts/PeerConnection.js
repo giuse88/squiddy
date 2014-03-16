@@ -18,7 +18,8 @@ var app = app || {};
     msgQueue : null,  
     session : null,
     peerId : '',
-    remoteStream  : null, 
+    remoteStream  : null,
+    localStream : null,
     isInitiator : false, 
     isStarted : false, 
     remoteConnection : null
@@ -179,10 +180,23 @@ var app = app || {};
     //
   },
 
-  _addLocalStream: function(stream) {
+  _addLocalStream: function(stream, renegotiation) {
     this.set('localStream', stream);
     this.attributes.remoteConnection.addStream(stream);
     LOG.info("Added local stream to peer connection : " + this.getPeerId());
+
+    if (renegotiation)
+        this.doRenegotiation()
+  },
+
+  // TODO probabily need to change it
+  doRenegotiation : function () {
+      //
+      if(this.isInitiator())
+            this.doOffer();
+      else
+            this.doAnswer();
+      //
   },
 
   dispatchMessage : function (msg) {
@@ -199,19 +213,22 @@ var app = app || {};
     var self = this;
 
     if (localStream) {
-        this._addLocalStream(localStream);
+        this._addLocalStream(localStream, false);
     }else {
-      this.attributes.session.on('localStream', function(stream) {self._addLocalStream(stream)});
+      this.attributes.session.on('localStream', function(stream) {self._addLocalStream(stream, true)});
       LOG.info("Local stream is not ready yet");
     }
   },
 
   onRemoteStreamRemoved: function (stream) {
+    this.set('remoteStream', null);
     LOG.info(this.getPeerId() + "Remote stream removed", stream);
   },
 
    onRemoteStreamAdded : function (stream) {
-    LOG.info(this.getPeerId() + "Remote stream added", stream);
+    // TODO check what happens when removing audio or video
+    this.set('remoteStream', stream);
+    LOG.info( " < " +  this.getPeerId() + " > Remote stream added", stream);
   },
 
  _createPeerConnection: function() {
@@ -236,7 +253,7 @@ var app = app || {};
   // handle local stream
   this.handleLocalStreams();
   // remote streams
-  pc.onaddstream = function(stream) { self.onRemoteStreamAdded(stream);};
+  pc.onaddstream = function(stream) {  self.onRemoteStreamAdded(stream);};
   pc.onremovestream = function(stream) { self.onRemoteStreamRemoved(stream);};
   //
   }

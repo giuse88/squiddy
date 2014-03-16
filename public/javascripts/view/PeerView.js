@@ -20,6 +20,8 @@ app.PeerView = Backbone.View.extend({
 
     initialize: function() {
         // Listeners
+        this.listenTo(this.model, 'change:remoteStream', this.changeRemoteStream);
+        this.listenTo(this.model, 'change:localStream', this.changeLocalStream);
         this.listenTo(this.model, 'change', this.changePeer);
     },
 
@@ -37,6 +39,14 @@ app.PeerView = Backbone.View.extend({
     changePeer: function( peerConnection) {
         "use strict";
         LOG.info("Change in status of the connection to peer " + peerConnection.getPeerId());
+    },
+
+    changeRemoteStream: function( peerConnection) {
+        LOG.info("< " + peerConnection.getPeerId() + " >" + " Change in remote stream!!!! :D ");
+    },
+    //
+    changeLocalStream: function( peerConnection) {
+        LOG.info("< " + peerConnection.getPeerId() + " >" + " Change in local stream!!!! :D ");
     }
     //
     });
