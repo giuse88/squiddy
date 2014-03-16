@@ -192,10 +192,10 @@ var app = app || {};
   // TODO probabily need to change it
   doRenegotiation : function () {
       //
-      if(this.isInitiator())
+     // if(this.isInitiator())
             this.doOffer();
-      else
-            this.doAnswer();
+  //    else
+  //          this.doAnswer();
       //
   },
 
@@ -220,15 +220,21 @@ var app = app || {};
     }
   },
 
+
+
   onRemoteStreamRemoved: function (stream) {
     this.set('remoteStream', null);
     LOG.info(this.getPeerId() + "Remote stream removed", stream);
   },
 
-   onRemoteStreamAdded : function (stream) {
+   getRemoteStream : function() {
+       return this.attributes.remoteStream;
+   },
+
+   onRemoteStreamAdded : function (event) {
     // TODO check what happens when removing audio or video
-    this.set('remoteStream', stream);
-    LOG.info( " < " +  this.getPeerId() + " > Remote stream added", stream);
+    this.set('remoteStream', event.stream);
+    LOG.info( " < " +  this.getPeerId() + " > Remote stream added", this.get('remoteStream'));
   },
 
  _createPeerConnection: function() {

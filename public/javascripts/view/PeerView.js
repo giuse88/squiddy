@@ -19,6 +19,14 @@ app.PeerView = Backbone.View.extend({
     },
 
     initialize: function() {
+        // dom
+        this.$mediaContainer = this.$('.remotePeerMediaContainer');
+        console.log(this.$mediaContainer);
+        console.log($('.remotePeerMediaContainer'));
+        this.$remoteVideo = this.$mediaContainer.children("video");
+        this.remoteVideo =this.$('.remotePeerMediaContainer').children('video')[0];  // dom
+        console.log(this.remoteVideo);
+
         // Listeners
         this.listenTo(this.model, 'change:remoteStream', this.changeRemoteStream);
         this.listenTo(this.model, 'change:localStream', this.changeLocalStream);
@@ -41,12 +49,22 @@ app.PeerView = Backbone.View.extend({
         LOG.info("Change in status of the connection to peer " + peerConnection.getPeerId());
     },
 
-    changeRemoteStream: function( peerConnection) {
-        LOG.info("< " + peerConnection.getPeerId() + " >" + " Change in remote stream!!!! :D ");
-    },
-    //
     changeLocalStream: function( peerConnection) {
         LOG.info("< " + peerConnection.getPeerId() + " >" + " Change in local stream!!!! :D ");
+    },
+    //
+    changeRemoteStream: function( peerConnection) {
+        LOG.info("< " + peerConnection.getPeerId() + " >" + " Change in remote stream!!!! :D ");
+        var stream = peerConnection.get('remoteStream');
+        console.log("REMOTE STREAM", stream);
+        console.log("REMOTE STREAM", peerConnection.getRemoteStream());
+        console.log(this.remoteVideo);
+        console.log(this.$remoteVideo);
+        this.remoteVideo = this.$('.remotePeerMediaContainer').children('video')[0];
+        if (stream)
+            attachMediaStream(this.remoteVideo, stream);
+        else
+            LOG.error("< " + peerConnection.getPeerId() + " > Error attaching remote stream.", stream);
     }
     //
     });
