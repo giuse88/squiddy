@@ -12,6 +12,7 @@ html(lang="en")
     script(src="javascripts/lib/adapter.js")
     script(src="javascripts/lib/underscore-min.js")
     script(src="javascripts/lib/backbone-min.js")
+    link(rel='stylesheet', href='stylesheets/style.css')
 
   body
     h1 Welcome to Room #{roomId}
@@ -25,7 +26,16 @@ html(lang="en")
       ul#peerList
 
     script(type="text/template")#peer-template
-        <div><p> Peer : <strong><%=peerId %> </strong> Status : <strong> <%=status %> </strong> Streams : <%=streams %></p></div>
+        <div>
+        <div class="remotePeerInfo">
+        <p> Peer : <strong> <%=peerId %> </strong> </p>
+        <p> Status : <strong> <%=status %> </strong> </p>
+        <p> Streams : <%=streams %></p>
+        </div>
+        <div class="remotePeerMediaContainer">
+        <video width="100" height="100"> </video>
+        </div>
+        </div>
 
     script(type="text/template")#localPeer-template
           <div class="localPeer"><p> Session initialized. Local peer  has received the following id : <strong><%=peerId %></strong> <br>
