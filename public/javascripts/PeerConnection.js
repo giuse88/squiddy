@@ -191,12 +191,7 @@ var app = app || {};
 
   // TODO probabily need to change it
   doRenegotiation : function () {
-      //
-     // if(this.isInitiator())
-            this.doOffer();
-  //    else
-  //          this.doAnswer();
-      //
+    this.doOffer();
   },
 
   dispatchMessage : function (msg) {

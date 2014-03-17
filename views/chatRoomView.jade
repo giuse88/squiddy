@@ -21,7 +21,21 @@ html(lang="en")
       #localPeer
       #localStreamContainer
           video(autoplay='autoplay')#localVideo
-          p Local Video
+          p Local video configuration :
+          #localOptions
+            #videoOptions
+              p.inline Select the video quality for the local stream :
+              select.inline.smallLeftMargin#videoSelector
+                each videoDefinition in videoDefinitions
+                  option(value=videoDefinition) Video #{videoDefinition}
+              p.inline.smallLeftMargin Toggle video :
+              button(disabled='disable').inline.smallLeftMargin#videoLocalToggleVideo Start Video
+            #audioOptions
+               p.inline Mute audio :
+               button(disabled='disable').inline.smallLeftMargin#audioLocalButton Mute
+            #dataOptions
+               p.inline Activate Data comunication :
+               button(disabled='disable').inline.smallLeftMargin#dataLocalToggleButton Data Channel Inactive
       h3 Remote peers info :
       ul#peerList
 

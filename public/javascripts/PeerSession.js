@@ -12,8 +12,44 @@ var app = app || {};
 
 (function() {
 
+    var qvga  = {
+        video: {
+            mandatory: {
+                maxWidth: 320,
+                maxHeight: 180
+            }
+        }
+    };
 
-app.PeerSession = Backbone.Collection.extend({
+    var vga  = {
+        video: {
+            mandatory: {
+                maxWidth: 640,
+                maxHeight: 360
+            }
+        }
+    };
+
+    var hd  = {
+        video: {
+            mandatory: {
+                minWidth: 1280,
+                minHeight: 720
+            }
+        }
+    };
+
+    var none = {
+        video: false
+    };
+    var videoOptions = {
+        "NONE" : none,
+        "VGA"  : vga,
+        "HD"   : hd,
+        "QVGA" : qvga
+    };
+
+  app.PeerSession = Backbone.Collection.extend({
   model: app.PeerConnection,
 
   initialize: function() {
@@ -37,7 +73,7 @@ app.PeerSession = Backbone.Collection.extend({
     this._setOnNewPeerHandler();
     this._setOnJoinedHandler();
     // User Media
-    this._doGetUserMedia();
+    //this._doGetUserMedia();
     //
     LOG.info("Session " + this._sessionId +  " initialized");
   },
@@ -200,9 +236,23 @@ app.PeerSession = Backbone.Collection.extend({
   }, 
 
    // THis should go to an indipendent  module
-  _doGetUserMedia: function() {
+  _doGetUserMedia: function(videoOption, audioOption) {
     var self = this; 
-    
+    var mediaConstraints = {};
+
+      console.log(videoOption,videoOptions[videoOption.toUpperCase()], videoOptions );
+    if(videoOption){
+      mediaConstraints = $.extend(mediaConstraints, videoOptions[videoOption.toUpperCase()]);
+    } else
+      mediaConstraints = $.extend(mediaConstraints, {video:true});
+
+    if(audioOption)
+      mediaConstraints = $.extend(mediaConstraints, audioOption);
+    else
+      mediaConstraints = $.extend(mediaConstraints, {audio:false});
+
+    LOG.info("MediaConstraints - ", mediaConstraints);
+
     function onUserMediaSuccess (stream) {
       LOG.info('User has granted access to local media.');
       self._localStream = stream;
@@ -214,9 +264,8 @@ app.PeerSession = Backbone.Collection.extend({
     };
 
     try {
-      var mediaConstraints = self.attr('mediaConstraints');
-      LOG.info("MediaConstraints - ", mediaConstraints);
       //
+      this._localStream && this._localStream.stop();
       getUserMedia(mediaConstraints, onUserMediaSuccess, onUserMediaError);
       //
       LOG.info('Requested access to local media with mediaConstraints:\n' +

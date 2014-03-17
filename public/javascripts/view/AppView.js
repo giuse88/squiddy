@@ -10,6 +10,12 @@ var app = app || {};
         // TODO the tamplate should be called statusj
         template: _.template( $('#localPeer-template').html() ),
 
+        events : {
+            "change #videoSelector": "handleUserChangeInLocalStream",
+            "click  #localVideoToggle"  : "toggleLocalVideo",
+            "click  #localAudioToggle"  : "toggleLocalAudio"
+        },
+
         initialize: function() {
             // we create the session
             this.peerSession = new app.PeerSession();
@@ -25,6 +31,8 @@ var app = app || {};
             this.listenTo(this.peerSession, 'localStream', this.addLocalStream);
             this.listenTo(this.peerSession, 'removedStream', this.removeLocalStream);
             this.listenTo(this.peerSession, 'remove', this.removePeer);
+            //
+            _.bindAll(this, "handleUserChangeInLocalStream");
         },
 
         // Re-renders the titles of the todo item.
@@ -59,6 +67,23 @@ var app = app || {};
 
         removeLocalStream: function(stream) {
             LOG.info("< AppViw > Local stream removed");
+        },
+
+        toggleLocalAudio : function (toggleEvent) {
+            var stream = this.peerSession.getLocalStream();
+            LOG.info("< AppView > Local stream stopped.");
+        },
+
+        toggleLocalVideo : function() {
+           var stream = this.peerSession.getLocalStream();
+           console.log(stream.getVideoTracks());
+           console.log(stream.getVideoTracks()[0]);
+        },
+
+        handleUserChangeInLocalStream: function (selectEvent) {
+            var value = $(selectEvent.currentTarget).val();
+            this.peerSession._doGetUserMedia(value);
+            LOG.info("< AppView > User selected " + value + " stream");
         }
     });
 }())

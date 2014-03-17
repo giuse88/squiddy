@@ -17,3 +17,17 @@ ul
     width: 40%;
     margin-left : 5%;
 }
+
+.inline {
+    display: inline-block;
+}
+
+.smallLeftMargin {
+    margin-left: 5%;
+}
+
+video {
+background: none;
+height: auto;
+width: auto;
+}
