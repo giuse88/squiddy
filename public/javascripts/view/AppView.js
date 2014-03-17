@@ -22,6 +22,7 @@ var app = app || {};
             // binding to HTML elements
             this.$peerList= this.$("#peerList");
             this.$localPeer= this.$("#localPeer");
+            this.$localVideoTogglerButton = this.$("#localVideoToggle");
             this.$localStreamContainer= this.$("#localStreamContainer");
             // I would like to use a jquery object
             this.localVideo = $('#localVideo')[0]; //dom
@@ -62,6 +63,8 @@ var app = app || {};
 
         addLocalStream: function(stream) {
             LOG.info("< AppView > Local stream added", stream);
+            this.$localVideoTogglerButton.removeAttr("disabled");
+            this.$localVideoTogglerButton.html("Pause");
             attachMediaStream(this.localVideo, stream);
         },
 
@@ -76,8 +79,17 @@ var app = app || {};
 
         toggleLocalVideo : function() {
            var stream = this.peerSession.getLocalStream();
-           console.log(stream.getVideoTracks());
-           console.log(stream.getVideoTracks()[0]);
+           var enable = false;
+           // this should be in the session TODO
+           var videoTracks = stream ? stream.getVideoTracks() : null;
+            if ( videoTracks && videoTracks.length > 0 ) {
+                var videoTrack = stream.getVideoTracks()[0];
+                videoTrack.enabled = !videoTrack.enabled;
+                enable = videoTrack.enabled;
+            }
+           var buttonText = ( enable ? "Pause" : "Resume");
+           this.$localVideoTogglerButton.html(buttonText);
+           LOG.info("Local video has been " + ( enable ? "started" : "stopped") + ".")
         },
 
         handleUserChangeInLocalStream: function (selectEvent) {
