@@ -80,6 +80,7 @@ var app = app || {};
         toggleLocalVideo : function() {
            var stream = this.peerSession.getLocalStream();
            var enable = false;
+            //=============== TO BE REMOVED END ===========
            // this should be in the session TODO
            var videoTracks = stream ? stream.getVideoTracks() : null;
             if ( videoTracks && videoTracks.length > 0 ) {
@@ -87,6 +88,7 @@ var app = app || {};
                 videoTrack.enabled = !videoTrack.enabled;
                 enable = videoTrack.enabled;
             }
+           //=============== TO BE REMOVED END ===========
            var buttonText = ( enable ? "Pause" : "Resume");
            this.$localVideoTogglerButton.html(buttonText);
            LOG.info("Local video has been " + ( enable ? "started" : "stopped") + ".")
