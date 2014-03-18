@@ -12,11 +12,8 @@ ul
     list-style-type: none;
 }
 
-.remotePeerInfo, .remotePeerMediaContainer {
-    display: inline-block;
-    width: 40%;
-    margin-left : 5%;
-}
+.remotePeerInfo{}
+.remotePeerMediaContainer {}
 
 .inline {
     display: inline-block;
