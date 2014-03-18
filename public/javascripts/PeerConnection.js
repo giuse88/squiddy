@@ -33,6 +33,7 @@ var app = app || {};
     this.attributes.session = session;
 
     this.attributes.session.on('localStream', function(stream) {self._addLocalStream(stream, true)});
+    this.attributes.session.on('removedLocalStream', function(stream){ self._removeLocalStream(stream, true)});
 
     if(isInitiator)
       this.set('isInitiator', true);  
@@ -191,7 +192,14 @@ var app = app || {};
         this.doRenegotiation()
   },
 
-  // TODO probabily need to change it
+  _removeLocalStream: function(stream, renegotiation) {
+    this.remoteConnection.removeStream(stream);
+    this.set('localStream', null);
+    if (renegotiation)
+        this.doRenegotiation()
+    LOG.info("Removed local stream from peer connection : " + this.getPeerId());
+     },
+
   doRenegotiation : function () {
     this.doOffer();
   },

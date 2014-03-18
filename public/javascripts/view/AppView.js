@@ -11,7 +11,7 @@ var app = app || {};
         template: _.template( $('#localPeer-template').html() ),
 
         events : {
-            "change #videoSelector": "handleUserChangeInLocalStream",
+            "change #videoSelector"     : "handleUserChangeInLocalStream",
             "click  #localVideoToggle"  : "toggleLocalVideo",
             "click  #localAudioToggle"  : "toggleLocalAudio"
         },
@@ -25,13 +25,14 @@ var app = app || {};
             this.$localVideoTogglerButton = this.$("#localVideoToggle");
             this.$localStreamContainer= this.$("#localStreamContainer");
             // I would like to use a jquery object
-            this.localVideo = $('#localVideo')[0]; //dom
+           // this.localVideo = $('#localVideo')[0]; //dom
             // Listeners
             this.listenTo(this.peerSession, 'ready', this.render);
             this.listenTo(this.peerSession, 'add',   this.addPeer);
-            this.listenTo(this.peerSession, 'localStream', this.addLocalStream);
-            this.listenTo(this.peerSession, 'removedStream', this.removeLocalStream);
             this.listenTo(this.peerSession, 'remove', this.removePeer);
+            // Local stream
+            this.listenTo(this.peerSession, 'localStream', this.addLocalStream);
+            this.listenTo(this.peerSession, 'removedLocalStream', this.removeLocalStream);
             //
             _.bindAll(this, "handleUserChangeInLocalStream");
         },
@@ -63,12 +64,24 @@ var app = app || {};
 
         addLocalStream: function(stream) {
             LOG.info("< AppView > Local stream added", stream);
+            //
+            this.$localVideo && this.$localVideo.remove();
+            this.$localStreamContainer.append("<video id='localVideo' autoplay='autoplay'></video>");
+            this.$localVideo = this.$localStreamContainer.find("#localVideo");
+            console.log(this.$localVideo);
+            //this.$localVideo.attr("id", "localVideo");
+            var video = this.$localVideo.get(0);
+            attachMediaStream(video, stream);
+            video.play();
+            //
             this.$localVideoTogglerButton.removeAttr("disabled");
             this.$localVideoTogglerButton.html("Pause");
-            attachMediaStream(this.localVideo, stream);
         },
 
-        removeLocalStream: function(stream) {
+        removeLocalStream: function() {
+            this.$localVideo.remove();
+            this.$localVideoTogglerButton.attr("disabled", "disabled");
+            this.$localVideoTogglerButton.html("No Video");
             LOG.info("< AppViw > Local stream removed");
         },
 

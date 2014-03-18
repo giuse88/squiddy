@@ -235,12 +235,22 @@ var app = app || {};
     }
   }, 
 
+   _removeLocalStream : function(){
+       this._localStream.stop();
+       this.trigger('removedLocalStream', this._localStream);
+   },
+
    // THis should go to an indipendent  module
   _doGetUserMedia: function(videoOption, audioOption) {
-    var self = this; 
+    var self = this;
+
+    if(videoOption.toUpperCase() === "NONE") {
+        this._removeLocalStream();
+        return;
+    }
+
     var mediaConstraints = {};
 
-      console.log(videoOption,videoOptions[videoOption.toUpperCase()], videoOptions );
     if(videoOption){
       mediaConstraints = $.extend(mediaConstraints, videoOptions[videoOption.toUpperCase()]);
     } else
