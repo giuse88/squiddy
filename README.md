@@ -1,25 +1,42 @@
-### webRTC-chat
-===========
+#webRTC-chat
 
+WebRTC-chat is a Video/Text chat implemented using a new exciting web technology called WebRTC.  WebRTC provides a means of installing a P2P connection between two browsers. That is, the browser becomes a peer in P2P network. This allows us developers to implement that kind of web application that since a fews years ago wouldn't be impossible to imagine. 
 
-WebRTC-chat is a Video chat implemented using the new web techonlogy called WebRTC. It is a clone of https://apprtc.appspot.com, but with some differences. 
-The singnaling server is implemented using node.js and socke.io. 
+The only goal of this project is to study and understand in depth the characteristic and possibility of this new technology. I want to implement a chat service with the following features : 
+  - Optional Video Chat with different  video qualities : QVGA, VGA, HD.  ( done )
+  - Optional Audio ( working )
+  - Optional DataConnection  
+		- Text Chat 
+		- File sharing 
+  -  A mesh network is used to connect peers.  ( done ) 
+  -  Session restoring 
+  -  Move to HTTPS and WSS
+  -  Bandwidth adaptetion
+  -  More then 2 users are allowed to connect at same time. In fact, there is no limit for the number  ( done ) 
+     of users but a mesh network does not scale well and after 4 or 5 users the application is    
+     unusable 
 
-The only goal of this project is to learn the webRTC technology. 
+A deployed version of the application can be found at : http://webrtc-chat-experiment.herokuapp.com/
+ 
 
-I want to augment the apprtc prototype with the following feautures : 
+##Signalling service 
+The signalling service is implemented using node.js and socket. ( full implemented and tested )
+      
+##Techonology 
+THe front end is implemented using Backbone.js. The base app model is built around the single peer connections object.    When a new peer connection is created is added to a BackBone collection which mantains a list of all peer Connection
+open in the web page. 
 
-  - Support text chat 
-  - Support an arbitrary number of users. 
+Express and jade are used to dinamically generate web pages. 
+    
+There is no need for a db as I don't keep any information regarding peer sessions in the back-end. 
 
-##Note : 
+##Note 
+The project is under havy development. 
 
-The project is under development and at the current stage the major feautures are not implemented yet. 
-
-
-Todo : 
-  Signal when a peer close the browser. In this case the signal bye should 
-  be sent. 
+## Next things to do 
+- Audio channel ( Problems remove echo )
+- Move to SSH and WSS 
+- Data Channel  ( to implement entirely) 
  
 ### License
 
