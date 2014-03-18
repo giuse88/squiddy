@@ -30,9 +30,11 @@ var app = app || {};
     
     this.attributes.msgQueue = new Array(); 
     this.attributes.peerId = id;
-    this.attributes.session = session; 
-    
-    if(isInitiator) 
+    this.attributes.session = session;
+
+    this.attributes.session.on('localStream', function(stream) {self._addLocalStream(stream, true)});
+
+    if(isInitiator)
       this.set('isInitiator', true);  
 
     if (session.isSessionReady())
@@ -210,12 +212,9 @@ var app = app || {};
     if (localStream) {
         this._addLocalStream(localStream, false);
     }else {
-      this.attributes.session.on('localStream', function(stream) {self._addLocalStream(stream, true)});
       LOG.info("Local stream is not ready yet");
     }
   },
-
-
 
   onRemoteStreamRemoved: function (stream) {
     this.set('remoteStream', null);
