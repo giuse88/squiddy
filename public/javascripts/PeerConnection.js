@@ -193,7 +193,7 @@ var app = app || {};
   },
 
   _removeLocalStream: function(stream, renegotiation) {
-    this.remoteConnection.removeStream(stream);
+    this.attributes.remoteConnection.removeStream(stream);
     this.set('localStream', null);
     if (renegotiation)
         this.doRenegotiation()
@@ -224,9 +224,10 @@ var app = app || {};
     }
   },
 
-  onRemoteStreamRemoved: function (stream) {
+  onRemoteStreamRemoved: function (event) {
+    event.stream.stop();
     this.set('remoteStream', null);
-    LOG.info(this.getPeerId() + "Remote stream removed", stream);
+    LOG.info(this.getPeerId() + "Remote stream removed", event.stream);
   },
 
    getRemoteStream : function() {
