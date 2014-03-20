@@ -44,8 +44,9 @@ html(lang="en")
         <div class="remotePeerInfo">
         <p> Peer : <strong> <%=peerId %> </strong> </p>
         <p class="inline smallLeftMargin"> Status :
-            <p>IceConnectionState : <%=iceConnectionState %> </p>
-            IceGatheringState : <%iceGatheringState %>, SignalingState : <%signalingState %> </p>
+        <p class="inline smallLeftMargin iceConnection">IceConnectionState : <%= iceConnectionState %> </p>
+        <p class="inline smallLeftMargin iceGathering">IceGatheringState  : <%= iceGatheringState %> </p>
+        <p class="inline smallLeftMargin signalingState">SignalingState : <%= signalingState %> </p>
         </p>
         </div>
         <div class="remotePeerMediaContainer">

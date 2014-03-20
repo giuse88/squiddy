@@ -33,22 +33,30 @@ app.PeerView = Backbone.View.extend({
 
     // Re-renders the titles of the todo item.
     render: function() {
-
-        console.log("FFFFF : ", this.model.toJSON());
+        //
         this.$el.html( this.template( this.model.toJSON()));
+        // Update dom elements
+        this.$mediaContainer    = this.$('.remotePeerMediaContainer');
+        this.$signalingState    = this.$('.signalingState');
+        this.$iceConnection     = this.$('.iceConnection');
+        this.$iceGathering      = this.$('.iceGathering');
+        //
         return this;
     },
 
     //
     changeSignalingState: function( peerConnection) {
+        this.$signalingState.html(peerConnection.getSignalingState());
         LOG.info("Change in status of the connection to peer " + peerConnection.getPeerId());
     },
 
     changeIceConnectionState: function( peerConnection) {
+        this.$iceConnection.html(peerConnection.getIceConnectionState());
         LOG.info("Change in status of the connection to peer " + peerConnection.getPeerId());
     },
 
     changeIceGatheringState: function( peerConnection) {
+        this.$iceGathering.html(peerConnection.getIceGatheringState());
         LOG.info("Change in status of the connection to peer " + peerConnection.getPeerId());
     },
     changeLocalStream: function( peerConnection) {

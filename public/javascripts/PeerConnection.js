@@ -62,6 +62,18 @@ app.PeerConnection = Backbone.Model.extend({
     return this.get('localStream');
   },
 
+  getSignalingState : function() {
+    return this.get('signalingState');
+  },
+
+  getIceConnectionState : function() {
+    return this.get('iceConnectionState');
+  },
+
+  getIceGatheringState : function() {
+    return this.get('iceGatheringState');
+  },
+
   dispatchMessage : function (msg) {
    //
     if(this.isStarted())
