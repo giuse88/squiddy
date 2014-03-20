@@ -236,7 +236,7 @@ var app = app || {};
   }, 
 
    _removeLocalStream : function(){
-       this._localStream.stop();
+       this._localStream && this._localStream.stop();
        this.trigger('removedLocalStream', this._localStream);
    },
 

@@ -4,25 +4,20 @@ var app = app || {};
 
 (function() {
 
-    app.PeerConnection = Backbone.Model.extend({
+app.PeerConnection = Backbone.Model.extend({
   
-  /* costants */
-  WAITING:0, 
-  CONNECTING:1,
-  CONNECTED:2, 
-  UNKNOWN:3, 
-
   defaults: {
-    status : this.UNKNOWN, 
-    isStarted   : false,  
-    msgQueue : null,  
-    session : null,
-    peerId : '',
-    remoteStream  : null,
-    localStream : null,
-    isInitiator : false, 
-    isStarted : false, 
-    remoteConnection : null
+    isStarted           : false,
+    msgQueue            : null,
+    session             : null,
+    remoteStream        : null,
+    localStream         : null,
+    peerId              : 'none',
+    iceConnectionState  : 'none',
+    iceGatheringState   : 'none',
+    signalingState      : 'none',
+    isInitiator         : false,
+    remoteConnection    : null
   }, 
 
   initialize: function(id, session, isInitiator) {
@@ -43,40 +38,64 @@ var app = app || {};
     else 
       session.on('ready', function() { console.log("Session ready" + self.getPeerId()); self._start()}); 
 
-    console.log("Creating Peer Connection");  
+    this._log("Initialization peer connection completed.", this.toJSON());
   },
 
+
   getPeerId: function () {
-    return this.attributes.peerId; 
+    return this.get('peerId');
   }, 
 
   isInitiator : function() {
     return this.get('isInitiator'); 
-  }, 
-
-  _start: function() {
-    LOG.info("START");
-    console.log("Messages pending in the queue : " + this.attributes.msgQueue.length); 
-   this._createPeerConnection();
-   //this._addLocalStream();
-   this.set('isStarted', true); 
-   console.log("Is initiator : " + this.isInitiator()); 
-
-   this.processQueue();
-   
-   if (this.isInitiator())
-     this.doOffer();
-   
-  }, 
-  
+  },
 
   isStarted: function() {
-   return this.get('isStarted'); 
-  }, 
+    return this.get('isStarted');
+  },
 
+  getRemoteStream : function() {
+    return this.get('remoteStream');
+  },
+
+  getLocalStream : function() {
+    return this.get('localStream');
+  },
+
+  dispatchMessage : function (msg) {
+   //
+    if(this.isStarted())
+      this.processMessage(msg);
+    else
+      this.attributes.msgQueue.push(msg);
+   //
+   this._log("Dispatched message.", msg);
+  },
+
+  //===================================
+  //        PRIVATE
+  //====
+  _start: function() {
+
+    this._createPeerConnection();
+
+    this.set('isStarted', true);
+    this._log("Is initiator : " + this.isInitiator());
+
+    this.processQueue();
+   
+    if (this.isInitiator())
+     this.doOffer();
+
+    this._log("Started.");
+  },
+  
   processQueue: function () {
-  while(this.attributes.msgQueue.length > 0)
-    this.processMessage(this.attributes.msgQueue.shift());
+    this._log("Messages pending in the queue : " + this.attributes.msgQueue.length);
+    //
+    while(this.attributes.msgQueue.length > 0)
+        this.processMessage(this.attributes.msgQueue.shift());
+    //
   }, 
 
   processMessage: function (message) {
@@ -91,7 +110,7 @@ var app = app || {};
   } else if ( message.type === 'ANSWER') {
     pc.setRemoteDescription( new RTCSessionDescription(message.msg));
   } else {
-    console.log("Unknow message");
+    this._err("Unknow message");
   }
   },
 
@@ -100,7 +119,7 @@ var app = app || {};
   addRemoteIceCandidate : function (message) {
         var candidate = new RTCIceCandidate(message);
         this.get('remoteConnection').addIceCandidate(candidate);
-        LOG.info("Added Remote ICE candidate", candidate);
+        this._log("Added Remote ICE candidate", candidate);
     },
 
   _iceCandidateType: function(candidateSDP) {
@@ -132,6 +151,9 @@ var app = app || {};
   },
 
   onIceCandidate: function(event, status) {
+
+    this.set('iceGatheringState', status);
+
     if (event.candidate) {
         //
         LOG.info("Gathered LOCAL " + this._iceCandidateType(event.candidate.candidate)
@@ -204,43 +226,44 @@ var app = app || {};
     this.doOffer();
   },
 
-  dispatchMessage : function (msg) {
-    LOG.info("Dispatched message to Peer " + this.getPeerId() + ". ", msg);
-    if(this.isStarted())
-      this.processMessage(msg);
-    else 
-      this.attributes.msgQueue.push(msg);
-  }, 
+
 
   handleLocalStreams : function() {
 
     var localStream = this.attributes.session.getLocalStream();
-    var self = this;
 
     if (localStream) {
         this._addLocalStream(localStream, false);
     }else {
-      LOG.info("Local stream is not ready yet");
+      this._log("Local stream is not ready yet");
     }
   },
 
   onRemoteStreamRemoved: function (event) {
     event.stream.stop();
     this.set('remoteStream', null);
-    LOG.info(this.getPeerId() + "Remote stream removed", event.stream);
+    this._log("Remote stream removed.", event.stream);
   },
 
-   getRemoteStream : function() {
-       return this.attributes.remoteStream;
-   },
 
    onRemoteStreamAdded : function (event) {
-    // TODO check what happens when removing audio or video
+    var remoteStream = this.get('remoteStream');
+    remoteStream && remoteStream.stop();
     this.set('remoteStream', event.stream);
-    LOG.info( " < " +  this.getPeerId() + " > Remote stream added", this.get('remoteStream'));
+    this._log("Remote stream added.", this.get('remoteStream'));
   },
 
- _createPeerConnection: function() {
+   onSignalingStateChange : function (event) {
+    this.set('signalingState', event.srcElement.signalingState);
+    this._log("The signal status has changed to " + this.get('signalingState'));
+   },
+
+   onIceConnectionStatusStateChange : function (event) {
+    this.set('iceConnectionState', event.srcElement.iceConnectionState);
+    this._log("Ice connection has changed to " + this.get('iceConnectionState'));
+   },
+
+  _createPeerConnection: function() {
   var self = this;
   var pcConfig = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]}
   var  pcConstraints   = {"optional": [{"DtlsSrtpKeyAgreement": true}]};
@@ -248,8 +271,8 @@ var app = app || {};
     this.attributes.remoteConnection = new RTCPeerConnection(pcConfig, pcConstraints);
     var pc =  this.attributes.remoteConnection;
         pc.onicecandidate = function(e) { self.onIceCandidate(e, pc.iceGatheringState)};
-        pc.oniceconnectionstatechange= function(e) {console.log("kkkk" + e);};
-        pc.onsignalingstatechange = function(e) {console.log("ffff"); console.log(e);};
+        pc.oniceconnectionstatechange= function(e) { self.onIceConnectionStatusStateChange(e)};
+        pc.onsignalingstatechange = function(e) {self.onSignalingStateChange(e)};
 
   console.log('Created RTCPeerConnnection with:\n' +
               'config: \'' + JSON.stringify(pcConfig) + '\';\n' +
@@ -265,7 +288,19 @@ var app = app || {};
   pc.onaddstream = function(stream) {  self.onRemoteStreamAdded(stream);};
   pc.onremovestream = function(stream) { self.onRemoteStreamRemoved(stream);};
   //
-  }
+  },
+
+  //=====================================//
+  //            PRIVATE METHODS          //
+  //=====================================//
+
+   _log : function(msg, object) {
+       LOG.info( "<" +  this.getPeerId() + "> " + msg, object);
+   },
+
+   _err : function(msg, object) {
+       LOG.error( "<" +  this.getPeerId() + "> " + msg, object);
+   }
 
 });
 

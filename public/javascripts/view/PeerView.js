@@ -19,31 +19,38 @@ app.PeerView = Backbone.View.extend({
     },
 
     initialize: function() {
+        // Listeners
+        this.listenTo(this.model, 'change:remoteStream',        this.changeRemoteStream);
+        this.listenTo(this.model, 'change:localStream',         this.changeLocalStream);
+        this.listenTo(this.model, 'change:signalingState',      this.changeSignalingState);
+        this.listenTo(this.model, 'change:iceConnectionState',  this.changeIceConnectionState);
+        this.listenTo(this.model, 'change:iceGatheringState',   this.changeIceGatheringState);
+        // Autorendering view
+       // this.render();
         // dom
         this.$mediaContainer = this.$('.remotePeerMediaContainer');
-
-        // Listeners
-        this.listenTo(this.model, 'change:remoteStream', this.changeRemoteStream);
-        this.listenTo(this.model, 'change:localStream', this.changeLocalStream);
-        this.listenTo(this.model, 'change', this.changePeer);
     },
 
     // Re-renders the titles of the todo item.
     render: function() {
-        this.$el.html( this.template(
-            { peerId : this.model.getPeerId(),
-              status : "none",
-              streams : "none"
-            }
-        ));
+
+        console.log("FFFFF : ", this.model.toJSON());
+        this.$el.html( this.template( this.model.toJSON()));
         return this;
     },
+
     //
-    changePeer: function( peerConnection) {
-        "use strict";
+    changeSignalingState: function( peerConnection) {
         LOG.info("Change in status of the connection to peer " + peerConnection.getPeerId());
     },
 
+    changeIceConnectionState: function( peerConnection) {
+        LOG.info("Change in status of the connection to peer " + peerConnection.getPeerId());
+    },
+
+    changeIceGatheringState: function( peerConnection) {
+        LOG.info("Change in status of the connection to peer " + peerConnection.getPeerId());
+    },
     changeLocalStream: function( peerConnection) {
         LOG.info("< " + peerConnection.getPeerId() + " >" + " Change in local stream!!!! :D ");
     },
@@ -51,7 +58,8 @@ app.PeerView = Backbone.View.extend({
     changeRemoteStream: function( peerConnection) {
         LOG.info("< " + peerConnection.getPeerId() + " >" + " Change in remote stream!!!! :D ");
         //
-        var stream = peerConnection.get('remoteStream');
+        var stream = peerConnection.getRemoteStream();
+        // need refactoring
         this.$mediaContainer = this.$('.remotePeerMediaContainer');
         this.$remoteVideo && this.$remoteVideo.remove();
         //

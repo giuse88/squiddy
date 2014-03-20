@@ -42,9 +42,11 @@ html(lang="en")
     script(type="text/template")#peer-template
         <div>
         <div class="remotePeerInfo">
-        <p class="inline"> Peer : <strong> <%=peerId %> </strong> </p>
-        <p class="inline smallLeftMargin"> Status : <strong> <%=status %> </strong> </p>
-        <p class="inline smallLeftMargin"> Streams : <%=streams %></p>
+        <p> Peer : <strong> <%=peerId %> </strong> </p>
+        <p class="inline smallLeftMargin"> Status :
+            <p>IceConnectionState : <%=iceConnectionState %> </p>
+            IceGatheringState : <%iceGatheringState %>, SignalingState : <%signalingState %> </p>
+        </p>
         </div>
         <div class="remotePeerMediaContainer">
         </div>
