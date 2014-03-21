@@ -8,17 +8,17 @@ app.PeerConnection = Backbone.Model.extend({
   
   defaults: {
     isStarted           : false,
+    isInitiator         : false,
     msgQueue            : null,
     session             : null,
     remoteStream        : null,
+    remoteConnection    : null,
     localStream         : null,
     peerId              : 'none',
     iceConnectionState  : 'none',
     iceGatheringState   : 'none',
-    signalingState      : 'none',
-    isInitiator         : false,
-    remoteConnection    : null
-  }, 
+    signalingState      : 'none'
+  },
 
   initialize: function(id, session, isInitiator) {
     var self=this; 
@@ -38,7 +38,7 @@ app.PeerConnection = Backbone.Model.extend({
     else 
       session.on('ready', function() { console.log("Session ready" + self.getPeerId()); self._start()}); 
 
-    this._log("Initialization peer connection completed.", this.toJSON());
+     this._log("Initialization peer connection completed.");
   },
 
 
