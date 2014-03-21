@@ -28,6 +28,8 @@ app.PeerView = Backbone.View.extend({
         this.listenTo(this.model, 'change:iceGatheringState',   this.renderPeerInfo);
         // Autorendering view
         this.render();
+        //
+        LOG.peerInfo(this.model.getPeerId(), "Peer View initialized.")
     },
 
 
@@ -41,22 +43,19 @@ app.PeerView = Backbone.View.extend({
         this.renderPeerInfo(this.model);
         this.renderPeerRemoteStream(this.model);
 
+        LOG.peerInfo(this.model.getPeerId(), "View rendered.");
+
         return this;
     },
 
    renderPeerInfo : function(peerConnection) {
-      console.log("Hello");
-    //  console.log(this.model);
-    //  console.log(this.templateInfo);
       this.$peerInfo.html(this.templateInfo(peerConnection.toJSON()));
+      LOG.peerInfo(this.model.getPeerId(), "Updated status view.");
    },
 
 
     renderPeerRemoteStream : function( peerConnection) {
-        LOG.info("< " + peerConnection.getPeerId() + " >" + " Change in remote stream!!!! :D ");
-        //
         var stream = peerConnection.getRemoteStream();
-        // need refactoring
         this.$remoteVideo && this.$remoteVideo.remove();
         //
         if (stream) {
@@ -64,8 +63,9 @@ app.PeerView = Backbone.View.extend({
             this.$remoteVideo = this.$mediaContainer.children("video");
             attachMediaStream(this.$remoteVideo.get(0), stream);
         }
-
+        //
+        LOG.peerInfo(this.model.getPeerId(), "Updated media container.");
     }
-    //
+
     });
 }())

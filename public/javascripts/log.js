@@ -25,15 +25,15 @@ LOG = (function(console) {
     }
 
     function peerInfo (peerId, msg, object) {
-        LOG.info( "<" + peerId  + "> " + msg, object);
+        info( "<" + peerId  + "> " + msg, object);
     }
 
     function peerError(peerId, msg, object) {
-        LOG.error( "<" + peerId + "> " + msg, object);
+        error( "<" + peerId + "> " + msg, object);
     }
 
     function peerTrace(peerId, msg, object){
-        LOG.trace( "<" +  peerId + "> " + msg, object);
+        trace( "<" +  peerId + "> " + msg, object);
     }
 
     // ===========================
