@@ -50,7 +50,7 @@ var app = app || {};
 
         addPeer: function(peerConnection) {
             var view = new app.PeerView({ model: peerConnection });
-            this.$peerList.append( view.render().el );
+            this.$peerList.append( view.el );
             LOG.info ("< AppView > New peer " + peerConnection.getPeerId());
             // update appView
             this.render();
