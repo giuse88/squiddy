@@ -17,7 +17,11 @@ The only goal of this project is to study and understand in depth the characteri
      unusable 
 
 A deployed version of the application can be found at : http://webrtc-chat-experiment.herokuapp.com/
- 
+
+##How to use it
+
+Using this app is really easy, you need just to go to the page and automatically a chat is created. To invite someone else in the room,
+you need just to share the url of the page.
 
 ##Signalling service 
 The signalling service is implemented using node.js and socket. ( full implemented and tested )
