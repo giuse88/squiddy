@@ -20,7 +20,6 @@ html(lang="en")
       h3 Session info :
       #localPeer
       #localStreamContainer
-          //video(autoplay='autoplay')#localVideo
           h3  Local video configuration :
           #localOptions
             #videoOptions
@@ -31,8 +30,10 @@ html(lang="en")
               p.inline.smallLeftMargin Toggle video :
               button(disabled='disable').inline.smallLeftMargin#localVideoToggle No video
             #audioOptions
-               p.inline Mute audio :
-               button(disabled='disable').inline.smallLeftMargin#audioLocalButton Mute
+               p.inline  Audio :
+               button.inline.smallLeftMargin#audioLocalButton No audio
+               p.inline.smallLeftMargin Toggle audio :
+               button(disabled='disable').inline.smallLeftMargin#localAudioToggle No audio
             #dataOptions
                p.inline Activate Data comunication :
                button(disabled='disable').inline.smallLeftMargin#dataLocalToggleButton Data Channel Inactive

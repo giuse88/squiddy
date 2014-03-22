@@ -57,7 +57,7 @@ var app = app || {};
     this._attributes = {
        pcConstraints    : {"optional": [{"DtlsSrtpKeyAgreement": true}]},
        constraints      : { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }},
-       mediaConstraints : { /*"audio": true ,*/ "video": true }
+       mediaConstraints : { audio: true , video: true }
     };
     //
     this._localStream = null;

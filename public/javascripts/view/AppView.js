@@ -12,6 +12,7 @@ var app = app || {};
 
         events : {
             "change #videoSelector"     : "handleUserChangeInLocalStream",
+            "change #audioSelector"     : "handleUserChangeInLocalStream",
             "click  #localVideoToggle"  : "toggleLocalVideo",
             "click  #localAudioToggle"  : "toggleLocalAudio"
         },
@@ -66,7 +67,7 @@ var app = app || {};
             LOG.info("< AppView > Local stream added", stream);
             //
             this.$localVideo && this.$localVideo.remove();
-            this.$localStreamContainer.append("<video id='localVideo' autoplay='autoplay'></video>");
+            this.$localStreamContainer.append("<video id='localVideo' muted='true' autoplay='autoplay'></video>");
             this.$localVideo = this.$localStreamContainer.find("#localVideo");
             console.log(this.$localVideo);
             //this.$localVideo.attr("id", "localVideo");
@@ -109,7 +110,7 @@ var app = app || {};
 
         handleUserChangeInLocalStream: function (selectEvent) {
             var value = $(selectEvent.currentTarget).val();
-            this.peerSession._doGetUserMedia(value);
+            this.peerSession._doGetUserMedia(value, {audio:true});
             LOG.info("< AppView > User selected " + value + " stream");
         }
     });
