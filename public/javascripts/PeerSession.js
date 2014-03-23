@@ -52,14 +52,19 @@ var app = app || {};
   app.PeerSession = Backbone.Collection.extend({
   model: app.PeerConnection,
 
+
+
   initialize: function() {
     //
-    this._attributes = {
-       pcConstraints    : {"optional": [{"DtlsSrtpKeyAgreement": true}]},
-       constraints      : { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }},
-       mediaConstraints : { audio: true , video: true }
-    };
     //
+    this._attr = {
+          pcConstraints    : {"optional": [{"DtlsSrtpKeyAgreement": true}]},
+          constraints      : { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }},
+          mediaConstraints : { audio: true , video: true },
+          videoConstraints : { video : false},
+          audioConstraints : { audio : false}
+      };
+
     this._localStream = null;
     this._connected = false;
     // room Id
@@ -240,26 +245,37 @@ var app = app || {};
        this.trigger('removedLocalStream', this._localStream);
    },
 
+
+   setVideoConstraints: function (videoOption) {
+     this._attr.videoConstraints = videoOptions[videoOption.toUpperCase()];
+     LOG.info("<SESSION> Set video constraints : ",  this._attr.videoConstraints);
+     //
+     this._doGetUserMedia();
+     //
+   },
+   setAudioConstraints: function (audioOption) {
+     this._attr.audioConstraints.audio = audioOption;
+     LOG.info("<SESSION> Set audio constraints : ", this._attr.audioConstraints);
+     //
+     this._doGetUserMedia();
+     //
+   },
+
    // THis should go to an indipendent  module
-  _doGetUserMedia: function(videoOption, audioOption) {
+  _doGetUserMedia: function() {
     var self = this;
 
-    if(videoOption.toUpperCase() === "NONE") {
+    var mediaConstraints = $.extend({},
+        this._attr.videoConstraints, this._attr.audioConstraints);
+
+    LOG.info("<SESSION> Media constraints : ", mediaConstraints);
+
+    this._attr.mediaConstraints = mediaConstraints;
+
+    if( !this._attr.mediaConstraints.video && !this._attr.mediaConstraints.audio) {
         this._removeLocalStream();
         return;
     }
-
-    var mediaConstraints = {};
-
-    if(videoOption){
-      mediaConstraints = $.extend(mediaConstraints, videoOptions[videoOption.toUpperCase()]);
-    } else
-      mediaConstraints = $.extend(mediaConstraints, {video:true});
-
-    if(audioOption)
-      mediaConstraints = $.extend(mediaConstraints, audioOption);
-    else
-      mediaConstraints = $.extend(mediaConstraints, {audio:false});
 
     LOG.info("MediaConstraints - ", mediaConstraints);
 
@@ -278,13 +294,13 @@ var app = app || {};
       this._localStream && this._localStream.stop();
       getUserMedia(mediaConstraints, onUserMediaSuccess, onUserMediaError);
       //
-      LOG.info('Requested access to local media with mediaConstraints:\n' +
-                  '  \'' + JSON.stringify(mediaConstraints) + '\'');
+      LOG.info('Requested access to local media with mediaConstraints:\n', mediaConstraints);
     } catch (e) {
       alert('getUserMedia() failed. Is this a WebRTC capable browser?');
       LOG.error('getUserMedia failed with exception: ' + e.message);
     }
-  } 
+
+  }
 
 });
 

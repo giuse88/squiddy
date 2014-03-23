@@ -11,8 +11,8 @@ var app = app || {};
         template: _.template( $('#localPeer-template').html() ),
 
         events : {
-            "change #videoSelector"     : "handleUserChangeInLocalStream",
-            "change #audioSelector"     : "handleUserChangeInLocalStream",
+            "change #videoSelector"     : "videoChange",
+            "change #audioSelector"     : "audioChange",
             "click  #localVideoToggle"  : "toggleLocalVideo",
             "click  #localAudioToggle"  : "toggleLocalAudio"
         },
@@ -25,8 +25,6 @@ var app = app || {};
             this.$localPeer= this.$("#localPeer");
             this.$localVideoTogglerButton = this.$("#localVideoToggle");
             this.$localStreamContainer= this.$("#localStreamContainer");
-            // I would like to use a jquery object
-           // this.localVideo = $('#localVideo')[0]; //dom
             // Listeners
             this.listenTo(this.peerSession, 'ready', this.render);
             this.listenTo(this.peerSession, 'add',   this.addPeer);
@@ -112,6 +110,19 @@ var app = app || {};
             var value = $(selectEvent.currentTarget).val();
             this.peerSession._doGetUserMedia(value, {audio:true});
             LOG.info("< AppView > User selected " + value + " stream");
+        },
+
+        audioChange : function(selectEvent) {
+            var value = ($(selectEvent.currentTarget).val() === 'true');
+            this.peerSession.setAudioConstraints(value);
+            LOG.info("<AppView> User selected " + value + " for the audio stream.");
+        },
+
+        videoChange: function (selectEvent) {
+            var value = $(selectEvent.currentTarget).val();
+            this.peerSession.setVideoConstraints(value);
+            LOG.info("<AppView> User selected " + value + " stream");
         }
+
     });
 }())

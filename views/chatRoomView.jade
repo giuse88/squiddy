@@ -31,7 +31,9 @@ html(lang="en")
               button(disabled='disable').inline.smallLeftMargin#localVideoToggle No video
             #audioOptions
                p.inline  Audio :
-               button.inline.smallLeftMargin#audioLocalButton No audio
+               select.inline.smallLeftMargin#audioSelector
+                option(value="false") Audio None
+                option(value="true")  Audio Active
                p.inline.smallLeftMargin Toggle audio :
                button(disabled='disable').inline.smallLeftMargin#localAudioToggle No audio
             #dataOptions
