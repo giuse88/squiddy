@@ -30,7 +30,7 @@ html(lang="en")
               p.inline.smallLeftMargin Toggle video :
               button(disabled='disable').inline.smallLeftMargin#localVideoToggle No video
             #audioOptions
-               p.inline  Audio :
+               p.inline Select the audio for the local stream  :
                select.inline.smallLeftMargin#audioSelector
                 option(value="false") Audio None
                 option(value="true")  Audio Active
@@ -65,13 +65,13 @@ html(lang="en")
           Local Streams : <%=streams %><br>
           </p> </div>
 
-    script(src="javascripts/PeerConnection.js")
-    script(src="javascripts/PeerSession.js")
+    script(src="javascripts/model/PeerConnection.js")
+    script(src="javascripts/model/PeerSession.js")
     script(src="javascripts/view/PeerView.js")
     script(src="javascripts/view/AppView.js")
-    script(src="javascripts/SignalingServiceFrontEnd.js")
-    script(src="javascripts/utils.js")
-    script(src="javascripts/log.js")
+    script(src="javascripts/helpers/SignalingServiceFrontEnd.js")
+    script(src="javascripts/helpers/utils.js")
+    script(src="javascripts/helpers/log.js")
     script(src="events/events.js")
 
     script(type='text/javascript').

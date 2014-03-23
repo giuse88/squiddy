@@ -72,7 +72,7 @@ var app = app || {};
             var video = this.$localVideo.get(0);
             attachMediaStream(video, stream);
             video.play();
-            //
+            //TODO refactro to support audio
             this.$localVideoTogglerButton.removeAttr("disabled");
             this.$localVideoTogglerButton.html("Pause");
         },
@@ -104,6 +104,10 @@ var app = app || {};
            var buttonText = ( enable ? "Pause" : "Resume");
            this.$localVideoTogglerButton.html(buttonText);
            LOG.info("Local video has been " + ( enable ? "started" : "stopped") + ".")
+        },
+
+        toggleLocalAudio : function() {
+
         },
 
         handleUserChangeInLocalStream: function (selectEvent) {
