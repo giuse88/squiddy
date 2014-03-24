@@ -24,6 +24,7 @@ var app = app || {};
             this.$peerList= this.$("#peerList");
             this.$localPeer= this.$("#localPeer");
             this.$localVideoTogglerButton = this.$("#localVideoToggle");
+            this.$localAudioToggleButton = this.$("#localAudioToggle");
             this.$localStreamContainer= this.$("#localStreamContainer");
             // Listeners
             this.listenTo(this.peerSession, 'ready', this.render);
@@ -64,6 +65,8 @@ var app = app || {};
         addLocalStream: function(stream) {
             LOG.info("< AppView > Local stream added", stream);
             //
+            LOG.info("< AppView > Local video tracks", stream.getVideoTracks());
+            LOG.info("< AppView > Local audio tracks", stream.getAudioTracks());
             this.$localVideo && this.$localVideo.remove();
             this.$localStreamContainer.append("<video id='localVideo' muted='true' autoplay='autoplay'></video>");
             this.$localVideo = this.$localStreamContainer.find("#localVideo");
@@ -73,8 +76,15 @@ var app = app || {};
             attachMediaStream(video, stream);
             video.play();
             //TODO refactro to support audio
-            this.$localVideoTogglerButton.removeAttr("disabled");
-            this.$localVideoTogglerButton.html("Pause");
+            if (stream.getVideoTracks().length > 0) {
+                this.$localVideoTogglerButton.removeAttr("disabled");
+                this.$localVideoTogglerButton.html("Pause");
+            }
+            //
+            if (stream.getAudioTracks().length > 0) {
+                this.$localAudioToggleButton.removeAttr("disabled");
+                this.$localAudioToggleButton.html("Mute");
+            }
         },
 
         removeLocalStream: function() {
@@ -84,30 +94,18 @@ var app = app || {};
             LOG.info("< AppViw > Local stream removed");
         },
 
-        toggleLocalAudio : function (toggleEvent) {
-            var stream = this.peerSession.getLocalStream();
-            LOG.info("< AppView > Local stream stopped.");
-        },
-
         toggleLocalVideo : function() {
-           var stream = this.peerSession.getLocalStream();
-           var enable = false;
-            //=============== TO BE REMOVED END ===========
-           // this should be in the session TODO
-           var videoTracks = stream ? stream.getVideoTracks() : null;
-            if ( videoTracks && videoTracks.length > 0 ) {
-                var videoTrack = stream.getVideoTracks()[0];
-                videoTrack.enabled = !videoTrack.enabled;
-                enable = videoTrack.enabled;
-            }
-           //=============== TO BE REMOVED END ===========
-           var buttonText = ( enable ? "Pause" : "Resume");
+           var enabled = this.peerSession.toggleVidoPause();
+           var buttonText = ( enabled ? "Pause" : "Resume");
            this.$localVideoTogglerButton.html(buttonText);
-           LOG.info("Local video has been " + ( enable ? "started" : "stopped") + ".")
+           LOG.info("Local video has been " + ( enabled ? "started" : "stopped") + ".")
         },
 
         toggleLocalAudio : function() {
-
+            var enable = this.peerSession.toggleAudioMute();
+            var buttonText = ( enable ? "Mute" : "Unmute");
+            this.$localAudioToggleButton.html(buttonText);
+            LOG.info("Local video has been " + ( enable ? "unmute" : "mute") + ".")
         },
 
         handleUserChangeInLocalStream: function (selectEvent) {
@@ -127,6 +125,5 @@ var app = app || {};
             this.peerSession.setVideoConstraints(value);
             LOG.info("<AppView> User selected " + value + " stream");
         }
-
     });
 }())

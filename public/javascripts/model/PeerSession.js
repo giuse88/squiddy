@@ -245,6 +245,32 @@ var app = app || {};
        this.trigger('removedLocalStream', this._localStream);
    },
 
+   toggleAudioMute: function () {
+    var audioTracks = this._localStream.getAudioTracks();
+
+    if (audioTracks.length === 0) {
+        LOG.info('No local audio available.');
+        return;
+    }
+    for (var i = 0; i < audioTracks.length; i++) {
+        audioTracks[i].enabled = !audioTracks[i].enabled;
+    }
+    LOG.info("Audio : " + audioTracks[0].enabled ? "unmute" : "mute");
+    return audioTracks[0].enabled;
+    },
+
+    toggleVidoPause: function () {
+      var videoTracks = this._localStream.getVideoTracks();
+
+      if (videoTracks.length === 0) {
+         LOG.info('No local Video available.');
+         return;
+      }
+      for (var i = 0; i < videoTracks.length; i++) {
+          videoTracks[i].enabled = !videoTracks[i].enabled;
+      }
+       LOG.info("Video : " + videoTracks[0].enable ? "resumed" : "paused");
+    },
 
    setVideoConstraints: function (videoOption) {
      this._attr.videoConstraints = videoOptions[videoOption.toUpperCase()];

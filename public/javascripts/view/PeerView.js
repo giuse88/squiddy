@@ -7,7 +7,7 @@ app.PeerView = Backbone.View.extend({
 
     tagName: 'li',
 
-    // Cache the template function for a single item.
+    // Cache templates from HTML page.
     template:       _.template($('#peer-template').html() ),
     templateInfo:   _.template($('#peer-template-info').html()),
     templateMedia:  _.template($('#peer-template-media').html()),
@@ -26,7 +26,7 @@ app.PeerView = Backbone.View.extend({
         this.listenTo(this.model, 'change:signalingState',      this.renderPeerInfo);
         this.listenTo(this.model, 'change:iceConnectionState',  this.renderPeerInfo);
         this.listenTo(this.model, 'change:iceGatheringState',   this.renderPeerInfo);
-        // Autorendering view
+        // Auto-rendering view
         this.render();
         //
         LOG.peerInfo(this.model.getPeerId(), "Peer View initialized.")
@@ -39,12 +39,11 @@ app.PeerView = Backbone.View.extend({
         // Update dom elements
         this.$mediaContainer    = this.$('.remotePeerMediaContainer');
         this.$peerInfo          = this.$('.remotePeerInfo');
-
+        //
         this.renderPeerInfo(this.model);
         this.renderPeerRemoteStream(this.model);
-
+        //
         LOG.peerInfo(this.model.getPeerId(), "View rendered.");
-
         return this;
     },
 
@@ -52,7 +51,6 @@ app.PeerView = Backbone.View.extend({
       this.$peerInfo.html(this.templateInfo(peerConnection.toJSON()));
       LOG.peerInfo(this.model.getPeerId(), "Updated status view.");
    },
-
 
     renderPeerRemoteStream : function( peerConnection) {
         var stream = peerConnection.getRemoteStream();
