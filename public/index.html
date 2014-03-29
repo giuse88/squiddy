@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="javascripts/lib/jquery.min.js"></script>
     <title> Index </title>
 
     <style> 
@@ -55,7 +56,62 @@
         margin: 10px auto;
         display : block;
      }
+     #bar-activator {
+         background-color: red;
+         width:100%;
+         height: 10px;
+     }
+    .center{
+        position: absolute;
+        height: 50px;
+        width: 50px;
+        background:red;
+        top:calc(50% - 50px/2);
+        left:calc(50% - 50px/2);
+    }
+     .hidden {
+         display: none;
+     }
     </style>
+      <script>
+          // jQuery
+          $(document).ready( function () {
+
+              var toogleBar = function () {
+                  toggleBar();
+                  $('#bar-activator').hide();
+              };
+
+              function toggleBar() {
+              $('#menu-bar').slideToggle();
+              };
+
+              function showBar() {
+                  $('#menu-bar').slideDown();
+              }
+
+              toggleBar();
+              $('#menu-bar').data('timeoutId', setTimeout(toggleBar , 2000));
+
+              $(document).mousemove(function(event){
+                  var docheight = $( document ).height() - 10; //subtracted with 10 just to be safe with checking the condition below
+                  if(event.pageY > docheight){
+                      showBar();
+                  }
+              });
+
+
+              $("#menu-bar").mouseleave(function(){
+                var menuBar = $(this);
+                menuBar.data('timeoutId') && clearTimeout($(this).data('timeoutId'));
+                menuBar.data('timeoutId', setTimeout(toggleBar , 2000));
+              }).mouseenter(function() {
+                var menuBar = $(this);
+                menuBar.data('timeoutId') && clearTimeout($(this).data('timeoutId'));
+              });
+
+          });
+      </script>
   </head>
   <body>
       <div class="page" id='container'>
@@ -64,7 +120,7 @@
           <img src='img/background.jpg' class='img-b'/> 
         </div>
 
-      <div id="menu-bar">
+      <div class='hidden' id="menu-bar">
         <div id="buttons-container">
           <div class="icon "> <img class="icon-img video-icon" src="img/icons/video.png"/></div>
           <div class="icon "> <img class="icon-img " src="img/icons/microphone.png"/></div>
