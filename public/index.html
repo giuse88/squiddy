@@ -56,6 +56,11 @@
         margin: 10px auto;
         display : block;
      }
+
+     .video-icon-big {
+         width: 64px;
+         margin: 10px auto;
+     }
      #bar-activator {
          background-color: red;
          width:100%;
@@ -63,15 +68,39 @@
      }
     .center{
         position: absolute;
-        height: 50px;
-        width: 50px;
-        background:red;
-        top:calc(50% - 50px/2);
-        left:calc(50% - 50px/2);
+        background: rgba(255, 255, 255, 0.25);
+        border-radius:25px;
+        height: 200px;
+        width: 200px;
+        top:calc(50% - 200px/2);
+        left:calc(50% - 200px/2);
     }
      .hidden {
          display: none;
      }
+     .big-icon{
+         width: 200px;
+         height: 150px;
+     }
+     .big-icon-text {
+         width: 200px;
+         height: 50px;
+         font-family: sans-serif;
+         text-align: center;
+         margin: 0;
+         font-size: large;
+         color : rgba(234, 219, 219, 0.9);
+     }
+
+     .big-icon-video {
+         position: relative;
+         width: 64px;
+         height: 48px;
+         margin: 0 auto;
+         display: block;
+         top:calc(50% - 48px/2);
+     }
+
     </style>
       <script>
           // jQuery
@@ -110,11 +139,21 @@
                 menuBar.data('timeoutId') && clearTimeout($(this).data('timeoutId'));
               });
 
+              $(".video-icon").click(function() {
+                 $("#popup").show();
+                 setTimeout(function() {$("#popup").fadeOut()},1000);
+              });
+
           });
       </script>
   </head>
   <body>
       <div class="page" id='container'>
+
+        <div id="popup" class="center hidden">
+            <div class="big-icon"> <img class="big-icon-video" src="img/icons/video.png"/></div>
+            <p class="big-icon-text">Video turned off</p>
+        </div>
 
         <div> 
           <img src='img/background.jpg' class='img-b'/> 
