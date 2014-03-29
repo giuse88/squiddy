@@ -95,7 +95,7 @@ var app = app || {};
         },
 
         toggleLocalVideo : function() {
-           var enabled = this.peerSession.toggleVidoPause();
+           var enabled = this.peerSession.toggleVideoPause();
            var buttonText = ( enabled ? "Pause" : "Resume");
            this.$localVideoTogglerButton.html(buttonText);
            LOG.info("Local video has been " + ( enabled ? "started" : "stopped") + ".")
