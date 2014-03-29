@@ -259,7 +259,7 @@ var app = app || {};
     return audioTracks[0].enabled;
     },
 
-    toggleVidoPause: function () {
+    toggleVideoPause: function () {
       var videoTracks = this._localStream.getVideoTracks();
 
       if (videoTracks.length === 0) {
