@@ -16,6 +16,17 @@
     .page {
     min-height:100%;
     position:relative;
+    background-color: rgb(232,74,74);
+    }
+
+    #local-video-container {
+        width: 200px;
+        height: 200px;
+        background-color: red;
+        border-radius: 50%;
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
     }
       #menu-bar{
         position:fixed;
@@ -106,36 +117,64 @@
           // jQuery
           $(document).ready( function () {
 
-              var toogleBar = function () {
-                  toggleBar();
-                  $('#bar-activator').hide();
-              };
+              var toggle = true;
 
-              function toggleBar() {
-              $('#menu-bar').slideToggle();
+              function toggleSizeVideo() {
+                  var $video = $( "#local-video-container" );
+                  if($video.data('small')) {
+                      $video.animate({ "width": "200px", "height": "200px" });
+                      $video.data('small', false);
+                  } else {
+                      $video.animate({ "width": "80px", "height": "80px" });
+                      $video.data('small', true);
+                  }
               };
 
               function showBar() {
                   $('#menu-bar').slideDown();
+                  toggleLocalVideo();
               }
 
-              toggleBar();
-              $('#menu-bar').data('timeoutId', setTimeout(toggleBar , 2000));
+              function hideBar() {
+                  $('#menu-bar').slideUp();
+                  toggleLocalVideo();
+              }
+
+              function isHidden(element) {
+                  return $(element).css('display') === 'none' ? true : false;
+              }
+
+              function toggleLocalVideo() {
+                  var $video = $( "#local-video-container" );
+                  if($video.data('down')) {
+                    $video.animate({ "bottom": "-=50px" });
+                    $video.data('down', false);
+                  } else {
+                    $video.animate({ "bottom": "+=50px" });
+                    $video.data('down', true);
+                  }
+              }
+
+              showBar();
+              $('#menu-bar').data('timeoutId', setTimeout(hideBar , 2000));
+              $( "#local-video-container").click(toggleSizeVideo);
 
               $(document).mousemove(function(event){
-                  var docheight = $( document ).height() - 10; //subtracted with 10 just to be safe with checking the condition below
-                  if(event.pageY > docheight){
-                      showBar();
+                  var docheight = $( document ).height() - 10;
+                  if( event.pageY > docheight && isHidden('#menu-bar')){
+                     showBar();
+                      /*toggleBar();*/
                   }
               });
 
-
               $("#menu-bar").mouseleave(function(){
+                toggle = true;
                 var menuBar = $(this);
                 menuBar.data('timeoutId') && clearTimeout($(this).data('timeoutId'));
-                menuBar.data('timeoutId', setTimeout(toggleBar , 2000));
+                menuBar.data('timeoutId', setTimeout(hideBar , 2000));
               }).mouseenter(function() {
                 var menuBar = $(this);
+                toggle = false;
                 menuBar.data('timeoutId') && clearTimeout($(this).data('timeoutId'));
               });
 
@@ -155,10 +194,13 @@
             <p class="big-icon-text">Video turned off</p>
         </div>
 
-        <div> 
+        <!--<div>
           <img src='img/background.jpg' class='img-b'/> 
         </div>
-
+        -->
+       <div id="local-video-container">
+           <div id="video"></div>
+       </div>
       <div class='hidden' id="menu-bar">
         <div id="buttons-container">
           <div class="icon "> <img class="icon-img video-icon" src="img/icons/video.png"/></div>
@@ -166,7 +208,7 @@
           <div class="icon "> <img class="icon-img" src="img/icons/gear.png" /> </div>
         </div>
       </div>
-      
+
     </div>
 
   </body>
