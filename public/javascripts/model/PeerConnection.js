@@ -257,22 +257,28 @@ app.PeerConnection = Backbone.Model.extend({
     this._log("Remote stream removed.", event.stream);
   },
 
-
    onRemoteStreamAdded : function (event) {
     var remoteStream = this.get('remoteStream');
     remoteStream && remoteStream.stop();
     this.set('remoteStream', event.stream);
     this._log("Remote stream added.", this.get('remoteStream'));
-  },
+    },
 
-   onSignalingStateChange : function (event) {
-    this.set('signalingState', event.srcElement.signalingState);
+
+    onSignalingStateChange : function (event) {
+    //
+    var status = this._extractStatusForSignalingStateChange(event);
+    this.set('signalingState',status);
+    //
     this._log("The signal status has changed to " + this.get('signalingState'));
    },
 
    onIceConnectionStatusStateChange : function (event) {
-    this.set('iceConnectionState', event.srcElement.iceConnectionState);
-    this._log("Ice connection has changed to " + this.get('iceConnectionState'));
+   //
+   var status = this._extractStatusForICEStateChange(event);
+   this.set('iceConnectionState', status);
+   //
+   this._log("Ice connection has changed to " + this.get('iceConnectionState'));
    },
 
   _createPeerConnection: function() {
@@ -312,8 +318,35 @@ app.PeerConnection = Backbone.Model.extend({
 
    _err : function(msg, object) {
        LOG.error( "<" +  this.getPeerId() + "> " + msg, object);
-   }
+   },
 
+   _extractStatusForSignalingStateChange: function (event) {
+      var status ="Status Error";
+       //
+      if (event && event.srcElement && event.srcElement.signalingState)
+         status = event.srcElement.signalingState;
+      else if (event && navigator.sayswho.indexOf('Firefox') > -1 )
+         status = event; /* FIREFOX */
+      else
+        this._err("Signaling change status : invalid event.", event);
+       //
+       return status;
+    },
+
+    _extractStatusForICEStateChange: function (event) {
+        var status ="Status Error";
+        //
+        if ( navigator.sayswho.indexOf('Chrome') > -1  && event.srcElement
+            && event.srcElement.iceConnectionState )
+            status = event.srcElement.iceConnectionState;
+        else if ( navigator.sayswho.indexOf('Firefox') > -1  && event.explicitOriginalTarget  &&
+           event.explicitOriginalTarget.iceConnectionState)
+            status = event.explicitOriginalTarget.iceConnectionState;
+        else
+            this._err("ICE change status : invalid event.", event);
+        //
+        return status;
+    }
 });
 
 })();
