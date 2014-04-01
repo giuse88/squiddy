@@ -33,7 +33,7 @@ var app = app || {};
 
             // components
             this.installMenuBar();
-
+            this.installLocalVideo();
             // Listeners
             this.listenTo(this.peerSession, 'ready', this.render);
             this.listenTo(this.peerSession, 'add',   this.addPeer);
@@ -92,6 +92,25 @@ var app = app || {};
                 $menuBar.data(timeoutId) && clearTimeout($(this).data(timeoutId));
             });
             LOG.info("Menu bar installed.")
+        },
+
+        installLocalVideo: function() {
+            var $video = this.$localVideoContainer;
+            var smallSize = "80px",
+                mediumSize = "200px";
+
+            function toggleSizeVideo() {
+                if($video.data('small')) {
+                    $video.animate({ "width": mediumSize, "height": mediumSize });
+                    $video.data('small', false);
+                } else {
+                    $video.animate({ "width": smallSize, "height": smallSize });
+                    $video.data('small', true);
+                }
+            };
+            //
+            $video.click(toggleSizeVideo);
+            //
         },
 
         // Re-renders the titles of the todo item.
