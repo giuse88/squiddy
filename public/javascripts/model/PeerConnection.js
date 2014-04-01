@@ -218,6 +218,7 @@ app.PeerConnection = Backbone.Model.extend({
   },
 
   _addLocalStream: function(stream, renegotiation) {
+    console.log(stream);
     this.set('localStream', stream);
     this.attributes.remoteConnection.addStream(stream);
     LOG.info("Added local stream to peer connection : " + this.getPeerId());
@@ -284,7 +285,8 @@ app.PeerConnection = Backbone.Model.extend({
   _createPeerConnection: function() {
   var self = this;
   var pcConfig = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]}
-  var  pcConstraints   = {"optional": [{"DtlsSrtpKeyAgreement": true}]};
+  //  var  pcConstraints   = {"optional": [{"DtlsSrtpKeyAgreement": true}]};
+      var pcConstraints = {"optional": []};
   try{
     this.attributes.remoteConnection = new RTCPeerConnection(pcConfig, pcConstraints);
     var pc =  this.attributes.remoteConnection;
