@@ -44,7 +44,9 @@ function make_peer_id(length){
       text += possible.charAt(Math.floor(Math.random() * possible.length));
    return text;
 }
-
+function isHidden(element) {
+    return $(element).css('display') === 'none' ? true : false;
+}
 function get_time() {
     var d = new Date();
     return d.getTime();

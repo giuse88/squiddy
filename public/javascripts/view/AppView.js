@@ -1,10 +1,10 @@
 var app = app || {};
 
-(function() {
+(function($) {
 
     app.AppView = Backbone.View.extend({
 
-        el: "#peers",
+        el: "#container",
 
         // Cache the template function for a single item.
         // TODO the tamplate should be called statusj
@@ -20,12 +20,20 @@ var app = app || {};
         initialize: function() {
             // we create the session
             this.peerSession = new app.PeerSession();
+
+            this.$menuBar = $('#menu-bar');
+            this.$localVideoContainer = $( "#local-video-container" );
+
             // binding to HTML elements
             this.$peerList= this.$("#peerList");
             this.$localPeer= this.$("#localPeer");
             this.$localVideoTogglerButton = this.$("#localVideoToggle");
             this.$localAudioToggleButton = this.$("#localAudioToggle");
             this.$localStreamContainer= this.$("#localStreamContainer");
+
+            // components
+            this.installMenuBar();
+
             // Listeners
             this.listenTo(this.peerSession, 'ready', this.render);
             this.listenTo(this.peerSession, 'add',   this.addPeer);
@@ -35,6 +43,55 @@ var app = app || {};
             this.listenTo(this.peerSession, 'removedLocalStream', this.removeLocalStream);
             //
             _.bindAll(this, "handleUserChangeInLocalStream");
+        },
+
+        installMenuBar: function () {
+            //
+            var timeoutId = 'timeoutId';
+            var $menuBar = this.$menuBar;
+            var $localVideoContainer = this.$localVideoContainer;
+            //
+            function showBar() {
+                $menuBar.slideDown();
+                moveLocalVideo();
+            }
+            //
+            function hideBar() {
+                $menuBar.slideUp();
+                moveLocalVideo();
+            }
+            //
+            function moveLocalVideo() {
+                var $video = $localVideoContainer;
+                if($video.data('down')) {
+                    $video.animate({ "bottom": "-=50px" });
+                    $video.data('down', false);
+                } else {
+                    $video.animate({ "bottom": "+=50px" });
+                    $video.data('down', true);
+                }
+            }
+            //
+            function installSensitiveArea() {
+                $(document).mousemove(function(event){
+                    var docheight = $( document ).height() - 10;
+                    if( event.pageY > docheight && isHidden('#menu-bar')){
+                        showBar();
+                    }
+                });
+            }
+            //
+            showBar();
+            $menuBar.data(timeoutId, setTimeout(hideBar , 2000));
+            installSensitiveArea();
+            //
+            $menuBar.mouseleave(function(){
+                $menuBar.data(timeoutId) && clearTimeout($(this).data(timeoutId));
+                $menuBar.data(timeoutId, setTimeout(hideBar , 2000));
+            }).mouseenter(function() {
+                $menuBar.data(timeoutId) && clearTimeout($(this).data(timeoutId));
+            });
+            LOG.info("Menu bar installed.")
         },
 
         // Re-renders the titles of the todo item.
@@ -126,4 +183,4 @@ var app = app || {};
             LOG.info("<AppView> User selected " + value + " stream");
         }
     });
-}())
+}($))
