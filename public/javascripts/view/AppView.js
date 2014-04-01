@@ -18,23 +18,24 @@ var app = app || {};
         },
 
         initialize: function() {
-            // we create the session
-            this.peerSession = new app.PeerSession();
-
             this.$menuBar = $('#menu-bar');
             this.$localVideoContainer = $( "#local-video-container" );
-
+            this.$localVideo = $("#localVideo");
+            this.$popUp = $('#popup');
             // binding to HTML elements
             this.$peerList= this.$("#peerList");
             this.$localPeer= this.$("#localPeer");
             this.$localVideoTogglerButton = this.$("#localVideoToggle");
             this.$localAudioToggleButton = this.$("#localAudioToggle");
             this.$localStreamContainer= this.$("#localStreamContainer");
-
             // components
             this.installMenuBar();
             this.installLocalVideo();
+
+            // we create the session
+            this.peerSession = new app.PeerSession();
             // Listeners
+
             this.listenTo(this.peerSession, 'ready', this.render);
             this.listenTo(this.peerSession, 'add',   this.addPeer);
             this.listenTo(this.peerSession, 'remove', this.removePeer);
@@ -140,27 +141,14 @@ var app = app || {};
 
         addLocalStream: function(stream) {
             LOG.info("< AppView > Local stream added", stream);
-            //
             LOG.info("< AppView > Local video tracks", stream.getVideoTracks());
             LOG.info("< AppView > Local audio tracks", stream.getAudioTracks());
-            this.$localVideo && this.$localVideo.remove();
-            this.$localStreamContainer.append("<video id='localVideo' muted='true' autoplay='autoplay'></video>");
-            this.$localVideo = this.$localStreamContainer.find("#localVideo");
+            //
             console.log(this.$localVideo);
             //this.$localVideo.attr("id", "localVideo");
             var video = this.$localVideo.get(0);
             attachMediaStream(video, stream);
             video.play();
-            //TODO refactro to support audio
-            if (stream.getVideoTracks().length > 0) {
-                this.$localVideoTogglerButton.removeAttr("disabled");
-                this.$localVideoTogglerButton.html("Pause");
-            }
-            //
-            if (stream.getAudioTracks().length > 0) {
-                this.$localAudioToggleButton.removeAttr("disabled");
-                this.$localAudioToggleButton.html("Mute");
-            }
         },
 
         removeLocalStream: function() {
@@ -171,9 +159,10 @@ var app = app || {};
         },
 
         toggleLocalVideo : function() {
+            // TODO check if the stream is null
            var enabled = this.peerSession.toggleVideoPause();
            var buttonText = ( enabled ? "Pause" : "Resume");
-           this.$localVideoTogglerButton.html(buttonText);
+          // this.$localVideoTogglerButton.html(buttonText);
            LOG.info("Local video has been " + ( enabled ? "started" : "stopped") + ".")
         },
 

@@ -22,7 +22,7 @@ html(lang="en")
     div.page#container
       include  snippets/popUp.html
       div#local-video-container
-        div#video
+        video(muted='true', autoplay='autoplay')#localVideo
       include  snippets/menuBar.html
   script(type="text/template")#peer-template
         <div>

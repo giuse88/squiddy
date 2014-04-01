@@ -50,9 +50,8 @@ var app = app || {};
     };
 
   app.PeerSession = Backbone.Collection.extend({
+
   model: app.PeerConnection,
-
-
 
   initialize: function() {
     //
@@ -61,8 +60,8 @@ var app = app || {};
           pcConstraints    : {"optional": [{"DtlsSrtpKeyAgreement": true}]},
           constraints      : { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }},
           mediaConstraints : { audio: true , video: true },
-          videoConstraints : { video : false},
-          audioConstraints : { audio : false}
+          videoConstraints : { video : true},
+          audioConstraints : { audio : true}
       };
 
     this._localStream = null;
@@ -78,7 +77,7 @@ var app = app || {};
     this._setOnNewPeerHandler();
     this._setOnJoinedHandler();
     // User Media
-    //this._doGetUserMedia();
+    this._doGetUserMedia();
     //
     LOG.info("Session " + this._sessionId +  " initialized");
   },
