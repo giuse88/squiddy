@@ -2,11 +2,12 @@ html, body {
     margin:0;
     padding:0;
     height:100%;
+
 }
 .page {
     min-height:100%;
     position:relative;
-    background-color: rgb(232,74,74);
+    background :url(/img/bg.png) repeat #111
 }
 
 #local-video-container {
@@ -102,3 +103,4 @@ html, body {
     display: block;
     top:calc(50% - 48px/2);
 }
+
