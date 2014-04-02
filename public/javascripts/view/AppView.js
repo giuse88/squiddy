@@ -44,6 +44,7 @@ var app = app || {};
             this.listenTo(this.peerSession, 'removedLocalStream', this.removeLocalStream);
             //
             _.bindAll(this, "handleUserChangeInLocalStream");
+            _.bindAll(this, "centerVideo");
         },
 
         installMenuBar: function () {
@@ -97,15 +98,18 @@ var app = app || {};
 
         installLocalVideo: function() {
             var $video = this.$localVideoContainer;
-            var smallSize = "80px",
+            var $localVideo = this.$localVideo;
+            var smallSize = "70px",
                 mediumSize = "200px";
 
             function toggleSizeVideo() {
                 if($video.data('small')) {
                     $video.animate({ "width": mediumSize, "height": mediumSize });
+                    $localVideo.animate({ "width": "300px", height:"225px", "margin-left":"-50px", "margin-bottom": "-12.5px"});
                     $video.data('small', false);
                 } else {
-                    $video.animate({ "width": smallSize, "height": smallSize });
+                   $video.animate({ "width": smallSize, "height": smallSize });
+                    $localVideo.animate({ "width": "100px", height:"75px", "margin-left":"-15px", "margin-bottom": "-2.5px"});
                     $video.data('small', true);
                 }
             };
@@ -140,6 +144,7 @@ var app = app || {};
         },
 
         addLocalStream: function(stream) {
+
             LOG.info("< AppView > Local stream added", stream);
             LOG.info("< AppView > Local video tracks", stream.getVideoTracks());
             LOG.info("< AppView > Local audio tracks", stream.getAudioTracks());
@@ -149,6 +154,9 @@ var app = app || {};
             var video = this.$localVideo.get(0);
             attachMediaStream(video, stream);
             video.play();
+            // find better solution.
+            // Neccessary to get the height of the video
+           // setTimeout(this.centerVideo, 100);
         },
 
         removeLocalStream: function() {
@@ -189,6 +197,13 @@ var app = app || {};
             var value = $(selectEvent.currentTarget).val();
             this.peerSession.setVideoConstraints(value);
             LOG.info("<AppView> User selected " + value + " stream");
+        },
+
+        centerVideo : function() {
+            var height = this.$localVideo.css('height');
+            var margin = - ( parseInt(height) -200) /2;
+            this.$localVideo.css('margin-top', margin);
         }
+
     });
 }($))
