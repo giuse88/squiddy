@@ -69,6 +69,23 @@ html, body {
     display : block;
 }
 
+.remote-media-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    margin: 0;
+}
+
+.remote-media {
+    left: 2.5%;
+    top: 2.5%;
+    width: 95%;
+    height: 95%;
+    position: absolute;
+    background: red;
+}
+
+
 .video-icon-big {
     width: 64px;
     margin: 10px auto;

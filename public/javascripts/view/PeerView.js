@@ -5,18 +5,18 @@ var app = app || {};
 
 app.PeerView = Backbone.View.extend({
 
-    tagName: 'li',
+    tagName: 'div',
 
     // Cache templates from HTML page.
-    template:       _.template($('#peer-template').html() ),
-    templateInfo:   _.template($('#peer-template-info').html()),
-    templateMedia:  _.template($('#peer-template-media').html()),
+    //template:       _.template($('#peer-template').html() ),
+   // templateInfo:   _.template($('#peer-template-info').html()),
+    template:  _.template($('#peer-template-media').html()),
 
     // Attributes for $el
     attributes : function () {
         return {
             id : this.model.getPeerId(),
-            class : "remotePeer"
+            class : "remote-media-container"
         }
     },
 
@@ -29,6 +29,8 @@ app.PeerView = Backbone.View.extend({
         // Auto-rendering view
         this.render();
         //
+        _.bindAll(this, "renderPeerRemoteStream");
+        //
         LOG.peerInfo(this.model.getPeerId(), "Peer View initialized.")
     },
 
@@ -36,19 +38,19 @@ app.PeerView = Backbone.View.extend({
     render: function() {
         //
         this.$el.html(this.template({}));
+        console.log(this.$el)
         // Update dom elements
-        this.$mediaContainer    = this.$('.remotePeerMediaContainer');
-        this.$peerInfo          = this.$('.remotePeerInfo');
+       // this.$peerInfo          = this.$('.remotePeerInfo');
         //
-        this.renderPeerInfo(this.model);
-        this.renderPeerRemoteStream(this.model);
+      //  this.renderPeerInfo(this.model);
+      //  this.renderPeerRemoteStream(this.model);
         //
         LOG.peerInfo(this.model.getPeerId(), "View rendered.");
         return this;
     },
 
    renderPeerInfo : function(peerConnection) {
-      this.$peerInfo.html(this.templateInfo(peerConnection.toJSON()));
+    //  this.$peerInfo.html(this.templateInfo(peerConnection.toJSON()));
       LOG.peerInfo(this.model.getPeerId(), "Updated status view.");
    },
 
@@ -57,8 +59,9 @@ app.PeerView = Backbone.View.extend({
         this.$remoteVideo && this.$remoteVideo.remove();
         //
         if (stream) {
-            this.$mediaContainer.html(this.templateMedia(peerConnection.toJSON));
-            this.$remoteVideo = this.$mediaContainer.children("video");
+           // this.$mediaContainer.html(this.templateMedia(peerConnection.toJSON));
+            this.$remoteVideo = this.$el.find("video");
+            console.log(this.$remoteVideo.get(0));
             attachMediaStream(this.$remoteVideo.get(0), stream);
         }
         //

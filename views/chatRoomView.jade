@@ -21,6 +21,7 @@ html(lang="en")
   body
     div.page#container
       include  snippets/popUp.html
+      div#peers
       div#local-video-container
         video(muted='true', autoplay='autoplay')#localVideo
       include  snippets/menuBar.html
@@ -39,7 +40,9 @@ html(lang="en")
           </p>
 
     script(type="text/template")#peer-template-media
-           <video class="smallLeftMargin" autoplay='autoplay'></video>
+        <div class="remote-media">
+        <video autoplay='autoplay'></video>
+        </div>
 
     script(type="text/template")#localPeer-template
           <div class="localPeer"><p> Session initialized. Local peer  has received the following id : <strong><%=peerId %></strong> <br>
@@ -47,13 +50,12 @@ html(lang="en")
           Local Streams : <%=streams %><br>
           </p> </div>
 
-    script(src="javascripts/helpers/SignalingServiceFrontEnd.js")
-    script(src="javascripts/model/PeerConnection.js")
-    script(src="javascripts/model/PeerSession.js")
-    script(src="javascripts/view/PeerView.js")
-    script(src="javascripts/view/AppView.js")
-
-    script(type='text/javascript').
-        $(document).ready(function () {
-            new app.AppView();
-        });
+script(src="javascripts/model/PeerConnection.js")
+script(src="javascripts/helpers/SignalingServiceFrontEnd.js")
+script(src="javascripts/model/PeerSession.js")
+script(src="javascripts/view/PeerView.js")
+script(src="javascripts/view/AppView.js")
+script(type='text/javascript').
+    $(document).ready(function () {
+        new app.AppView();
+    });

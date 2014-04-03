@@ -23,7 +23,7 @@ var app = app || {};
             this.$localVideo = $("#localVideo");
             this.$popUp = $('#popup');
             // binding to HTML elements
-            this.$peerList= this.$("#peerList");
+            this.$peerList= this.$("#peers");
             this.$localPeer= this.$("#localPeer");
             this.$localVideoTogglerButton = this.$("#localVideoToggle");
             this.$localAudioToggleButton = this.$("#localAudioToggle");
@@ -134,13 +134,13 @@ var app = app || {};
             this.$peerList.append( view.el );
             LOG.info ("< AppView > New peer " + peerConnection.getPeerId());
             // update appView
-            this.render();
+            //this.render();
          },
         removePeer: function(peerConnection) {
             this.$("#" + peerConnection.getPeerId()).remove();
             LOG.info ("< AppView > Removed peer : " + peerConnection);
             // update appView
-            this.render();
+            //this.render();
         },
 
         addLocalStream: function(stream) {
