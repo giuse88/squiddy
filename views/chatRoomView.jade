@@ -40,9 +40,7 @@ html(lang="en")
           </p>
 
     script(type="text/template")#peer-template-media
-        <div class="remote-media">
-        <video autoplay='autoplay'></video>
-        </div>
+        <video class="remote-media-video" autoplay='autoplay'></video>
 
     script(type="text/template")#localPeer-template
           <div class="localPeer"><p> Session initialized. Local peer  has received the following id : <strong><%=peerId %></strong> <br>

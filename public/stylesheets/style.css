@@ -76,13 +76,9 @@ html, body {
     margin: 0;
 }
 
-.remote-media {
-    left: 2.5%;
-    top: 2.5%;
-    width: 95%;
-    height: 95%;
-    position: absolute;
-    background: red;
+.remote-media-video {
+   min-height: 100%;
+   max-height: 100%;
 }
 
 
