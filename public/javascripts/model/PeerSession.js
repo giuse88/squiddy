@@ -275,16 +275,17 @@ var app = app || {};
     },
 
     toggleVideoPause: function () {
-      var videoTracks = this._localStream.getVideoTracks();
+      var videoTracks = this._localStream ? this._localStream.getVideoTracks() : null;
 
-      if (videoTracks.length === 0) {
+      if (!videoTracks ||  videoTracks.length === 0) {
          LOG.info('No local Video available.');
-         return;
+         return null;
       }
       for (var i = 0; i < videoTracks.length; i++) {
           videoTracks[i].enabled = !videoTracks[i].enabled;
       }
-       LOG.info("Video : " + videoTracks[0].enable ? "resumed" : "paused");
+      LOG.info("Video : " + videoTracks[0].enabled ? "resumed" : "paused");
+      return  videoTracks[0].enabled;
     },
 
    setVideoConstraints: function (videoOption) {

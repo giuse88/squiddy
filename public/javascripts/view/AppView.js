@@ -125,15 +125,7 @@ var app = app || {};
             //
         },
 
-        // Re-renders the titles of the todo item.
         render: function() {
-            // LOGIC for the all app view goes here
-           /* this.$localPeer.html(this.template({
-               peerId : this.peerSession.getMyPeerId(),
-               connectedPeers : this.peerSession.size(),
-               streams : "None"
-            }));
-            */
             _.each(this.views, function (view){
                 view.transform(sizeToPeerNumber[new String(this.views.length)]);
             }, this);
@@ -184,9 +176,26 @@ var app = app || {};
         toggleLocalVideo : function() {
             // TODO check if the stream is null
            var enabled = this.peerSession.toggleVideoPause();
-           var buttonText = ( enabled ? "Pause" : "Resume");
-          // this.$localVideoTogglerButton.html(buttonText);
-           LOG.info("Local video has been " + ( enabled ? "started" : "stopped") + ".")
+           if ( enabled != null) {
+               this.showPopup();
+               this.toggleVideoIcon(enabled);
+               LOG.info("Local video has been " + ( enabled ? "started" : "stopped") + ".")
+           }else
+               LOG.info("No local video.");
+        },
+
+        toggleVideoIcon : function (show) {
+
+
+        },
+        showPopup : function () {
+          var self = this;
+          var hidePopup = function () {
+           self.$popUp.fadeOut();
+          };
+          hidePopup();
+          this.$popUp.show();
+          setTimeout(hidePopup, 1000);
         },
 
         toggleLocalAudio : function() {
