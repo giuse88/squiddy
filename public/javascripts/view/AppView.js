@@ -57,6 +57,7 @@ var app = app || {};
             //
             _.bindAll(this, "handleUserChangeInLocalStream");
             _.bindAll(this, "centerVideo");
+            _.bindAll(this, "hidePopup");
         },
 
         installMenuBar: function () {
@@ -183,7 +184,7 @@ var app = app || {};
            //
            if ( enabled != null) {
                var msg = enabled ? VIDEO_ON : VIDEO_OFF;
-               this.showPopup(enabled, msg);
+               this.showPopup({video:true}, enabled, msg);
                this.toggleRedBar(this.$localVideoTogglerButton,!enabled);
                enabled ? this.$localVideoContainer.show() : this.$localVideoContainer.hide();
                LOG.info("Local video has been " + ( enabled ? "started" : "stopped") + ".")
@@ -198,23 +199,43 @@ var app = app || {};
             else
                 $element.find(".red-bar").hide();
         },
-        showPopup : function (enabled, msg) {
-          var self = this;
-          var hidePopup = function () {
-           self.$popUp.fadeOut();
-          };
+
+        showPopup : function (obj, enabled, msg) {
           this.$popUp.hide(); // if there is already a popUp
+          //
           this.$popUp.find(".big-icon-text").html(msg)
+          if (obj.audio) {
+              this.$popUp.find("#audio-popup").show();
+              this.$popUp.find("#video-popup").hide();
+          } else if (obj.video) {
+              this.$popUp.find("#video-popup").show();
+              this.$popUp.find("#audio-popup").hide();
+          } else {
+              LOG.error("Unknown object showing popup");
+          }
+          //
           this.toggleRedBar(this.$popUp, !enabled);
           this.$popUp.show();
-          setTimeout(hidePopup, 1000);
+          setTimeout(this.hidePopup, 1000);
+          //
+        },
+
+        hidePopup:  function () {
+            this.$popUp.fadeOut();
         },
 
         toggleLocalAudio : function() {
-            var enable = this.peerSession.toggleAudioMute();
-            var buttonText = ( enable ? "Mute" : "Unmute");
-            this.$localAudioToggleButton.html(buttonText);
-            LOG.info("Local video has been " + ( enable ? "unmute" : "mute") + ".")
+            var enabled = this.peerSession.toggleAudioMute();
+            //
+            if (enabled != null) {
+                var msg = enabled ? AUDIO_ON : AUDIO_OFF;
+                this.showPopup({audio:true}, enabled, msg);
+                this.toggleRedBar(this.$localAudioToggleButton,!enabled);
+                LOG.info("Local audio has been " + ( enabled ? "unmute" : "mute") + ".")
+            } else  {
+                LOG.info("No local audio.");
+            }
+            //
         },
 
         handleUserChangeInLocalStream: function (selectEvent) {

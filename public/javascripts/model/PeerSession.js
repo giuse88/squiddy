@@ -261,11 +261,11 @@ var app = app || {};
    },
 
    toggleAudioMute: function () {
-    var audioTracks = this._localStream.getAudioTracks();
+    var audioTracks = this._localStream ? this._localStream.getAudioTracks() : null;
 
-    if (audioTracks.length === 0) {
+    if (!audioTracks || audioTracks.length === 0) {
         LOG.info('No local audio available.');
-        return;
+        return null;
     }
     for (var i = 0; i < audioTracks.length; i++) {
         audioTracks[i].enabled = !audioTracks[i].enabled;
@@ -278,7 +278,7 @@ var app = app || {};
       var videoTracks = this._localStream ? this._localStream.getVideoTracks() : null;
 
       if (!videoTracks ||  videoTracks.length === 0) {
-         LOG.info('No local Video available.');
+         LOG.info('No local video available.');
          return null;
       }
       for (var i = 0; i < videoTracks.length; i++) {

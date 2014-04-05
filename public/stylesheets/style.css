@@ -160,6 +160,12 @@ html, body{
     top:calc(50% - 48px/2);
 }
 
+.big-icon-audio {
+    position: relative;
+    margin: 0 auto;
+    display: block;
+    top:calc(50% - 48px/2);
+}
 .big-red-bar-icon {
     position: relative;
     top:46px;
