@@ -19,6 +19,7 @@
     define("NEW_PEER",     "new_peer");
     define("JOIN",             "join");
     define("JOINED",         "joined");
+    define("REJECTED",      "rejected")
     define("BYE",               "bye");
 
 })(typeof exports === 'undefined'? this['events']={}: exports);

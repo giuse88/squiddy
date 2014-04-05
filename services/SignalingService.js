@@ -33,7 +33,7 @@ SignalingService.prototype.onConnect = function()  {
         socket.on(events.JOIN, function (data) {self.onJoin(socket, data)});
         socket.on(events.MESSAGE, function (data) {self.onMessage(socket, data)});
         socket.on(events.BYE,     function (data) {self.onBye(socket, data)});
-        socket.on(events.DISCONNECT,   function    ()  {self.onDisconnect(socket)});
+        socket.on(events.DISCONNECT,   function ()  {self.onDisconnect(socket)});
     });
 
 }
@@ -41,14 +41,23 @@ SignalingService.prototype.onJoin = function(socket, data) {
     this.logger && this.logger.trace("Received request from peer %s to join room %s.", data.peerId, data.roomId);
     try {
         //
-        this.chatRoomService.addPeerToRoom(data.roomId, data.peerId);
-        socket.roomId = data.roomId;
-        this.joinRoom(socket, data.peerId, data.roomId);
+        if ( this.chatRoomService.isRoomFull(data.roomId)) {
+           var msg = "Room is full."
+           this.rejectJoinRequest(socket, data.roomId, data.peerId, msg);
+        }else  {
+            this.chatRoomService.addPeerToRoom(data.roomId, data.peerId);
+            socket.roomId = data.roomId;
+            this.joinRoom(socket, data.peerId, data.roomId);
+        }
         //
     } catch (e){
         socket.disconnect();
         this.logger && this.logger.error("NAME : " +e.name +  " MSG : " + e.message);
     }
+}
+SignalingService.prototype.rejectJoinRequest = function (socket, peer, room, mes) {
+    socket.emit(events.REJECTED, {roomId : room, peerId : peer, reason: mes});
+    this.logger && this.logger.trace("Peer %s request to join room %s has been rejected. Reason : ", peer, room, mes);
 }
 
 SignalingService.prototype.joinRoom = function (socket, peer, room) {

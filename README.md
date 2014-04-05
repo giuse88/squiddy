@@ -35,13 +35,12 @@ Express and jade are used to dinamically generate web pages.
 There is no need for a db as I don't keep any information regarding peer sessions in the back-end. 
 
 ##Note 
-The project is under havy development. 
+The project is under heavy development.
 
 ## Next things to do 
-- Audio channel ( Problems remove echo )
-- Move to SSH and WSS 
+- Move to SSH and WSS
 - Data Channel  ( to implement entirely) 
- 
+- Implement a better control over the number of peers per room
 ### License
 
 This software is licensed under the MIT License.

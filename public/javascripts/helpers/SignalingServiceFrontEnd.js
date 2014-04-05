@@ -68,7 +68,13 @@ SignalingService.prototype.setHandlerForJoinEvent = function(handler){
 SignalingService.prototype.setHandlerForJoinedEvent = function(handler){
     this._setHandlerFor(events.JOINED, handler);
 }
+SignalingService.prototype.setHandlerForDisconnectEvent = function(handler){
+    this._setHandlerFor(events.DISCONNECT, handler);
+}
 
+SignalingService.prototype.setHandlerForRejectedEvent = function(handler){
+    this._setHandlerFor(events.REJECTED, handler);
+}
 //============================================//
 //              PRIVATE METHODS
 //============================================//

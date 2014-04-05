@@ -13,6 +13,7 @@
 
 var _         = require('underscore');
 var ROOM_SIZE_ID = 20;
+var MAX_PEERS    = 5;
 
 //======================
 //      EXCEPTIONS
@@ -31,6 +32,11 @@ function EmptyRoomException(roomId) {
 function RoomNotEmptyException(roomId) {
     this.name = "RoomNotEmptyException";
     this.message = "Room '" + roomId + "' is not empty";
+}
+
+function RoomFullException(roomId) {
+    this.name = "RoomFullException";
+    this.message = "Room '" + roomId + "' is full";
 }
 
 //======================
@@ -107,6 +113,9 @@ RoomService.prototype.addPeerToRoom = function ( roomId , peerId) {
     if(!this.doesRoomExist(roomId))
         throw new RoomNotFoundException(roomId);
 
+    if(this.isRoomFull(roomId))
+        throw new RoomFullException(roomId);
+
     if(this.rooms[roomId] !== null && this.rooms[roomId] !== undefined ){
         this.rooms[roomId].push(peerId);
         this.logger && this.logger.trace("Added peer '' %s '' to room '' %s ''.", peerId, roomId);
@@ -127,6 +136,16 @@ RoomService.prototype.isRoomEmpty = function (roomId) {
         return false;
 
     if(this.rooms[roomId] && this.rooms[roomId].length == 0 )
+        return true;
+    return false;
+}
+
+RoomService.prototype.isRoomFull = function (roomId) {
+
+    if(!this.doesRoomExist(roomId))
+        throw new RoomNotFoundException(roomId);
+
+    if(this.rooms[roomId] && this.rooms[roomId].length == MAX_PEERS )
         return true;
     return false;
 }

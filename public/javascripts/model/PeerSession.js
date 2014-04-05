@@ -76,6 +76,8 @@ var app = app || {};
     this._setOnByeHandler();
     this._setOnNewPeerHandler();
     this._setOnJoinedHandler();
+    this._setOnRejectedHandler();
+    this._setOnDisconnectHandler();
     // User Media
     this._doGetUserMedia();
     //
@@ -111,6 +113,20 @@ var app = app || {};
       this._signalingService.send(events.JOIN, request);
       LOG.info("Peer " + this._peerId + " has sent request to join room " + this._roomId + ".");
   },
+  _setOnDisconnectHandler: function () {
+        var self = this;
+        self._signalingService.setHandlerForDisconnectEvent(function(message) {
+               LOG.error(""+ self._peerId + " has been disconnected from the server.", message);
+            }
+        );
+    },
+    _setOnRejectedHandler: function () {
+         var self = this;
+         self._signalingService.setHandlerForRejectedEvent(function(data) {
+             LOG.info("Peers "+data.peerId + " request to join romm" +data.roomId+"has been rejected.");
+             LOG.info("Reason : "+ data.reason);
+          });
+      },
   _setOnMessageHandler : function() {
       var self = this;
       self._signalingService.setHandlerForMessageEvent(function(message){
