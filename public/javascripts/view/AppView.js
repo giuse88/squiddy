@@ -2,6 +2,13 @@ var app = app || {};
 
 (function($) {
 
+    var sizeToPeerNumber = {
+        1 : {width: "100%", height :"100%"},
+        2 : {width: "50%" , height :"100%"},
+        3 : {width: "50%" , height :"50%"},
+        4 : {width: "50%" , height :"50%"}
+    };
+
     app.AppView = Backbone.View.extend({
 
         el: "#container",
@@ -31,7 +38,7 @@ var app = app || {};
             // components
             this.installMenuBar();
             this.installLocalVideo();
-
+            this.views = [];
             // we create the session
             this.peerSession = new app.PeerSession();
             // Listeners
@@ -121,26 +128,39 @@ var app = app || {};
         // Re-renders the titles of the todo item.
         render: function() {
             // LOGIC for the all app view goes here
-            this.$localPeer.html(this.template({
+           /* this.$localPeer.html(this.template({
                peerId : this.peerSession.getMyPeerId(),
                connectedPeers : this.peerSession.size(),
                streams : "None"
             }));
+            */
+            _.each(this.views, function (view){
+                view.transform(sizeToPeerNumber[new String(this.views.length)]);
+            }, this);
+
             LOG.info("Rendering view for peer " + this.peerSession.getMyPeerId() +  ".");
         },
 
         addPeer: function(peerConnection) {
             var view = new app.PeerView({ model: peerConnection });
+            //
             this.$peerList.append( view.el );
+            this.views.push(view);
             LOG.info ("< AppView > New peer " + peerConnection.getPeerId());
-            // update appView
-            //this.render();
+            //
+            this.render();
          },
+
         removePeer: function(peerConnection) {
-            this.$("#" + peerConnection.getPeerId()).remove();
+            var peerId =  peerConnection.getPeerId();
+            // Remove Dom object and view from collection
+            this.$("#"+peerId).remove();
+            this.views = _.filter(this.views, function(view){
+                return view.getPeerId() !== peerId;
+            }, this);
             LOG.info ("< AppView > Removed peer : " + peerConnection);
-            // update appView
-            //this.render();
+            //
+            this.render();
         },
 
         addLocalStream: function(stream) {

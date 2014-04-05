@@ -66,6 +66,14 @@ app.PeerView = Backbone.View.extend({
         }
         //
         LOG.peerInfo(this.model.getPeerId(), "Updated media container.");
+    },
+
+    transform: function (css) {
+      $("#" + this.model.getPeerId()).animate(css);
+    },
+
+    getPeerId : function () {
+        return this.model.getPeerId();
     }
 
     });
