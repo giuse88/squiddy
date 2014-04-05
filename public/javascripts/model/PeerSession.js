@@ -134,7 +134,7 @@ var app = app || {};
           var id = message.from;
 
           // Is this always true?
-          // what about the ICE_CANDIDATE
+          // what about an ICE_CANDIDATE
           if (!self.getPeer(id) && message.type === "OFFER")
               self.add( new app.PeerConnection(id, self));
           else if ( !self.getPeer(id))

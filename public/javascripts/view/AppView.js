@@ -9,6 +9,11 @@ var app = app || {};
         4 : {width: "50%" , height :"50%"}
     };
 
+    var VIDEO_ON  = "Local video on";
+    var VIDEO_OFF = "Local video off";
+    var AUDIO_ON  = "Local audio on";
+    var AUDIO_OFF = "Local audio off";
+
     app.AppView = Backbone.View.extend({
 
         el: "#container",
@@ -174,26 +179,33 @@ var app = app || {};
         },
 
         toggleLocalVideo : function() {
-            // TODO check if the stream is null
            var enabled = this.peerSession.toggleVideoPause();
+           //
            if ( enabled != null) {
-               this.showPopup();
-               this.toggleVideoIcon(enabled);
+               var msg = enabled ? VIDEO_ON : VIDEO_OFF;
+               this.showPopup(enabled, msg);
+               this.toggleRedBar(this.$localVideoTogglerButton,!enabled);
+               enabled ? this.$localVideoContainer.show() : this.$localVideoContainer.hide();
                LOG.info("Local video has been " + ( enabled ? "started" : "stopped") + ".")
            }else
                LOG.info("No local video.");
+           //
         },
 
-        toggleVideoIcon : function (show) {
-
-
+        toggleRedBar : function ($element, show) {
+            if(show)
+                $element.find(".red-bar").show();
+            else
+                $element.find(".red-bar").hide();
         },
-        showPopup : function () {
+        showPopup : function (enabled, msg) {
           var self = this;
           var hidePopup = function () {
            self.$popUp.fadeOut();
           };
-          hidePopup();
+          this.$popUp.hide(); // if there is already a popUp
+          this.$popUp.find(".big-icon-text").html(msg)
+          this.toggleRedBar(this.$popUp, !enabled);
           this.$popUp.show();
           setTimeout(hidePopup, 1000);
         },
