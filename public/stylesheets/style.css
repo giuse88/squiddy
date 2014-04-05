@@ -17,7 +17,6 @@ html, body{
     height:100%;
 }
 
-
 #local-video-container {
     width: 200px;
     height: 200px;
@@ -56,6 +55,14 @@ html, body{
     height : 100%;
 }
 
+.remotePeerInfo {
+    height: 80%;
+    position: absolute;
+    top: 0 ;
+    left: 0;
+    color: #ffffff;
+}
+
 .inline-div {
     display: inline-block;
 }
@@ -80,15 +87,17 @@ html, body{
 .remote-media-container {
     width: 0;
     height: 0;
+    position: relative;
     display: inline-block;
 }
 
 .remote-media-video {
   position: relative;
-  min-height: 100%;
-  max-height: 100%;
+  min-height: 99%;
+  max-height: 99%;
   width: 95%;
   left: 2.5%;
+  bottom: 0.5%;
   margin: 0 auto;
 }
 

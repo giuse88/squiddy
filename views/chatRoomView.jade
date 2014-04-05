@@ -33,14 +33,13 @@ html(lang="en")
 
     script(type="text/template")#peer-template-info
           <p> Peer : <strong> <%=peerId %> </strong> </p>
-          <p class="inline smallLeftMargin"> Status :
           <p class="inline smallLeftMargin iceConnection">IceConnectionState : <%= iceConnectionState %> </p>
           <p class="inline smallLeftMargin iceGathering">IceGatheringState  : <%= iceGatheringState %> </p>
           <p class="inline smallLeftMargin signalingState">SignalingState : <%= signalingState %> </p>
-          </p>
 
     script(type="text/template")#peer-template-media
         <video class="remote-media-video" autoplay='autoplay'></video>
+        <div class="hidden remotePeerInfo"></div>
 
     script(type="text/template")#localPeer-template
           <div class="localPeer"><p> Session initialized. Local peer  has received the following id : <strong><%=peerId %></strong> <br>

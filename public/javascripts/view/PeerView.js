@@ -9,7 +9,7 @@ app.PeerView = Backbone.View.extend({
 
     // Cache templates from HTML page.
     //template:       _.template($('#peer-template').html() ),
-   // templateInfo:   _.template($('#peer-template-info').html()),
+    templateInfo:   _.template($('#peer-template-info').html()),
     template:  _.template($('#peer-template-media').html()),
 
     // Attributes for $el
@@ -40,9 +40,9 @@ app.PeerView = Backbone.View.extend({
         this.$el.html(this.template({}));
         console.log(this.$el)
         // Update dom elements
-       // this.$peerInfo          = this.$('.remotePeerInfo');
+        this.$peerInfo          = this.$('.remotePeerInfo');
         //
-      //  this.renderPeerInfo(this.model);
+        this.renderPeerInfo(this.model);
       //  this.renderPeerRemoteStream(this.model);
         //
         LOG.peerInfo(this.model.getPeerId(), "View rendered.");
@@ -50,7 +50,7 @@ app.PeerView = Backbone.View.extend({
     },
 
    renderPeerInfo : function(peerConnection) {
-    //  this.$peerInfo.html(this.templateInfo(peerConnection.toJSON()));
+      this.$peerInfo.html(this.templateInfo(peerConnection.toJSON()));
       LOG.peerInfo(this.model.getPeerId(), "Updated status view.");
    },
 
