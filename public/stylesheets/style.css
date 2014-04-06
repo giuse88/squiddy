@@ -174,3 +174,7 @@ html, body{
     margin: 0 auto;
     display: block;
 }
+
+.top-stack {
+    z-index: 100;
+}
