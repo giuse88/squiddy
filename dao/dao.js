@@ -1,4 +1,4 @@
-(function(exports) {
+(function(exports,LOG) {
 
     var pg = require('pg');
     var connectionString = process.env.DATABASE_URL || 'postgres://giuseppe@localhost/jelly_db'
@@ -9,9 +9,11 @@
         client.connect(function(err) {
             if(err) {
                 connected = false;
+                LOG.error("Dao initialization failed.", err);
                 errorCallBack && errorCallBack(err);
             }else {
                 connected = true;
+                LOG.trace("Dao initialized.");
                 callBack && callBack();
             }
         });
@@ -29,16 +31,19 @@
            initialize( function() {
               makeQuery(queryStr, callback, errorCallback);
            }, function(err) {
-            console.log("Error initialization", err);
+            LOG.error("Error connection initialization.", err);
            });
        }
         else
           client.query(queryStr, callback, errorCallback);
     }
 
-    var release = function() {};
+    var release = function() {
+        client.end();
+        LOG.trace("Client released.");
+    };
 
     exports.release = release;
     exports.insert = insert;
 
-})(exports);
+})(exports,LOGGER);

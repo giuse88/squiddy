@@ -3,7 +3,7 @@ var http      = require('http');
 var path      = require('path');
 var log4js    = require('log4js');
 
-var LOGGER = log4js.getLogger('app.js');
+GLOBAL.LOGGER = log4js.getLogger('app.js');
 
 // create express app
 var app = express();
@@ -21,11 +21,6 @@ app.use(app.router);
 
 // DB access
 var dao = require('./dao/dao');
-
-dao.insert("insert into messages (sender, receiver, type, roomid, message) values ('test', 'test','test','test','test')",
-          function(result){LOGGER.trace("Insert was successful",result);},
-          function(err){ LOGGER.trace("Error insert", err);}
-          );
 
 // Create the HTTP server
 var server = http.createServer(app);
