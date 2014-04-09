@@ -29,7 +29,6 @@ var MessagingService = require('./services/MessageService');
 var messagingService = new MessagingService(dao);
 
 var testMessage = {
-    to:"aaa",
     from:"aaa",
     msg: "node is awesome",
     type: "offer",
