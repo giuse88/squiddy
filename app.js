@@ -2,8 +2,10 @@ var express   = require('express');
 var http      = require('http');
 var path      = require('path');
 var log4js    = require('log4js');
+var util      = require('util');
 
 GLOBAL.LOGGER = log4js.getLogger('app.js');
+GLOBAL.util = util;
 
 // create express app
 var app = express();
@@ -21,6 +23,21 @@ app.use(app.router);
 
 // DB access
 var dao = require('./dao/dao');
+
+// records into the db all messages exchanged by peers in the initialization phase
+var MessagingService = require('./services/MessageService');
+var messagingService = new MessagingService(dao);
+
+var testMessage = {
+    to:"aaa",
+    from:"aaa",
+    msg: "node is awesome",
+    type: "offer",
+    roomId : "dddd"
+};
+
+messagingService.add(testMessage, function(){console.log("Awesome, It worked");},
+    function (err) {console.log("Fuck", err);});
 
 // Create the HTTP server
 var server = http.createServer(app);
