@@ -6,7 +6,7 @@
     var insert = function (queryStr, callback, errorCallback) {
         pg.connect(connectionString, function(err, client, done) {
             if(err) {
-                LOG.error('error fetching client from pool', err);
+                LOG && LOG.error('error fetching client from pool', err);
             }
             client.query(queryStr, '', function(err, result) {
                 //call `done()` to release the client back to the pool
@@ -19,7 +19,6 @@
             });
         });
     }
-
     exports.insert = insert;
 
 })(exports,LOGGER);

@@ -112,21 +112,35 @@ app.PeerConnection = Backbone.Model.extend({
 
   processMessage: function (message) {
   //
-  var pc = this.get('remoteConnection');
   //
   if (message.type === 'ICE_CANDIDATE'){
-     this.addRemoteIceCandidate(message.msg);
+    this.addRemoteIceCandidate(message.msg);
   } else if ( message.type === 'OFFER') {
-    pc.setRemoteDescription( new RTCSessionDescription(message.msg));
+    this._setRemoteDescription(message.msg);
     this.doAnswer();
   } else if ( message.type === 'ANSWER') {
-    pc.setRemoteDescription( new RTCSessionDescription(message.msg));
+      this._setRemoteDescription(message.msg);
   } else {
-    this._err("Unknow message");
+    this._err("Unknown  message");
   }
   },
 
+  _setRemoteDescription:function (sdp){
 
+      var pc = this.get('remoteConnection');
+
+      var success = function () {
+         console.log("------------- Remote description set correctly");
+      }
+
+      var error = function(err) {
+          console.log("------------- Remote description errror");
+          console.log(err);
+          alert(err);
+      }
+
+      pc.setRemoteDescription(new RTCSessionDescription(sdp) ,success,  error);
+  },
 
   addRemoteIceCandidate : function (message) {
         var candidate = new RTCIceCandidate(message);
@@ -148,11 +162,16 @@ app.PeerConnection = Backbone.Model.extend({
       this.attributes.session.send(this.attributes.peerId, candidate,  "ICE_CANDIDATE");
   },
 
-  _setRemoteDescriptor : function (remoteSDP) {
-  },
-
   _setLocalDescriptor : function (localSDP) {
-      this.get('remoteConnection').setLocalDescription(localSDP);
+      var success = function() {
+         LOG.info("Local descriptor successfully installed.")
+      }
+
+      var error = function(err) {
+         LOG.error("Error setting local descriptor. Cause :" + err);
+         alert(err);
+      }
+      this.get('remoteConnection').setLocalDescription(localSDP, success, error);
   },
 
   _sendAnswer    : function( answer ) {
@@ -191,6 +210,7 @@ app.PeerConnection = Backbone.Model.extend({
 
     var errorOffer = function (err) {
         LOG.error("Error when creating an offer", err);
+        alert(err);
     }
     //
     this.attributes.remoteConnection.createOffer(sussessOffer,errorOffer, constraints);
@@ -211,6 +231,7 @@ app.PeerConnection = Backbone.Model.extend({
 
     var errorAnswer = function (err) {
         LOG.error("Error when creating an answer", err);
+        alert(err);
     }
     //
     this.attributes.remoteConnection.createAnswer(sussessAnswer,errorAnswer, constraints);

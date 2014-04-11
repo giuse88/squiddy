@@ -19,18 +19,18 @@
       var sqlInsert =  util.format(INSERT_TEMPLATE, TABLE, message.from,to, message.type, message.roomId, content);
 
       function queryError(err) {
-          LOG.trace("QUERY : '" +sqlInsert +"'");
-          LOG.error("Query not executed. Error : " + err);
+          LOG && LOG.trace("QUERY : '" +sqlInsert +"'");
+          LOG && LOG.error("Query not executed. Error : " + err);
       }
 
       function querySuccess(result) {
-          LOG.trace("QUERY : '" +sqlInsert +"'");
-          LOG.trace("Query success. Rows affected : " + result.rowCount);
+          LOG && LOG.trace("QUERY : '" +sqlInsert +"'");
+          LOG && LOG.trace("Query success. Rows affected : " + result.rowCount);
       }
       this.dao.insert(sqlInsert, querySuccess, queryError);
-      LOG.trace("Message Service dispatched query  : " + sqlInsert);
+      LOG &&  LOG.trace("Message Service dispatched query  : " + sqlInsert);
     }
 
     module.exports = MessageService;
 
-})(util,LOGGER);
+})(util);

@@ -85,7 +85,8 @@ SignalingService.prototype.onMessage = function (socket, data) {
     } else {
         this.io.sockets.socket(data.to).emit(events.MESSAGE,data);
         this.messageService.add(data);
-        this.logger && this.logger.trace("[ Room %s ] : Message from %s has been sent to peer %s. Room %s", data.from, data.to, data.roomId);
+        this.logger && this.logger.trace("[ Room %s ] : Message from %s has been sent to peer %s. Room %s",
+                                       data.roomId, data.from, data.to, data.roomId);
     }
 }
 
