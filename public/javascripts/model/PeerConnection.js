@@ -81,7 +81,7 @@ app.PeerConnection = Backbone.Model.extend({
     else
       this.attributes.msgQueue.push(msg);
    //
-   this._log("Dispatched message.", msg);
+   //this._log("Dispatched message.", msg);
   },
 
   //===================================
@@ -129,12 +129,15 @@ app.PeerConnection = Backbone.Model.extend({
 
       var pc = this.get('remoteConnection');
 
+      var self = this;
       var success = function () {
-         console.log("------------- Remote description set correctly");
+        self._log("------------- Remote description set correctly");
+        self._log("!!!!!!" + self.getSignalingState());
+        console.log(self.get('remoteConnection'));
       }
 
       var error = function(err) {
-          console.log("------------- Remote description errror");
+          console.log("------------- Remote description error");
           console.log(err);
           alert(err);
       }
@@ -163,14 +166,18 @@ app.PeerConnection = Backbone.Model.extend({
   },
 
   _setLocalDescriptor : function (localSDP) {
+      var self = this;
+
       var success = function() {
+         console.log(self.get('remoteConnection'));
          LOG.info("Local descriptor successfully installed.")
       }
-
       var error = function(err) {
          LOG.error("Error setting local descriptor. Cause :" + err);
          alert(err);
       }
+      console.log(self.get('remoteConnection'));
+      this._log("!!!!!!" + this.getSignalingState());
       this.get('remoteConnection').setLocalDescription(localSDP, success, error);
   },
 
@@ -187,12 +194,12 @@ app.PeerConnection = Backbone.Model.extend({
 
     if (event.candidate) {
         //
-        LOG.info("Gathered LOCAL " + this._iceCandidateType(event.candidate.candidate)
+        this._log("Gathered LOCAL " + this._iceCandidateType(event.candidate.candidate)
                  + " Ice candidate." + " Status : " + status + ".", event.candidate);
         this._sendIceCandidate(event.candidate);
         //
     } else {
-        LOG.info("End gathering LOCAL Ice candidates." + " Status : " + status + ".");
+        this._log("End gathering LOCAL Ice candidates." + " Status : " + status + ".");
     }
   },
 
