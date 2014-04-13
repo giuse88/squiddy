@@ -125,25 +125,6 @@ app.PeerConnection = Backbone.Model.extend({
   }
   },
 
-  _setRemoteDescription:function (sdp){
-
-      var pc = this.get('remoteConnection');
-
-      var self = this;
-      var success = function () {
-        self._log("------------- Remote description set correctly");
-        self._log("!!!!!!" + self.getSignalingState());
-        console.log(self.get('remoteConnection'));
-      }
-
-      var error = function(err) {
-          console.log("------------- Remote description error");
-          console.log(err);
-          alert(err);
-      }
-
-      pc.setRemoteDescription(new RTCSessionDescription(sdp) ,success,  error);
-  },
 
   addRemoteIceCandidate : function (message) {
         var candidate = new RTCIceCandidate(message);
@@ -165,21 +146,49 @@ app.PeerConnection = Backbone.Model.extend({
       this.attributes.session.send(this.attributes.peerId, candidate,  "ICE_CANDIDATE");
   },
 
-  _setLocalDescriptor : function (localSDP) {
+  _setLocalDescriptor : function (localSDP, successCb, errorCb) {
       var self = this;
 
-      var success = function() {
-         console.log(self.get('remoteConnection'));
-         LOG.info("Local descriptor successfully installed.")
+      var successIntern = function() {
+         self._log("Local descriptor successfully installed.")
+         self._log("Signal State : ", pc.signalingState);
       }
-      var error = function(err) {
-         LOG.error("Error setting local descriptor. Cause :" + err);
+
+      var errorIntern = function(err) {
+         self._err("Error setting local descriptor. Cause :" + err);
+         self._err(self.get('remoteConnection'));
          alert(err);
       }
-      console.log(self.get('remoteConnection'));
-      this._log("!!!!!!" + this.getSignalingState());
-      this.get('remoteConnection').setLocalDescription(localSDP, success, error);
+
+      var success = successCb || successIntern;
+      var error   = errorIntern || errorCb;
+
+      this.get('remoteConnection').setLocalDescription(new RTCSessionDescription(localSDP), success, error);
   },
+
+
+  _setRemoteDescription:function (remoteSDP, successCB, errorCB){
+
+      var pc = this.get('remoteConnection');
+      var self = this;
+
+      var successIntern = function () {
+          self._log("Remote descriptor successfully installed.");
+          self._log("Signal State : ", pc.signalingState);
+      }
+
+      var errorIntern = function(err) {
+          self._err("Error setting remote descriptor. Cause :" + err);
+          self._err(self.get('remoteConnection'));
+          alert(err);
+      }
+
+      var success = successCB || successIntern;
+      var error   = errorIntern || errorCB;
+
+      pc.setRemoteDescription(new RTCSessionDescription(remoteSDP) ,success,  error);
+  },
+
 
   _sendAnswer    : function( answer ) {
       this.attributes.session.send(this.attributes.peerId, answer , "ANSWER");
@@ -224,7 +233,7 @@ app.PeerConnection = Backbone.Model.extend({
     //
   },
 
-  doAnswer : function () {
+  doAnswer : function (successExtern,failureExtern) {
     //
     var  constraints =  { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }};
     LOG.info("Creating answer for peer " + this.getPeerId() + " with constraints : ", constraints);
@@ -240,8 +249,9 @@ app.PeerConnection = Backbone.Model.extend({
         LOG.error("Error when creating an answer", err);
         alert(err);
     }
+  //  success = successExtern ||
     //
-    this.attributes.remoteConnection.createAnswer(sussessAnswer,errorAnswer, constraints);
+    this.attributes.remoteConnection.createAnswer(successExtern || sussessAnswer, failureExtern || errorAnswer, constraints);
     //
   },
 
