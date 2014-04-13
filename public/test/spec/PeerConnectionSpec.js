@@ -152,7 +152,7 @@ describe("Create Peer connection test suite", function() {
             */
       });
 
-      it("Test the signalStatus machine when a peer receives an offer", function(done){
+      xit("Test the signalStatus machine when a peer receives an offer", function(done){
           var peerReceiver = new app.PeerConnection("mock_receiver", session, false);
 
           var successRemote = function(){
@@ -202,7 +202,7 @@ describe("Create Peer connection test suite", function() {
           peerSender._setLocalDescriptor(mockOffer, successLocal,failure);
       });
 
-      it("Normal offer data exchange", function(done) {
+      it("Offer/Answer exchange without Ice Candidates", function(done) {
 
         function verify() {
            expect(peer1.localOffer).toBeTruthy();
@@ -260,7 +260,10 @@ describe("Create Peer connection test suite", function() {
 
       });
 
-      it(" dddd Normal offer data exchange", function(done) {
+
+      // insall ice candidate before offer
+
+      it("Offer/Answer exchange with Ice Candidates", function(done) {
 
            function verify() {
                expect(peer1.localOffer).toBeTruthy();
@@ -276,43 +279,40 @@ describe("Create Peer connection test suite", function() {
                done();
            }
 
+           function check() {
+             if(pc1.getIceGatheringState() === "complete" &&
+                pc2.getIceGatheringState() === "complete")
+               verify()
+           }
+
            var peer1= {ice:[], localOffer:null, remoteOffer:null};
            var peer2= {ice:[], localOffer:null, remoteOffer:null};
+
+           session.send =  function (destination, data, type) {
+
+               var message = {
+                   to     : destination,
+                   from   : "",
+                   roomId : "Mock",
+                   msg    : data
+               };
+               //
+               if (type)
+                   message.type = type;
+
+               if (destination === PEER_ID_1){
+                   message.from = PEER_ID_2;
+                   pc1.dispatchMessage(message);
+               } else {
+                   message.from = PEER_ID_1;
+                   pc2.dispatchMessage(message);
+               }
+           };
            var pc1 = new app.PeerConnection(PEER_ID_1, session, false);
            var pc2 = new app.PeerConnection(PEER_ID_2, session, false);
 
-           var errorCB =  function(err){
-               console.log("Error installing SDP." + err);
-               console.log(new Error().stack);
-               expect(err).toBeNull();
-               done();
-           }
-
-           pc1.onIceCandidate = function() {};
-           pc2.onIceCandidate = function() {};
-
-           var pc1LocalOriginal = pc1._setLocalDescriptor;
-           pc1._setLocalDescriptor = function(offer) {
-               peer1.localOffer = offer;
-               peer2.remoteOffer =offer;
-               pc1LocalOriginal.call(pc1, offer, function(){
-                   pc2._setRemoteDescription(offer, function(){
-                       pc2.doAnswer();
-                   },errorCB);
-               }, errorCB);
-           };
-           //
-           var pc2LocalOriginal = pc2._setLocalDescriptor;
-           pc2._setLocalDescriptor= function(offer){
-               peer2.localOffer = offer;
-               peer1.remoteOffer=offer;
-               pc2LocalOriginal.call(pc2, offer, function(){
-                   pc1._setRemoteDescription(offer, function(){
-                       verify();
-                   },errorCB);
-               }, errorCB);
-
-           };
+           pc1.on("change", check);
+           pc2.on("change", check);
            // Kick off
            pc1.doOffer();
 
