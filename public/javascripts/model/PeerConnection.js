@@ -182,12 +182,17 @@ app.PeerConnection = Backbone.Model.extend({
 
       var error = function(err) {
          self._err("Error setting local descriptor. Cause :" + err);
-         self._err(self.get('remoteConnection'));
+         console.error(self.get('remoteConnection'));
          alert(err);
          errorCB && errorCB(err);
       }
 
-      pc.setLocalDescription(new RTCSessionDescription(localSDP), success, error);
+      try {
+        pc.setLocalDescription(new RTCSessionDescription(localSDP), success, error);
+      }catch(e){
+        self._err("An Exception was thrown when setting a local descriptor", e);
+        errorCB && errorCB();
+    }
   },
 
   _setRemoteDescription:function (remoteSDP, successCB, errorCB){
@@ -203,12 +208,17 @@ app.PeerConnection = Backbone.Model.extend({
 
       var error = function(err) {
           self._err("Error setting remote descriptor. Cause :" + err);
-          self._err(self.get('remoteConnection'));
+          console.error(self.get('remoteConnection'));
           alert(err);
           errorCB && errorCB();
       }
 
-      pc.setRemoteDescription(new RTCSessionDescription(remoteSDP) ,success,  error);
+      try {
+        pc.setRemoteDescription(new RTCSessionDescription(remoteSDP) ,success,  error);
+      }catch(e){
+         self._err("An Exception has been thrown when setting a remote descriptor", e);
+         errorCB && errorCB();
+      }
   },
 
   doOffer : function () {

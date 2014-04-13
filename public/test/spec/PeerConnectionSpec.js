@@ -261,38 +261,30 @@ describe("Create Peer connection test suite", function() {
       });
 
 
-      // insall ice candidate before offer
-
-      it("Offer/Answer exchange with Ice Candidates", function(done) {
+     it("Full connection between two peers", function(done) {
 
            function verify() {
-               expect(peer1.localOffer).toBeTruthy();
-               expect(peer1.remoteOffer).toBeTruthy();
-               expect(pc1.getIceConnectionState()).toEqual("none");
+               expect(pc1.getIceConnectionState()).toEqual("completed");
+               expect(pc1.getIceGatheringState()).toEqual("complete");
                expect(pc1.getSignalingState()).toEqual("stable");
-               expect(peer2.localOffer).toBeTruthy();
-               expect(peer2.remoteOffer).toBeTruthy();
-               expect(pc2.getIceConnectionState()).toEqual("none");
+               expect(pc2.getIceConnectionState()).toEqual("connected");
                expect(pc2.getSignalingState()).toEqual("stable");
-               expect(peer1.localOffer).toEqual(peer2.remoteOffer);
-               expect(peer2.localOffer).toEqual(peer1.remoteOffer);
+               expect(pc1.getIceGatheringState()).toEqual("complete");
                done();
            }
 
            function check() {
-             if(pc1.getIceGatheringState() === "complete" &&
-                pc2.getIceGatheringState() === "complete")
+             // NOTE : pc1 goes in state completed because it started the iceGathering process
+             if(pc1.getIceConnectionState() === "completed" &&
+                pc2.getIceConnectionState() === "connected")
                verify()
            }
-
-           var peer1= {ice:[], localOffer:null, remoteOffer:null};
-           var peer2= {ice:[], localOffer:null, remoteOffer:null};
 
            session.send =  function (destination, data, type) {
 
                var message = {
-                   to     : destination,
-                   from   : "",
+                   to     : "",
+                   from   : destination,
                    roomId : "Mock",
                    msg    : data
                };
@@ -300,13 +292,14 @@ describe("Create Peer connection test suite", function() {
                if (type)
                    message.type = type;
 
-               if (destination === PEER_ID_1){
-                   message.from = PEER_ID_2;
+               if (message.from === PEER_ID_2){
                    pc1.dispatchMessage(message);
-               } else {
-                   message.from = PEER_ID_1;
+               } else if( message.from === PEER_ID_1){
                    pc2.dispatchMessage(message);
+               }else {
+                 console.error("error");
                }
+
            };
            var pc1 = new app.PeerConnection(PEER_ID_1, session, false);
            var pc2 = new app.PeerConnection(PEER_ID_2, session, false);
@@ -321,20 +314,3 @@ describe("Create Peer connection test suite", function() {
 
 });
 
-
-/*
- /*     peer1= {ice:[]};
- peer2= {ice:[]};
- session.isSessionReady.and.callFake(function() {return true});
- session.send.and.callFake(function (peerId ,value) {
- if(peerId=== PEER_ID_1)
- saveInfo(peer1, value);
- else
- saveInfo(peer2, value);
- });
-
- function onChange(obj){
- if ( obj.getIceGatheringState() === 'complete')
- done()
- };
- */
