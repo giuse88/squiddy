@@ -17,13 +17,21 @@ app.PeerConnection = Backbone.Model.extend({
     peerId              : 'none',
     iceConnectionState  : 'none',
     iceGatheringState   : 'none',
-    signalingState      : 'none'
+    signalingState      : 'none',
+    status              : 'none',
+    acceptIceCandidates : false,
+    remoteIceCandidates : null
   },
+
+  //===============================
+  //         CONSTRUCTOR
+  //===============================
 
   initialize: function(id, session, isInitiator) {
     var self=this; 
     
-    this.attributes.msgQueue = new Array(); 
+    this.attributes.msgQueue = new Array();
+    this.attributes.remoteIceCandidates = new Array();
     this.attributes.peerId = id;
     this.attributes.session = session;
 
@@ -41,6 +49,9 @@ app.PeerConnection = Backbone.Model.extend({
      this._log("Initialization peer connection completed.");
   },
 
+  //============================
+  //        PUBLIC INTERFACE
+  //
 
   getPeerId: function () {
     return this.get('peerId');
@@ -86,7 +97,7 @@ app.PeerConnection = Backbone.Model.extend({
 
   //===================================
   //        PRIVATE
-  //====
+  //===================================
   _start: function() {
 
     this._createPeerConnection();
@@ -101,7 +112,12 @@ app.PeerConnection = Backbone.Model.extend({
 
     this._log("Started.");
   },
-  
+
+
+  //===================================
+  // Message processing
+  //===================================
+
   processQueue: function () {
     this._log("Messages pending in the queue : " + this.attributes.msgQueue.length);
     //
@@ -127,12 +143,54 @@ app.PeerConnection = Backbone.Model.extend({
   }
   },
 
+  //===============================
+  // ICE candidates
+  //===============================
+
+  _addIceCandidate: function(candidate, successCB, errorCB) {
+
+      var self = this;
+
+      var success = function () {
+          self._log("Successfully add remote ICE candidate.", candidate);
+          successCB && successCB();
+      };
+
+      var error = function (err) {
+          self._err("Error when adding a remote ICE candidate. Error :" + err, candidate);
+          errorCB && errorCB(err);
+      };
+
+      this.get('remoteConnection').addIceCandidate(candidate, success, error);
+  },
 
   addRemoteIceCandidate : function (message) {
-        var candidate = new RTCIceCandidate(message);
-        this.get('remoteConnection').addIceCandidate(candidate);
-        this._log("Added Remote ICE candidate", candidate);
-    },
+
+     if ( message === "ICE_COMPLETED" ) {
+         this.set('acceptIceCandidates', false);
+         this._log("Remote Ice candidate gathering complete");
+         return;
+     }
+     var candidate = new RTCIceCandidate(message);
+     //
+     if(this.get('acceptIceCandidates'))
+        this._addIceCandidate(message);
+      else {
+        this.get('remoteIceCandidates').push(candidate);
+        this._log("Cached Remote ICE candidate", candidate);
+     }
+   },
+
+    processIceCandidates: function(){
+      //
+      _.each(this.get('remoteIceCandidates'), function (iceCandidate){
+           this._addIceCandidate(iceCandidate);
+      }, this);
+      //
+      this.get('remoteIceCandidates').length = 0;
+      this.set('acceptIceCandidates', true);
+      //
+   },
 
   _iceCandidateType: function(candidateSDP) {
   if (candidateSDP.indexOf("typ relay ") >= 0)
@@ -148,13 +206,6 @@ app.PeerConnection = Backbone.Model.extend({
       this.attributes.session.send(this.attributes.peerId, candidate,  "ICE_CANDIDATE");
   },
 
-  _sendAnswer    : function( answer ) {
-      this.attributes.session.send(this.attributes.peerId, answer , "ANSWER");
-  },
-  _sendOffer     : function( offer  ) {
-      this.attributes.session.send(this.attributes.peerId, offer, "OFFER");
-  },
-
   onIceCandidate: function(event, status) {
 
         this.set('iceGatheringState', status);
@@ -166,8 +217,22 @@ app.PeerConnection = Backbone.Model.extend({
             this._sendIceCandidate(event.candidate);
             //
         } else {
+            // to comunicate the end of the remote Ice candidates ( weak mechanism §)
+            this._sendIceCandidate("ICE_COMPLETED");
             this._log("End gathering LOCAL Ice candidates." + " Status : " + status + ".");
         }
+   },
+
+   // ========================================
+   //           OFFER // ANSWER
+   // ========================================
+
+  _sendAnswer    : function( answer ) {
+      this.attributes.session.send(this.attributes.peerId, answer , "ANSWER");
+  },
+
+  _sendOffer     : function( offer  ) {
+      this.attributes.session.send(this.attributes.peerId, offer, "OFFER");
   },
 
   _setLocalDescriptor : function (localSDP, successCB, errorCB) {
@@ -187,12 +252,13 @@ app.PeerConnection = Backbone.Model.extend({
          errorCB && errorCB(err);
       }
 
-      try {
+      try{
         pc.setLocalDescription(new RTCSessionDescription(localSDP), success, error);
       }catch(e){
         self._err("An Exception was thrown when setting a local descriptor", e);
+        alert(e);
         errorCB && errorCB();
-    }
+      }
   },
 
   _setRemoteDescription:function (remoteSDP, successCB, errorCB){
@@ -203,11 +269,13 @@ app.PeerConnection = Backbone.Model.extend({
       var success = function () {
           self._log("Remote descriptor successfully installed.");
           self._log("Signal State : ", pc.signalingState);
+          self.processIceCandidates();
           successCB && successCB();
       }
 
       var error = function(err) {
-          self._err("Error setting remote descriptor. Cause :" + err);
+          self._err("Error setting remote descriptor. Cause :" + err + ". Values : ");
+          console.error(remoteSDP);
           console.error(self.get('remoteConnection'));
           alert(err);
           errorCB && errorCB();
@@ -268,6 +336,9 @@ app.PeerConnection = Backbone.Model.extend({
   },
 
 
+   //==================================
+   //   stream
+   //----------------------------------
 
 
   _addLocalStream: function(stream, renegotiation) {
@@ -291,8 +362,6 @@ app.PeerConnection = Backbone.Model.extend({
   doRenegotiation : function () {
     this.doOffer();
   },
-
-
 
   handleLocalStreams : function() {
 
