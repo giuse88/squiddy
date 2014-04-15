@@ -160,7 +160,7 @@ app.PeerConnection = Backbone.Model.extend({
           self._err("Error when adding a remote ICE candidate. Error :" + err, candidate);
           errorCB && errorCB(err);
       };
-
+      console.log(candidate);
       this.get('remoteConnection').addIceCandidate(candidate, success, error);
   },
 
@@ -173,8 +173,8 @@ app.PeerConnection = Backbone.Model.extend({
      }
      var candidate = new RTCIceCandidate(message);
      //
-     if(this.get('acceptIceCandidates'))
-        this._addIceCandidate(message);
+     if(true || this.get('acceptIceCandidates'))
+        this._addIceCandidate.call(this, message);
       else {
         this.get('remoteIceCandidates').push(candidate);
         this._log("Cached Remote ICE candidate", candidate);
