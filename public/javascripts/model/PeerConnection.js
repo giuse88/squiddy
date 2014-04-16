@@ -161,9 +161,17 @@ app.PeerConnection = Backbone.Model.extend({
           errorCB && errorCB(err);
       };
       console.log(candidate);
+      //console.log(this.get('remoteConnection'));
       this.get('remoteConnection').addIceCandidate(candidate, success, error);
   },
 
+ /*  old_addRemoteIceCandidate : function (message) {
+        var candidate = new RTCIceCandidate(message);
+        //this.get('remoteConnection').addIceCandidate(candidate);
+        this._addIceCandidate(candidate);
+        this._log("Added Remote ICE candidate", candidate);
+    },
+ */
   addRemoteIceCandidate : function (message) {
 
      if ( message === "ICE_COMPLETED" ) {
@@ -173,8 +181,8 @@ app.PeerConnection = Backbone.Model.extend({
      }
      var candidate = new RTCIceCandidate(message);
      //
-     if(true || this.get('acceptIceCandidates'))
-        this._addIceCandidate.call(this, message);
+     if(this.get('acceptIceCandidates'))
+         this._addIceCandidate(candidate);
       else {
         this.get('remoteIceCandidates').push(candidate);
         this._log("Cached Remote ICE candidate", candidate);
