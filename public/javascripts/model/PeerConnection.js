@@ -20,7 +20,9 @@ app.PeerConnection = Backbone.Model.extend({
     signalingState      : 'none',
     status              : 'none',
     acceptIceCandidates : false,
-    remoteIceCandidates : null
+    remoteIceCandidates : null,
+    defaultOfferConstraints : null,
+    defaultAnswerConstraints : null
   },
 
   //===============================
@@ -34,6 +36,8 @@ app.PeerConnection = Backbone.Model.extend({
     this.attributes.remoteIceCandidates = new Array();
     this.attributes.peerId = id;
     this.attributes.session = session;
+    this.attributes.defaultOfferConstraints  = { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }};
+    this.attributes.defaultAnswerConstraints = { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }};
 
     this.attributes.session.on('localStream', function(stream) {self._addLocalStream(stream, true)});
     this.attributes.session.on('removedLocalStream', function(stream){ self._removeLocalStream(stream, true)});
@@ -297,9 +301,9 @@ app.PeerConnection = Backbone.Model.extend({
       }
   },
 
-  doOffer : function () {
-    // TODO refactor
-    var  constraints =  { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }};
+  doOffer : function (successCB, errorCB, additionalConstraints) {
+
+    var  constraints = $.extend(true, this.get('defaultOfferConstraints'),  additionalConstraints || {});
     this._log("Creating offer for peer " + this.getPeerId() + " with constraints : ", constraints);
     var self = this;
 
@@ -308,12 +312,14 @@ app.PeerConnection = Backbone.Model.extend({
         self._setLocalDescriptor(localSDP, function(){
             self._sendOffer(localSDP);
         });
+        successCB && successCB();
     };
 
     var errorOffer = function (err) {
         var msg = "Error when creating an offer" + err;
         self._err(msg);
         alert(msg);
+        errorCB && errorCB(err);
     }
     //
     this.attributes.remoteConnection.createOffer(sussessOffer,errorOffer, constraints);
@@ -406,8 +412,22 @@ app.PeerConnection = Backbone.Model.extend({
 
    onIceConnectionStatusStateChange : function (event) {
    //
-   var status = this._extractStatusForICEStateChange(event);
-   this.set('iceConnectionState', status);
+    var status = this._extractStatusForICEStateChange(event);
+    this.set('iceConnectionState', status);
+
+    if( status === "Failed") {
+        var restartIceConnection = {mandatory: {IceRestart: true}};
+        this._err("Connection to remote peer failed. Attempting a new connection");
+        this.doOffer(null,null, restartIceConnection);
+    }
+      /*
+        THIS MUST TESTED
+       if( the connection is set to disconnect)
+       You can restart the ice connection by creating a new offer with
+       peerConnection.createOffer(successCallback, failureCallback, {mandatory: {IceRestart: true}}),
+       and configuring your successCallback to do a complete negotiation (setLocalDescription,
+       send offer over the signaling channel, etc.).
+       */
    //
    this._log("Ice connection has changed to " + this.get('iceConnectionState'));
    },

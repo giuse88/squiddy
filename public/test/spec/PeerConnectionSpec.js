@@ -63,7 +63,56 @@ describe("Create Peer connection test suite", function() {
 
     var mockOffer = {sdp : SDP ,"type":"offer"};
 
-   var mockAnswer = {"sdp": "v=0\r\no=- 6465573306213105510 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE audio video\r\na=msid-semantic: WMS\r\nm=audio 1 RTP/SAVPF 111 103 104 0 8 106 105 13 126\r\nc=IN IP4 0.0.0.0\r\na=rtcp:1 IN IP4 0.0.0.0\r\na=ice-ufrag:AyBahFUhrQOPtHlQ\r\na=ice-pwd:QGUAtvpJDqYq2F8BUH2ZWdGv\r\na=fingerprint:sha-256 54:90:7A:6F:BC:46:C4:5F:25:B9:02:97:3D:A7:53:5D:B4:F6:CE:55:EB:78:51:84:0C:41:0B:2B:21:AA:CD:05\r\na=setup:active\r\na=mid:audio\r\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\na=sendonly\r\na=rtcp-mux\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 minptime=10\r\na=rtpmap:103 ISAC/16000\r\na=rtpmap:104 ISAC/32000\r\na=rtpmap:0 PCMU/8000\r\na=rtpmap:8 PCMA/8000\r\na=rtpmap:106 CN/32000\r\na=rtpmap:105 CN/16000\r\na=rtpmap:13 CN/8000\r\na=rtpmap:126 telephone-event/8000\r\na=maxptime:60\r\nm=video 1 RTP/SAVPF 100 116 117\r\nc=IN IP4 0.0.0.0\r\na=rtcp:1 IN IP4 0.0.0.0\r\na=ice-ufrag:AyBahFUhrQOPtHlQ\r\na=ice-pwd:QGUAtvpJDqYq2F8BUH2ZWdGv\r\na=fingerprint:sha-256 54:90:7A:6F:BC:46:C4:5F:25:B9:02:97:3D:A7:53:5D:B4:F6:CE:55:EB:78:51:84:0C:41:0B:2B:21:AA:CD:05\r\na=setup:active\r\na=mid:video\r\na=extmap:2 urn:ietf:params:rtp-hdrext:toffset\r\na=extmap:3 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\na=sendonly\r\na=rtcp-mux\r\na=rtpmap:100 VP8/90000\r\na=rtcp-fb:100 ccm fir\r\na=rtcp-fb:100 nack\r\na=rtcp-fb:100 nack pli\r\na=rtcp-fb:100 goog-remb\r\na=rtpmap:116 red/90000\r\na=rtpmap:117 ulpfec/90000\r\n", "type": "answer"};
+   var mockAnswer = {"sdp":
+       "v=0\r\n" +
+       "o=- 6465573306213105510 2 IN IP4 127.0.0.1\r\n" +
+           "s=-\r\n" +
+           "t=0 0\r\n" +
+           "a=group:BUNDLE audio video\r\n" +
+           "a=msid-semantic: WMS\r\n" +
+           "m=audio 1 RTP/SAVPF 111 103 104 0 8 106 105 13 126\r\n" +
+           "c=IN IP4 0.0.0.0\r\n" +
+           "a=rtcp:1 IN IP4 0.0.0.0\r\n" +
+           "a=ice-ufrag:AyBahFUhrQOPtHlQ\r\n" +
+           "a=ice-pwd:QGUAtvpJDqYq2F8BUH2ZWdGv\r\n" +
+           "a=fingerprint:sha-256 54:90:7A:6F:BC:46:C4:5F:25:B9:02:97:3D:A7:53:5D:B4:F6:CE:55:EB:78:51:84:0C:41:0B:2B:21:AA:CD:05\r\n" +
+           "a=setup:active\r\n" +
+           "a=mid:audio\r\n" +
+           "a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\n" +
+           "a=sendonly\r\n" +
+           "a=rtcp-mux\r\n" +
+           "a=rtpmap:111 opus/48000/2\r\n" +
+           "a=fmtp:111 minptime=10\r\n" +
+           "a=rtpmap:103 ISAC/16000\r\n" +
+           "a=rtpmap:104 ISAC/32000\r\n" +
+           "a=rtpmap:0 PCMU/8000\r\n" +
+           "a=rtpmap:8 PCMA/8000\r\n" +
+           "a=rtpmap:106 CN/32000\r\n" +
+           "a=rtpmap:105 CN/16000\r\n" +
+           "a=rtpmap:13 CN/8000\r\n" +
+           "a=rtpmap:126 telephone-event/8000\r\n" +
+           "a=maxptime:60\r\n" +
+           "m=video 1 RTP/SAVPF 100 116 117\r\n" +
+           "c=IN IP4 0.0.0.0\r\n" +
+           "a=rtcp:1 IN IP4 0.0.0.0\r\n" +
+           "a=ice-ufrag:AyBahFUhrQOPtHlQ\r\n" +
+           "a=ice-pwd:QGUAtvpJDqYq2F8BUH2ZWdGv\r\n" +
+           "a=fingerprint:sha-256 54:90:7A:6F:BC:46:C4:5F:25:B9:02:97:3D:A7:53:5D:B4:F6:CE:55:EB:78:51:84:0C:41:0B:2B:21:AA:CD:05\r\n" +
+           "a=setup:active\r\n" +
+           "a=mid:video\r\n" +
+           "a=extmap:2 urn:ietf:params:rtp-hdrext:toffset\r\n" +
+           "a=extmap:3 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\n" +
+           "a=sendonly\r\n" +
+           "a=rtcp-mux\r\n" +
+           "a=rtpmap:100 VP8/90000\r\n" +
+           "a=rtcp-fb:100 ccm fir\r\n" +
+           "a=rtcp-fb:100 nack\r\n" +
+           "a=rtcp-fb:100 nack pli\r\n" +
+           "a=rtcp-fb:100 goog-remb\r\n" +
+           "a=rtpmap:116 red/90000\r\n" +
+           "a=rtpmap:117 ulpfec/90000\r\n",
+    "type": "answer"};
+
 
     var a ={"sdp":"v=0\r\no=- 4287580602782988024 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE audio video\r\na=msid-semantic: WMS\r\nm=audio 1 RTP/SAVPF 111 103 104 0 8 106 105 13 126\r\nc=IN IP4 0.0.0.0\r\na=rtcp:1 IN IP4 0.0.0.0\r\na=ice-ufrag:K3Wy0WP3kBI7znyf\r\na=ice-pwd:On5xEkoDHh5zFidGzjlL+9fQ\r\na=fingerprint:sha-256 54:90:7A:6F:BC:46:C4:5F:25:B9:02:97:3D:A7:53:5D:B4:F6:CE:55:EB:78:51:84:0C:41:0B:2B:21:AA:CD:05\r\na=setup:active\r\na=mid:audio\r\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\na=sendonly\r\na=rtcp-mux\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 minptime=10\r\na=rtpmap:103 ISAC/16000\r\na=rtpmap:104 ISAC/32000\r\na=rtpmap:0 PCMU/8000\r\na=rtpmap:8 PCMA/8000\r\na=rtpmap:106 CN/32000\r\na=rtpmap:105 CN/16000\r\na=rtpmap:13 CN/8000\r\na=rtpmap:126 telephone-event/8000\r\na=maxptime:60\r\nm=video 1 RTP/SAVPF 100 116 117\r\nc=IN IP4 0.0.0.0\r\na=rtcp:1 IN IP4 0.0.0.0\r\na=ice-ufrag:K3Wy0WP3kBI7znyf\r\na=ice-pwd:On5xEkoDHh5zFidGzjlL+9fQ\r\na=fingerprint:sha-256 54:90:7A:6F:BC:46:C4:5F:25:B9:02:97:3D:A7:53:5D:B4:F6:CE:55:EB:78:51:84:0C:41:0B:2B:21:AA:CD:05\r\na=setup:active\r\na=mid:video\r\na=extmap:2 urn:ietf:params:rtp-hdrext:toffset\r\na=extmap:3 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\na=sendonly\r\na=rtcp-mux\r\na=rtpmap:100 VP8/90000\r\na=rtcp-fb:100 ccm fir\r\na=rtcp-fb:100 nack\r\na=rtcp-fb:100 nack pli\r\na=rtcp-fb:100 goog-remb\r\na=rtpmap:116 red/90000\r\na=rtpmap:117 ulpfec/90000\r\n","type":"answer"};
     var b = {"sdp":"v=0\r\no=- 3170353243610990819 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE audio video\r\na=msid-semantic: WMS\r\nm=audio 1 RTP/SAVPF 111 103 104 0 8 106 105 13 126\r\nc=IN IP4 0.0.0.0\r\na=rtcp:1 IN IP4 0.0.0.0\r\na=ice-ufrag:/9jKaskSn+lvH+rB\r\na=ice-pwd:0+34ONNNNlX4hloYhxM4juE0\r\na=ice-options:google-ice\r\na=fingerprint:sha-256 54:90:7A:6F:BC:46:C4:5F:25:B9:02:97:3D:A7:53:5D:B4:F6:CE:55:EB:78:51:84:0C:41:0B:2B:21:AA:CD:05\r\na=setup:actpass\r\na=mid:audio\r\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\na=recvonly\r\na=rtcp-mux\r\na=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:dSswnwwIckXb9fLpZ3STJjK358Xvk9WJ69UxFvcd\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 minptime=10\r\na=rtpmap:103 ISAC/16000\r\na=rtpmap:104 ISAC/32000\r\na=rtpmap:0 PCMU/8000\r\na=rtpmap:8 PCMA/8000\r\na=rtpmap:106 CN/32000\r\na=rtpmap:105 CN/16000\r\na=rtpmap:13 CN/8000\r\na=rtpmap:126 telephone-event/8000\r\na=maxptime:60\r\nm=video 1 RTP/SAVPF 100 116 117\r\nc=IN IP4 0.0.0.0\r\na=rtcp:1 IN IP4 0.0.0.0\r\na=ice-ufrag:/9jKaskSn+lvH+rB\r\na=ice-pwd:0+34ONNNNlX4hloYhxM4juE0\r\na=ice-options:google-ice\r\na=fingerprint:sha-256 54:90:7A:6F:BC:46:C4:5F:25:B9:02:97:3D:A7:53:5D:B4:F6:CE:55:EB:78:51:84:0C:41:0B:2B:21:AA:CD:05\r\na=setup:actpass\r\na=mid:video\r\na=extmap:2 urn:ietf:params:rtp-hdrext:toffset\r\na=extmap:3 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\na=recvonly\r\na=rtcp-mux\r\na=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:dSswnwwIckXb9fLpZ3STJjK358Xvk9WJ69UxFvcd\r\na=rtpmap:100 VP8/90000\r\na=rtcp-fb:100 ccm fir\r\na=rtcp-fb:100 nack\r\na=rtcp-fb:100 nack pli\r\na=rtcp-fb:100 goog-remb\r\na=rtpmap:116 red/90000\r\na=rtpmap:117 ulpfec/90000\r\n","type":"offer"};
@@ -92,6 +141,14 @@ describe("Create Peer connection test suite", function() {
             expect(connection.isInitiator()).toEqual(initiator);
         });
 
+        it("should restart ICE candidate mechanism", function() {
+            connection._extractStatusForICEStateChange = function() {return "Failed";};
+
+            connection.doOffer = function(success, failure, additionalConstraints){
+                expect(additionalConstraints).toEqual({mandatory: {IceRestart: true}});
+            }
+            connection.onIceConnectionStatusStateChange({});
+        });
 
     });
 
@@ -124,6 +181,10 @@ describe("Create Peer connection test suite", function() {
         });
 
     });
+
+
+
+
 
    describe("This test suite create two peer connections", function() {
 
@@ -177,7 +238,7 @@ describe("Create Peer connection test suite", function() {
           peerReceiver._setRemoteDescription(mockOffer, successRemote,failure);
       });
 
-   it("Test the signalStatus machine when a peer sends an offer", function(done){
+   xit("Test the signalStatus machine when a peer sends an offer", function(done){
           var peerSender  = new app.PeerConnection("mock_sender", session, false);
 
           var successRemote = function(){
@@ -190,6 +251,7 @@ describe("Create Peer connection test suite", function() {
               console.log("Local descriptor installed successfully.");
               expect(peerSender.getSignalingState()).toEqual("have-local-offer");
               peerSender._setRemoteDescription(mockAnswer, successRemote,failure);
+              //peerSender.doAnswer();
           }.bind(this);
 
           var failure = function(error){
@@ -201,6 +263,33 @@ describe("Create Peer connection test suite", function() {
           expect(peerSender.getSignalingState()).toEqual("none");
           peerSender._setLocalDescriptor(mockOffer, successLocal,failure);
       });
+
+      xit("Test concurrent offers", function(done){
+           var peerSender  = new app.PeerConnection("mock_sender", session, false);
+
+           var successRemote = function(){
+               console.log("Remote descriptor installed successfully.");
+               expect(peerSender.getSignalingState()).toEqual("stable");
+               done();
+           };
+
+           var successLocal = function(){
+               console.log("Local descriptor installed successfully.");
+               expect(peerSender.getSignalingState()).toEqual("have-local-offer");
+               peerSender._setRemoteDescription(mockOffer, successRemote,failure);
+               //peerSender.doAnswer();
+           }.bind(this);
+
+           var failure = function(error){
+               console.log("Error installing SDP." + error);
+               expect(error).toBeNull();
+               done();
+           }.bind(this);
+
+           expect(peerSender.getSignalingState()).toEqual("none");
+           peerSender._setLocalDescriptor(mockOffer, successLocal,failure);
+      });
+
 
    it("Offer/Answer exchange without Ice Candidates", function(done) {
 
