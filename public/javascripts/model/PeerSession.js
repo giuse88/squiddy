@@ -151,8 +151,9 @@ var app = app || {};
           LOG.info("Closing connection with peer '" +  data.peerId +"' .", data);
           // TODO create a method in the session whihc provicdes this functionality
           var peerToBeRemoved = self.getPeer(data.peerId);
-          self.remove(peerToBeRemoved);
+          peerToBeRemoved.close();
           LOG.info("Connection with peer '"+ data.peerId + " closed.");
+          self.remove(peerToBeRemoved);
           LOG.info("Removed model for  peer '"+ peerToBeRemoved.getPeerId() + " closed.");
          //
       });

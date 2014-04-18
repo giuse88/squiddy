@@ -118,6 +118,17 @@ app.PeerConnection = Backbone.Model.extend({
   },
 
 
+  close: function() {
+
+      this.set('isStarted', false);
+   //    signalingReady = false;
+      this.get('remoteConnection').close();
+      this.set('remoteConnection', null);
+ //          remoteStream = null;
+ //         msgQueue.length = 0;
+      this._log("Closed connection");
+  },
+
   //===================================
   // Message processing
   //===================================
