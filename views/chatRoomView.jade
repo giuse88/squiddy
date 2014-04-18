@@ -9,6 +9,7 @@ html(lang="en")
 
     script(src="socket.io/socket.io.js")
     script(src="javascripts/lib/jquery.min.js")
+    script(src="javascripts/lib/bootstrap.min.js")
     script(src="javascripts/helpers/utils.js")
     script(src="javascripts/lib/adapter.js")
     script(src="javascripts/lib/underscore-min.js")
@@ -17,9 +18,12 @@ html(lang="en")
     script(src="events/events.js")
 
     link(rel='stylesheet', href='stylesheets/style.css')
+    link(rel='stylesheet', href='stylesheets/bootstrap.min.css')
+    link(rel='stylesheet', href='stylesheets/bootstrap-theme.min.css')
 
   body
     div.page#container
+      include  snippets/modalBrowserUnsupported.html
       include  snippets/popUp.html
       div#peers
       div#local-video-container
@@ -52,7 +56,8 @@ script(src="javascripts/helpers/SignalingServiceFrontEnd.js")
 script(src="javascripts/model/PeerSession.js")
 script(src="javascripts/view/PeerView.js")
 script(src="javascripts/view/AppView.js")
+script(src="javascripts/main.js")
 script(type='text/javascript').
     $(document).ready(function () {
-        new app.AppView();
+       app.main();
     });
