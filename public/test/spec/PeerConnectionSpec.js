@@ -238,7 +238,7 @@ describe("Create Peer connection test suite", function() {
           peerReceiver._setRemoteDescription(mockOffer, successRemote,failure);
       });
 
-   xit("Test the signalStatus machine when a peer sends an offer", function(done){
+   it("Test the signalStatus machine when a peer sends an offer", function(done){
           var peerSender  = new app.PeerConnection("mock_sender", session, false);
 
           var successRemote = function(){
@@ -264,7 +264,7 @@ describe("Create Peer connection test suite", function() {
           peerSender._setLocalDescriptor(mockOffer, successLocal,failure);
       });
 
-      xit("Test concurrent offers", function(done){
+      it("Test concurrent offers", function(done){
            var peerSender  = new app.PeerConnection("mock_sender", session, false);
 
            var successRemote = function(){
@@ -277,7 +277,6 @@ describe("Create Peer connection test suite", function() {
                console.log("Local descriptor installed successfully.");
                expect(peerSender.getSignalingState()).toEqual("have-local-offer");
                peerSender._setRemoteDescription(mockOffer, successRemote,failure);
-               //peerSender.doAnswer();
            }.bind(this);
 
            var failure = function(error){

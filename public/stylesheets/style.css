@@ -6,11 +6,24 @@ html, body{
     position: absolute;
 }
 
+@font-face
+{
+    font-family: pacifico;
+    src: url(/img/fonts/pacifico.ttf);
+}
+
+@font-face
+{
+    font-family: capitan-america;
+    src : url(/img/fonts/capitanAmerica.ttf)
+}
+
+
 .page {
     height:100%;
     width: 100%;
     position:absolute;
-    background :url(/img/bg.png) repeat #111
+    background :url(/img/bg.jpg) repeat;
 }
 
 #peers {
@@ -38,7 +51,7 @@ html, body{
 
 #menu-bar{
     position:fixed;
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(0,0,0,0.6);
     bottom:0px;
     height : 50px;
     width  : 100%;
@@ -121,7 +134,7 @@ html, body{
 }
 .center{
     position: absolute;
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(0, 0,0 , 0.6);
     border-radius:25px;
     height: 200px;
     width: 200px;
@@ -178,3 +191,48 @@ html, body{
 .top-stack {
     z-index: 100;
 }
+
+.strech{
+    height: 100%;
+}
+
+#image-backgroud{
+    position: relative;
+    top: -100%;
+    margin: 0 auto;
+    display: block;
+}
+
+#logo {
+    position: relative;
+    width: 40%;
+    margin: 0 auto;
+}
+
+.big-text-logo {
+    font-family: pacifico;
+    margin: 0;
+    font-size: 45px;
+    text-align: center;
+}
+
+.small-text-logo {
+    font-size: 13px;
+    font-family: capitan-america;
+    margin: 0;
+    font-size: 15px;
+    color: rgba(0,0,0,0.5);
+    top: -8px;
+    position: relative;
+    left: 70px;
+}
+
+/*
+#link-message {
+    width: 400px;
+    height: 70px;
+    background-color: rgba(200,200,200,0.9);
+    border-radius: 10px;
+    color: white;
+}
+*/
