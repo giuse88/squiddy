@@ -39,8 +39,8 @@ app.PeerConnection = Backbone.Model.extend({
     this.attributes.defaultOfferConstraints  = { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }};
     this.attributes.defaultAnswerConstraints = { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }};
 
-    this.attributes.session.on('localStream', function(stream) {self._addLocalStream(stream, true)});
-    this.attributes.session.on('removedLocalStream', function(stream){ self._removeLocalStream(stream, true)});
+    this.attributes.session.on('localStream', function(stream) {self._addLocalStream(stream, false)});
+    this.attributes.session.on('removedLocalStream', function(stream){ self._removeLocalStream(stream, false)});
 
     if(isInitiator)
       this.set('isInitiator', true);  
@@ -93,10 +93,10 @@ app.PeerConnection = Backbone.Model.extend({
    //
     if(this.isStarted())
       this.processMessage(msg);
-    else
+    else {
       this.attributes.msgQueue.push(msg);
-   //
-   //this._log("Dispatched message.", msg);
+      this._log("Message saved in the queue.", msg);
+    }
   },
 
   //===================================
@@ -139,7 +139,8 @@ app.PeerConnection = Backbone.Model.extend({
     while(this.attributes.msgQueue.length > 0)
         this.processMessage(this.attributes.msgQueue.shift());
     //
-  }, 
+    this._log("Messages pending in the queue processed.");
+  },
 
   processMessage: function (message) {
   //
@@ -262,6 +263,8 @@ app.PeerConnection = Backbone.Model.extend({
       var self = this;
       var pc = this.get('remoteConnection');
 
+      this._status();
+
       var success = function() {
          self._log("Local descriptor successfully installed.")
          self._log("Signal State : ", pc.signalingState);
@@ -319,7 +322,8 @@ app.PeerConnection = Backbone.Model.extend({
     var self = this;
 
     var sussessOffer = function (localSDP) {
-        self._log("Obtained local session descriptor : ", localSDP);
+        console.log(localSDP.sdp);
+        self._log("Obtained local session descriptor : ");
         self._setLocalDescriptor(localSDP, function(){
             self._sendOffer(localSDP);
         });
@@ -344,7 +348,8 @@ app.PeerConnection = Backbone.Model.extend({
     var self = this;
 
     var sussessAnswer = function (localSDP) {
-        LOG.info("Obtained local session descriptor : ", localSDP);
+        LOG.info("Obtained local session descriptor : ");
+        console.log(localSDP.sdp);
         self._setLocalDescriptor(localSDP,function(){
             self._sendAnswer(localSDP);
         });
@@ -385,6 +390,7 @@ app.PeerConnection = Backbone.Model.extend({
      },
 
   doRenegotiation : function () {
+    this._log("Staring renegotiation");
     this.doOffer();
   },
 
@@ -468,12 +474,21 @@ app.PeerConnection = Backbone.Model.extend({
   // remote streams
   pc.onaddstream = function(stream) {  self.onRemoteStreamAdded(stream);};
   pc.onremovestream = function(stream) { self.onRemoteStreamRemoved(stream);};
+  pc.onnegotiationneeded = function () { self.doRenegotiation();}
   //
   },
 
   //=====================================//
   //            PRIVATE METHODS          //
   //=====================================//
+
+   _status : function() {
+       var pc = this.get('remoteConnection');
+       this._log("-- STATUS -- " +
+           " SignalState : "  + pc.signalingState+
+           " iceGatheringState :"+ pc.iceGatheringState +
+           " iceConnectionState : " + pc.iceConnectionState )
+   },
 
    _log : function(msg, object) {
        LOG.info( "<" +  this.getPeerId() + "> " + msg, object);

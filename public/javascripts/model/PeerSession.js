@@ -130,7 +130,7 @@ var app = app || {};
   _setOnMessageHandler : function() {
       var self = this;
       self._signalingService.setHandlerForMessageEvent(function(message){
-          LOG.info("Received message from peer " + message.from +". ", message);
+          LOG.info("Received message from peer " + message.from +". ");
           var id = message.from;
 
           // Is this always true?
@@ -193,7 +193,7 @@ var app = app || {};
         message.type = type;
     //
     this._signalingService.send(events.MESSAGE, message);
-    LOG.info("Sent message to " + destination + ".", data);
+    LOG.info("Sent message to " + destination + ".");
   },
 
   isSessionReady: function() {

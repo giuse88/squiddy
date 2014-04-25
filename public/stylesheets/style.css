@@ -73,7 +73,7 @@ html, body{
     position: absolute;
     top: 0 ;
     left: 0;
-    color: #ffffff;
+    color: #000000;
 }
 
 .inline-div {
@@ -204,7 +204,7 @@ html, body{
 }
 
 #logo {
-    position: relative;
+    position: absolute;
     width: 40%;
     margin: 0 auto;
 }
@@ -224,15 +224,14 @@ html, body{
     color: rgba(0,0,0,0.5);
     top: -8px;
     position: relative;
-    left: 70px;
+    left: 20%;
 }
 
-/*
+
 #link-message {
-    width: 400px;
-    height: 70px;
-    background-color: rgba(200,200,200,0.9);
-    border-radius: 10px;
-    color: white;
+    position: absolute;
+    margin:0;
+    top: calc(45% - 75px);
+    width: 100%;
+    height: 150px;
 }
-*/
