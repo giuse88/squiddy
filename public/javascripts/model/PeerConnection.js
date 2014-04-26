@@ -408,10 +408,11 @@ var app = app || {};
 
 
   _addLocalStream: function(stream, renegotiation) {
-    console.log(stream);
-    console.log( this.attributes.remoteConnection.addStream);
+    var pc = this.get('remoteConnection');
+     if(!pc)
+        alert(pc);
     this.set('localStream', stream);
-    this.attributes.remoteConnection.addStream(stream);
+    pc.addStream(stream);
     LOG.info("Added local stream to peer connection : " + this.getPeerId());
 
     if (renegotiation)
