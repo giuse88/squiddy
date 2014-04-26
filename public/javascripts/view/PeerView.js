@@ -26,6 +26,7 @@ app.PeerView = Backbone.View.extend({
         this.listenTo(this.model, 'change:signalingState',      this.renderPeerInfo);
         this.listenTo(this.model, 'change:iceConnectionState',  this.renderPeerInfo);
         this.listenTo(this.model, 'change:iceGatheringState',   this.renderPeerInfo);
+        this.listenTo(this.model, 'change:isRenegotiationScheduled',   this.renderPeerInfo);
         // Auto-rendering view
         this.render();
         //

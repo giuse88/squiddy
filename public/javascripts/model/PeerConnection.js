@@ -5,9 +5,10 @@ var app = app || {};
 (function() {
 
     var  SET_LOCAL_DESCRIPTION_DELAY  = 1000;
-    var  DEFAULT_CONNECTION_ATTEMPS = 3;
+    var  DEFAULT_CONNECTION_ATTEMPTS = 3;
+    var  RENEGOTIATION_DELAY = 1000;
 
-app.PeerConnection = Backbone.Model.extend({
+    app.PeerConnection = Backbone.Model.extend({
   
   defaults: {
     isStarted           : false,
@@ -26,7 +27,8 @@ app.PeerConnection = Backbone.Model.extend({
     remoteIceCandidates : null,
     defaultOfferConstraints : null,
     defaultAnswerConstraints : null,
-    connectionAttempts : 3
+    connectionAttempts : 3,
+    isRenegotiationScheduled : false
   },
 
   //===============================
@@ -81,6 +83,10 @@ app.PeerConnection = Backbone.Model.extend({
 
   getLocalStream : function() {
     return this.get('localStream');
+  },
+
+  getIsRenegotiationScheduled : function() {
+    return this.get('isRenegotiationScheduled');
   },
 
   getSignalingState : function() {
@@ -298,7 +304,7 @@ app.PeerConnection = Backbone.Model.extend({
             errorCB && errorCB();
         }
        //
-      }else{
+      }else if ( attempt > 0 ){
           // new attempt
           this._log("Rescheduling new attempt to set local description");
           setTimeout(function() {
@@ -307,6 +313,10 @@ app.PeerConnection = Backbone.Model.extend({
             self._setLocalDescriptor(localSDP, successCB,errorCB);
           }, SET_LOCAL_DESCRIPTION_DELAY);
           //
+      } else {
+          var mes = "I cannot set local description. Exceed attempts.";
+          this._err(mes)
+          alert(mes);
       }
   },
 
@@ -405,21 +415,22 @@ app.PeerConnection = Backbone.Model.extend({
     LOG.info("Added local stream to peer connection : " + this.getPeerId());
 
     if (renegotiation)
-        this.doRenegotiation()
+        this.scheduleRenegotiation()
   },
 
   _removeLocalStream: function(stream, renegotiation) {
     this.attributes.remoteConnection.removeStream(stream);
     this.set('localStream', null);
     if (renegotiation)
-        this.doRenegotiation()
+        this.scheduleRenegotiation()
     LOG.info("Removed local stream from peer connection : " + this.getPeerId());
      },
 
-  doRenegotiation : function () {
+  old_doRenegotiation : function () {
     this._log("Starting renegotiation.");
-    var restartIceConnection = {mandatory: {IceRestart: true}};
-    this.doOffer(null, null, restartIceConnection);
+    // I don't think it is neccessary here
+    //var restartIceConnection = {mandatory: {IceRestart: true}};
+    this.doOffer();
   },
 
   handleLocalStreams : function() {
@@ -503,20 +514,72 @@ app.PeerConnection = Backbone.Model.extend({
   pc.onaddstream = function(stream) {  self.onRemoteStreamAdded(stream);};
   pc.onremovestream = function(stream) { self.onRemoteStreamRemoved(stream);};
   pc.onnegotiationneeded = function (event) {
+      // this is a bug in chrome in my point of view
       if ( pc.iceConnectionState == 'new')
             self._log("Skip renegotiation");
       else
-            self.doRenegotiation();
+            self.scheduleRenegotiation();
     }
   //
   },
+
+   //=====================================//
+   //             RENEGOTIATION           //
+   //=====================================//
+
+    scheduleRenegotiation : function() {
+
+       var self = this;
+       this._log("Scheduling renegotiation.");
+
+        var performRenegotiation  = function() {
+            self.set("isRenegotiationScheduled", true);
+            if (self._isFullStable()) {
+                // start renegotiation
+                self._log("Performing renegotiation.");
+                self.doOffer();
+                // not sure about this
+                self.set("isRenegotiationScheduled", false);
+            }else {
+                self._log("Renegotiation cannot be performed in this status. Trying again in 1s.");
+                setTimeout(performRenegotiation, RENEGOTIATION_DELAY)
+            }
+        };
+
+        if (this.get("isRenegotiationScheduled")) {
+            this._log("Renegotiation already scheduled. SKIPPED");
+            return;
+        }else {
+            performRenegotiation();
+        }
+    },
 
   //=====================================//
   //            PRIVATE METHODS          //
   //=====================================//
 
+    _isFullStable : function() {
+        return this._isICEConnected() &&
+               this._isICEGatheringCompleted() &&
+               this._isSingnalStable();
+    },
+
+    _isSingnalStable : function () {
+        var pc = this.get('remoteConnection');
+        return "stable" ===   pc.signalingState;
+    },
+    _isICEGatheringCompleted : function () {
+        var pc = this.get('remoteConnection');
+        return "complete" ===  pc.iceGatheringState;
+    },
+    _isICEConnected : function () {
+        var pc = this.get('remoteConnection');
+       return "completed" === pc.iceConnectionState ||
+              "connected" === pc.iceConnectionState;
+    },
+
     _resetConnectionAttempts : function(){
-       this.set('connectionAttempts', DEFAULT_CONNECTION_ATTEMPS);
+       this.set('connectionAttempts', DEFAULT_CONNECTION_ATTEMPTS);
     },
 
    _status : function() {
