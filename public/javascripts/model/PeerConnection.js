@@ -471,10 +471,10 @@ var app = app || {};
     var status = this._extractStatusForICEStateChange(event);
     this.set('iceConnectionState', status);
 
-    if( status === "Failed") {
-        var restartIceConnection = {mandatory: {IceRestart: true}};
+    if( status === "failed") {
+        //var restartIceConnection = {mandatory: {IceRestart: true}};
         this._err("Connection to remote peer failed. Attempting a new connection");
-        this.doOffer(null,null, restartIceConnection);
+        this.scheduleRenegotiation();
     }
       /*
         THIS MUST TESTED
@@ -491,8 +491,8 @@ var app = app || {};
   _createPeerConnection: function() {
   var self = this;
   var pcConfig = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]}
-  //var pcConstraints   = {"optional": [{"DtlsSrtpKeyAgreement": true}]};
-  var pcConstraints = {"optional": []};
+  var pcConstraints   = {"optional": [{"DtlsSrtpKeyAgreement": true}]};
+  //var pcConstraints = {"optional": []};
   try{
     this.attributes.remoteConnection = new RTCPeerConnection(pcConfig, pcConstraints);
     var pc =  this.attributes.remoteConnection;
@@ -531,13 +531,14 @@ var app = app || {};
 
        var self = this;
        this._log("Scheduling renegotiation.");
+       var restartIceConnection = {mandatory: {IceRestart: true}};
 
         var performRenegotiation  = function() {
             self.set("isRenegotiationScheduled", true);
             if (self._isFullStable()) {
                 // start renegotiation
                 self._log("Performing renegotiation.");
-                self.doOffer();
+                self.doOffer(null,null, restartIceConnection);
                 // not sure about this
                 self.set("isRenegotiationScheduled", false);
             }else {

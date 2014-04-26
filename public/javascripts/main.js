@@ -13,7 +13,7 @@ var app = app || {};
     // public
     function main() {
         if ( navigator.sayswho.indexOf('Chrome') > -1 )
-            new app.AppView();
+            window.application = new app.AppView();
         else
             renderBrowserNotSupportedError();
     }
