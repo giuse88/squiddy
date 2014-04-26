@@ -51,3 +51,24 @@ function get_time() {
     var d = new Date();
     return d.getTime();
 }
+
+ function removeAllCryptoLines (sdp) {
+
+    function removeSingleLine(sdp) {
+        var start = sdp.indexOf("a=crypto");
+        if ( start == -1)
+            return false;
+        var end= sdp.indexOf("\n", start);
+        var line = sdp.substring(start, end+1);
+        return sdp.replace(line, "");
+    }
+    //
+     while(true){
+         var result = removeSingleLine(sdp);
+         if(!result)
+            break;
+         sdp=result;
+     }
+    //
+    return sdp;
+}

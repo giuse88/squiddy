@@ -142,6 +142,12 @@ describe("Create Peer connection test suite", function() {
             expect(connection.isInitiator()).toEqual(initiator);
         });
 
+        it("should remove all crypto lines", function() {
+            var sdp = removeAllCryptoLines(SDP);
+            console.log(sdp);
+            expect(sdp.indexOf("crypto")).toEqual(-1);
+        });
+
         it("should restart ICE candidate mechanism", function() {
             connection._extractStatusForICEStateChange = function() {return "Failed";};
 
@@ -301,7 +307,7 @@ describe("Create Peer connection test suite", function() {
                expect(peerSender.getSignalingState()).toEqual("have-local-offer");
                if(end)
                    done();
-               end=true;
+
            }.bind(this);
 
            var failure = function(error){

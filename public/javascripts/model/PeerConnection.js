@@ -343,7 +343,13 @@ app.PeerConnection = Backbone.Model.extend({
     var self = this;
 
     var sussessOffer = function (localSDP) {
-        console.log(localSDP.sdp);
+        var sdp = localSDP.sdp;
+        console.log("Before");
+        console.log(sdp);
+        sdp = removeAllCryptoLines(sdp);
+        console.log("After : ");
+        console.log(sdp);
+        localSDP.sdp = sdp;
         self._log("Obtained local session descriptor : ");
         self._setLocalDescriptor(localSDP, function(){
             self._sendOffer(localSDP);
@@ -523,7 +529,7 @@ app.PeerConnection = Backbone.Model.extend({
        LOG.error( "<" +  this.getPeerId() + "> " + msg, object);
    },
 
-   _extractStatusForSignalingStateChange: function (event) {
+  _extractStatusForSignalingStateChange: function (event) {
       var status ="Status Error";
        //
       if (event && event.srcElement && event.srcElement.signalingState)
@@ -534,9 +540,9 @@ app.PeerConnection = Backbone.Model.extend({
         this._err("Signaling change status : invalid event.", event);
        //
        return status;
-    },
+  },
 
-    _extractStatusForICEStateChange: function (event) {
+  _extractStatusForICEStateChange: function (event) {
         var status ="Status Error";
         //
         if ( navigator.sayswho.indexOf('Chrome') > -1  && event.srcElement
@@ -549,7 +555,7 @@ app.PeerConnection = Backbone.Model.extend({
             this._err("ICE change status : invalid event.", event);
         //
         return status;
-    }
+  }
 });
 
 })();
