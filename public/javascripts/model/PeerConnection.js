@@ -43,7 +43,9 @@ app.PeerConnection = Backbone.Model.extend({
     this.attributes.defaultOfferConstraints  = { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }};
     this.attributes.defaultAnswerConstraints = { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }};
 
-    this.attributes.session.on('localStream', function(stream) {self._addLocalStream(stream, false)});
+    this.attributes.session.on('localStream', function(stream) {
+        console.log("FUCK");
+        self._addLocalStream(stream, false)});
     this.attributes.session.on('removedLocalStream', function(stream){ self._removeLocalStream(stream, false)});
 
     if(isInitiator)
@@ -317,6 +319,8 @@ app.PeerConnection = Backbone.Model.extend({
           self._log("Remote descriptor successfully installed.");
           self._log("Signal State : ", pc.signalingState);
           self.processIceCandidates();
+          console.log( "remote stream : " + pc.remoteStream);
+          console.log(pc);
           successCB && successCB();
       }
 
@@ -338,8 +342,8 @@ app.PeerConnection = Backbone.Model.extend({
 
   doOffer : function (successCB, errorCB, additionalConstraints) {
 
-    var  constraints = $.extend(true, this.get('defaultOfferConstraints'),  additionalConstraints || {});
     this._log("Creating offer for peer " + this.getPeerId() + " with constraints : ", constraints);
+    var  constraints = $.extend(true, this.get('defaultOfferConstraints'),  additionalConstraints || {});
     var self = this;
 
     var sussessOffer = function (localSDP) {
@@ -395,6 +399,7 @@ app.PeerConnection = Backbone.Model.extend({
 
   _addLocalStream: function(stream, renegotiation) {
     console.log(stream);
+    console.log( this.attributes.remoteConnection.addStream);
     this.set('localStream', stream);
     this.attributes.remoteConnection.addStream(stream);
     LOG.info("Added local stream to peer connection : " + this.getPeerId());
@@ -412,8 +417,9 @@ app.PeerConnection = Backbone.Model.extend({
      },
 
   doRenegotiation : function () {
-    this._log("Staring renegotiation");
-    this.doOffer();
+    this._log("Starting renegotiation.");
+    var restartIceConnection = {mandatory: {IceRestart: true}};
+    this.doOffer(null, null, restartIceConnection);
   },
 
   handleLocalStreams : function() {
@@ -474,8 +480,8 @@ app.PeerConnection = Backbone.Model.extend({
   _createPeerConnection: function() {
   var self = this;
   var pcConfig = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]}
-  //  var  pcConstraints   = {"optional": [{"DtlsSrtpKeyAgreement": true}]};
-      var pcConstraints = {"optional": []};
+  //var pcConstraints   = {"optional": [{"DtlsSrtpKeyAgreement": true}]};
+  var pcConstraints = {"optional": []};
   try{
     this.attributes.remoteConnection = new RTCPeerConnection(pcConfig, pcConstraints);
     var pc =  this.attributes.remoteConnection;
@@ -496,7 +502,12 @@ app.PeerConnection = Backbone.Model.extend({
   // remote streams
   pc.onaddstream = function(stream) {  self.onRemoteStreamAdded(stream);};
   pc.onremovestream = function(stream) { self.onRemoteStreamRemoved(stream);};
-  pc.onnegotiationneeded = function () { self.doRenegotiation();}
+  pc.onnegotiationneeded = function (event) {
+      if ( pc.iceConnectionState == 'new')
+            self._log("Skip renegotiation");
+      else
+            self.doRenegotiation();
+    }
   //
   },
 
