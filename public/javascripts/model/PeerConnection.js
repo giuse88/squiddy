@@ -343,13 +343,7 @@ app.PeerConnection = Backbone.Model.extend({
     var self = this;
 
     var sussessOffer = function (localSDP) {
-        var sdp = localSDP.sdp;
-        console.log("Before");
-        console.log(sdp);
-        sdp = removeAllCryptoLines(sdp);
-        console.log("After : ");
-        console.log(sdp);
-        localSDP.sdp = sdp;
+        localSDP.sdp = removeAllCryptoLines(localSDP.sdp);
         self._log("Obtained local session descriptor : ");
         self._setLocalDescriptor(localSDP, function(){
             self._sendOffer(localSDP);
@@ -375,7 +369,8 @@ app.PeerConnection = Backbone.Model.extend({
     var self = this;
 
     var sussessAnswer = function (localSDP) {
-        LOG.info("Obtained local session descriptor : ");
+        // this should not be neccessary
+        localSDP.sdp = removeAllCryptoLines(localSDP.sdp);
         console.log(localSDP.sdp);
         self._setLocalDescriptor(localSDP,function(){
             self._sendAnswer(localSDP);
