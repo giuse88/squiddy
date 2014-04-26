@@ -4,6 +4,9 @@ var app = app || {};
 
 (function() {
 
+    var  SET_LOCAL_DESCRIPTION_DELAY  = 1000;
+    var  DEFAULT_CONNECTION_ATTEMPS = 3;
+
 app.PeerConnection = Backbone.Model.extend({
   
   defaults: {
@@ -22,7 +25,8 @@ app.PeerConnection = Backbone.Model.extend({
     acceptIceCandidates : false,
     remoteIceCandidates : null,
     defaultOfferConstraints : null,
-    defaultAnswerConstraints : null
+    defaultAnswerConstraints : null,
+    connectionAttempts : 3
   },
 
   //===============================
@@ -262,28 +266,45 @@ app.PeerConnection = Backbone.Model.extend({
   _setLocalDescriptor : function (localSDP, successCB, errorCB) {
       var self = this;
       var pc = this.get('remoteConnection');
+      var attempt = this.get('connectionAttempts');
 
+      console.log(pc);
       this._status();
 
       var success = function() {
+         self._resetConnectionAttempts();
          self._log("Local descriptor successfully installed.")
          self._log("Signal State : ", pc.signalingState);
          successCB && successCB();
       }
 
       var error = function(err) {
+         self._resetConnectionAttempts();
          self._err("Error setting local descriptor. Cause :" + err);
          console.error(self.get('remoteConnection'));
          alert(err);
          errorCB && errorCB(err);
       }
 
-      try{
-        pc.setLocalDescription(new RTCSessionDescription(localSDP), success, error);
-      }catch(e){
-        self._err("An Exception was thrown when setting a local descriptor", e);
-        alert(e);
-        errorCB && errorCB();
+      if ( attempt  > 0 &&  !(pc.signalingState == "have-local-offer")){
+        //
+        try{
+          pc.setLocalDescription(new RTCSessionDescription(localSDP), success, error);
+        }catch(e){
+            self._err("An Exception was thrown when setting a local descriptor", e);
+            alert(e);
+            errorCB && errorCB();
+        }
+       //
+      }else{
+          // new attempt
+          this._log("Rescheduling new attempt to set local description");
+          setTimeout(function() {
+            self._log("Attempt " + attempt + " to setLocalDescription");
+            self.set('connectionAttempts', attempt - 1);
+            self._setLocalDescriptor(localSDP, successCB,errorCB);
+          }, SET_LOCAL_DESCRIPTION_DELAY);
+          //
       }
   },
 
@@ -481,6 +502,10 @@ app.PeerConnection = Backbone.Model.extend({
   //=====================================//
   //            PRIVATE METHODS          //
   //=====================================//
+
+    _resetConnectionAttempts : function(){
+       this.set('connectionAttempts', DEFAULT_CONNECTION_ATTEMPS);
+    },
 
    _status : function() {
        var pc = this.get('remoteConnection');
