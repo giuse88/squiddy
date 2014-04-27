@@ -45,14 +45,10 @@ var app = app || {};
     this.attributes.defaultOfferConstraints  = { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }};
     this.attributes.defaultAnswerConstraints = { mandatory : { OfferToReceiveAudio : true, OfferToReceiveVideo : true }};
 
-    this.attributes.session.on('localStream', function(stream) {
-        console.log("FUCK");
-        self._addLocalStream(stream, false)});
-    this.attributes.session.on('removedLocalStream', function(stream){ self._removeLocalStream(stream, false)});
-
     if(isInitiator)
       this.set('isInitiator', true);  
 
+    // to be removed
     if (session.isSessionReady())
       this._start(); 
     else 
@@ -64,6 +60,14 @@ var app = app || {};
   //============================
   //        PUBLIC INTERFACE
   //
+
+  removeLocalStream:function(stream){
+     this._removeLocalStream(stream, false)
+  },
+
+  addLocalStream:function(stream){
+     this._addLocalStream(stream, false);
+  },
 
   getPeerId: function () {
     return this.get('peerId');

@@ -326,6 +326,9 @@ var app = app || {};
       LOG.info('User has granted access to local media.');
       self._localStream = stream;
       self.trigger('localStream', stream);
+      self.each(function(pc){
+         pc.addLocalStream(stream);
+      })
     };
   
     function onUserMediaError (error) {
