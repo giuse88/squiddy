@@ -25,8 +25,10 @@ html(lang="en")
     div.page#container
       include  snippets/modalBrowserUnsupported.html
       include  snippets/logo.html
-      div#link-message.jumbotron
-          p Share this link to start a call : #{roomId}
+      div.absolute-center#link-container
+        p.info-msg Share this link to start a call.
+        div#link-message
+          p.text-center https://www.squiddy.io/#{roomId}
       include  snippets/popUp.html
       div#peers
       div#local-video-container
