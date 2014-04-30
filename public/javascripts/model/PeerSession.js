@@ -332,7 +332,7 @@ var app = app || {};
     };
   
     function onUserMediaError (error) {
-      LOG.error('Failed to get access to local media. Error code was ' + error.code);
+      LOG.error('Failed to get access to local media. Error code was ', error);
     };
 
     try {

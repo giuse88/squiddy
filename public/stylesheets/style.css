@@ -51,8 +51,9 @@ html, body{
 
 #menu-bar{
     position:fixed;
-    background: rgba(255, 255, 255, 0.33);
-/*    background: rgba(0,0,0,0.6); */
+    /* background: rgba(255, 255, 255, 0.33);
+     background: rgba(0,0,0,0.6); */
+    background-color: rgba(0,0,0,0.1);
     bottom:0px;
     height : 50px;
     width  : 100%;
@@ -231,8 +232,8 @@ html, body{
     position: relative;
     left: 15px;
     color: #999;
-    text-shadow: 0px 3px 8px #2a2a2a;
-    letter-spacing: 0.8px;
+   /* text-shadow: 0px 3px 8px #2a2a2a;*/
+    letter-spacing: 1px;
 }
 
 #link-message {
@@ -273,3 +274,53 @@ html, body{
 #link-message p {
     line-height: 50px;
 }
+
+.white-circle {
+    display: block;
+    width: 20px;
+    height: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 2;
+    overflow: hidden;
+}
+
+.connection-img {
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    right: 0;
+    left: 0;
+}
+
+.circle {
+    width: 0px;
+    height: 0px;
+    margin-top: 0px;
+    margin-left: 0px;
+    border: 4px solid white;
+    -webkit-border-radius: 300px;
+    -moz-border-radius: 300px;
+    border-radius: 300px;
+    opacity: 1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+.connecting {
+    position: absolute;
+    top: calc(50% + 100px);
+    right: 0;
+    left: 0;
+}
+
+.connection-img p {
+    font-size: 15px;
+}
+
+.background{}

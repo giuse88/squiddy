@@ -9,6 +9,7 @@ html(lang="en")
 
     script(src="socket.io/socket.io.js")
     script(src="javascripts/lib/jquery.min.js")
+    script(src="javascripts/lib/jquery-ui.min.js")
     script(src="javascripts/lib/bootstrap.min.js")
     script(src="javascripts/helpers/utils.js")
     script(src="javascripts/lib/adapter.js")
@@ -26,7 +27,7 @@ html(lang="en")
       include  snippets/gitHubBanner.html
       include  snippets/modalBrowserUnsupported.html
       include  snippets/logo.html
-      div.absolute-center#link-container
+      div.absolute-center.background#link-container
         p.info-msg Share this link to start a call.
         div#link-message
           p.text-center https://www.squiddy.io/#{roomId}
@@ -49,6 +50,7 @@ html(lang="en")
           <p class="inline smallLeftMargin signalingState">isRenegotiationScheduled : <%= isRenegotiationScheduled %> </p>
 
     script(type="text/template")#peer-template-media
+        <div class"white-circle"> </div>
         <video class="remote-media-video" autoplay='autoplay'></video>
         <div class="remotePeerInfo"></div>
 

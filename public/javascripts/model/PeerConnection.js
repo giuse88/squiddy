@@ -259,6 +259,7 @@ var app = app || {};
         } else {
             // to comunicate the end of the remote Ice candidates ( weak mechanism §)
             this._sendIceCandidate("ICE_COMPLETED");
+            this.maybeTriggerConnected();
             this._log("End gathering LOCAL Ice candidates." + " Status : " + status + ".");
         }
    },
@@ -465,6 +466,7 @@ var app = app || {};
     //
     var status = this._extractStatusForSignalingStateChange(event);
     this.set('signalingState',status);
+    this.maybeTriggerConnected();
     //
     this._log("The signal status has changed to " + this.get('signalingState'));
    },
@@ -488,6 +490,7 @@ var app = app || {};
        send offer over the signaling channel, etc.).
        */
    //
+   this.maybeTriggerConnected();
    this._log("Ice connection has changed to " + this.get('iceConnectionState'));
    },
 
@@ -580,6 +583,13 @@ var app = app || {};
         var pc = this.get('remoteConnection');
        return "completed" === pc.iceConnectionState ||
               "connected" === pc.iceConnectionState;
+    },
+
+    maybeTriggerConnected : function() {
+        if(this._isFullStable()) {
+          this.trigger("connected");
+          this._log("PeerConnected event triggered");
+        }
     },
 
     _resetConnectionAttempts : function(){

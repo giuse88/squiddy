@@ -140,14 +140,23 @@ var app = app || {};
         },
 
         addPeer: function(peerConnection) {
-            var view = new app.PeerView({ model: peerConnection });
+            this.removeBackgroundObjects();
             //
+            var view = new app.PeerView({ model: peerConnection });
             this.$peerList.append( view.el );
             this.views.push(view);
             LOG.info ("< AppView > New peer " + peerConnection.getPeerId());
             //
             this.render();
          },
+
+        removeBackgroundObjects:function() {
+           $(".background").hide();
+        },
+
+        showBackgroundObjects:function() {
+            $(".background").show();
+        },
 
         removePeer: function(peerConnection) {
             var peerId =  peerConnection.getPeerId();
@@ -156,6 +165,10 @@ var app = app || {};
             this.views = _.filter(this.views, function(view){
                 return view.getPeerId() !== peerId;
             }, this);
+
+            if (this.views.length == 0)
+                this.showBackgroundObjects();
+
             LOG.info ("< AppView > Removed peer : " + peerConnection);
             //
             this.render();
