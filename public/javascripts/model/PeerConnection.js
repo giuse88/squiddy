@@ -59,7 +59,7 @@ var app = app || {};
 
   //============================
   //        PUBLIC INTERFACE
-  //
+  //============================
 
   removeLocalStream:function(stream){
      this._removeLocalStream(stream, false)
@@ -414,8 +414,7 @@ var app = app || {};
 
    //==================================
    //   stream
-   //----------------------------------
-
+   //==================================
 
   _addLocalStream: function(stream, renegotiation) {
     var pc = this.get('remoteConnection');
