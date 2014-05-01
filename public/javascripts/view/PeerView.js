@@ -103,6 +103,7 @@ app.PeerView = Backbone.View.extend({
             this.$remoteVideo = this.$el.find("video");
             console.log(this.$remoteVideo.get(0));
             attachMediaStream(this.$remoteVideo.get(0), stream);
+            this.$remoteVideo.fadeIn("fadeIn");
         }
         //
         LOG.peerInfo(this.model.getPeerId(), "Updated media container.");

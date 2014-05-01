@@ -135,14 +135,19 @@ var app = app || {};
 
 
   close: function() {
-
-      this.set('isStarted', false);
-   //    signalingReady = false;
-      this.get('remoteConnection').close();
-      this.set('remoteConnection', null);
- //          remoteStream = null;
- //         msgQueue.length = 0;
-      this._log("Closed connection");
+    this.set('isStarted', false);
+    var pc = this.get('remoteConnection');
+    pc.onicecandidate = null;
+    pc.oniceconnectionstatechange= null;
+    pc.onsignalingstatechange =null;
+    pc.onaddstream = null;
+    pc.onremovestream = null;
+    pc.onnegotiationneeded = null;
+    pc.close();
+    this.set('remoteConnection', null);
+    //remoteStream = null;
+    //msgQueue.length = 0;
+    this._log("Closed connection");
   },
 
   //===================================
