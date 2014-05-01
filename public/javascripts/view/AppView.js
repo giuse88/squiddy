@@ -41,8 +41,7 @@ var app = app || {};
             this.$localAudioToggleButton = this.$("#localAudioToggle");
             this.$localStreamContainer= this.$("#localStreamContainer");
             // components
-            this.installMenuBar();
-            this.installLocalVideo();
+
             this.views = [];
             // we create the session
             this.peerSession = new app.PeerSession();
@@ -62,49 +61,39 @@ var app = app || {};
 
         installMenuBar: function () {
             //
-            var timeoutId = 'timeoutId';
+            var idle = 1;
+            var withinBar = false;
             var $menuBar = this.$menuBar;
             var $localVideoContainer = this.$localVideoContainer;
             //
             function showBar() {
                 $menuBar.slideDown();
-                moveLocalVideo();
+                $localVideoContainer.animate({ "bottom": "+=50px" });
             }
             //
             function hideBar() {
                 $menuBar.slideUp();
-                moveLocalVideo();
+                $localVideoContainer.animate({ "bottom": "-=50px" });
             }
-            //
-            function moveLocalVideo() {
-                var $video = $localVideoContainer;
-                if($video.data('down')) {
-                    $video.animate({ "bottom": "-=50px" });
-                    $video.data('down', false);
-                } else {
-                    $video.animate({ "bottom": "+=50px" });
-                    $video.data('down', true);
-                }
-            }
-            //
-            function installSensitiveArea() {
-                $(document).mousemove(function(event){
-                    var docheight = $( document ).height() - 10;
-                    if( event.pageY > docheight && isHidden('#menu-bar')){
-                        showBar();
-                    }
-                });
-            }
+
+            $(document).mousemove(function(event){
+               idle=0;
+               if(isHidden('#menu-bar'))
+                   showBar();
+            });
+            setInterval(function(){
+               if (idle !=0 && !withinBar )
+                   hideBar();
+                else
+                   idle=1;
+            }, 2000);
             //
             showBar();
-            $menuBar.data(timeoutId, setTimeout(hideBar , 2000));
-            installSensitiveArea();
             //
             $menuBar.mouseleave(function(){
-                $menuBar.data(timeoutId) && clearTimeout($(this).data(timeoutId));
-                $menuBar.data(timeoutId, setTimeout(hideBar , 2000));
+                withinBar = false;
             }).mouseenter(function() {
-                $menuBar.data(timeoutId) && clearTimeout($(this).data(timeoutId));
+                withinBar = true;
             });
             LOG.info("Menu bar installed.")
         },
@@ -180,6 +169,8 @@ var app = app || {};
             LOG.info("< AppView > Local video tracks", stream.getVideoTracks());
             LOG.info("< AppView > Local audio tracks", stream.getAudioTracks());
             //
+            this.installMenuBar();
+            this.installLocalVideo();
             var video = this.$localVideo.get(0);
             attachMediaStream(video, stream);
             video.play();
