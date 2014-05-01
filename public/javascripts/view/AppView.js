@@ -82,7 +82,7 @@ var app = app || {};
                    showBar();
             });
             setInterval(function(){
-               if (idle !=0 && !withinBar )
+               if (!isHidden('#menu-bar') && idle !=0 && !withinBar )
                    hideBar();
                 else
                    idle=1;
