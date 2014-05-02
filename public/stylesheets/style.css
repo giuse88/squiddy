@@ -4,6 +4,7 @@ html, body{
     min-height: 100%;
     min-width: 100%;
     position: absolute;
+    overflow: hidden;
 }
 
 @font-face
@@ -51,9 +52,7 @@ html, body{
 
 #menu-bar{
     position:fixed;
-    /* background: rgba(255, 255, 255, 0.33);
-     background: rgba(0,0,0,0.6); */
-    background-color: rgba(0,0,0,0.1);
+    background-color: rgba(255, 255, 255,0.1);
     bottom:0px;
     height : 50px;
     width  : 100%;
@@ -117,8 +116,7 @@ html, body{
 
 .remote-media-video {
   position: relative;
-  min-height: 99%;
-  max-height: 99%;
+  height: 100%;
   width: 95%;
   left: 2.5%;
   margin: 0 auto;
@@ -136,7 +134,7 @@ html, body{
 }
 .center{
     position: absolute;
-    background: rgba(0, 0, 0 , 0.1);
+    background-color: rgba(255, 255, 255,0.1);
     border-radius:25px;
     height: 200px;
     width: 200px;
