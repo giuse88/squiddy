@@ -171,7 +171,7 @@ var app = app || {};
     this.addRemoteIceCandidate(message.msg);
   } else if ( message.type === 'OFFER') {
     this._setRemoteDescription(message.msg, function () {
-        self.doAnswer();
+       // self.doAnswer();
     });
   } else if ( message.type === 'ANSWER') {
       this._setRemoteDescription(message.msg);
@@ -470,7 +470,12 @@ var app = app || {};
     //
     var status = this._extractStatusForSignalingStateChange(event);
     this.set('signalingState',status);
-    this.maybeTriggerConnected();
+    //
+    if (status == "have-remote-offer")  {
+        this.doAnswer();
+    }else {
+        this.maybeTriggerConnected();
+    }
     //
     this._log("The signal status has changed to " + this.get('signalingState'));
    },
