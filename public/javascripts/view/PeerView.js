@@ -56,7 +56,7 @@ app.PeerView = Backbone.View.extend({
 
     onConnected : function(pc){
         this.cleanConnectingImage();
-        this.$remoteVideo.fadeIn("slow");
+        this.$remoteVideo && this.$remoteVideo.fadeIn("slow");
     },
 
    renderPeerInfo : function(peerConnection) {

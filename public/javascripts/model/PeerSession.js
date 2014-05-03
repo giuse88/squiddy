@@ -304,6 +304,10 @@ var app = app || {};
      //
    },
 
+   triggerError : function (error){
+      this.trigger('error', error);
+   },
+
    // THis should go to an indipendent  module
   _doGetUserMedia: function() {
     var self = this;
@@ -332,12 +336,17 @@ var app = app || {};
     };
   
     function onUserMediaError (error) {
-      LOG.error('Failed to get access to local media. Error code was ', error);
+      error.msg = "User did not grant access to media devices.";
+      error.link = "https://support.google.com/chrome/answer/2693767?hl=en";
+      error.linkText = "More info";
+      self.triggerError(error);
+      LOG.error('Failed to get access to local media. Error code was ', error.name);
     };
 
     try {
       //
       this._localStream && this._localStream.stop();
+      // TODO try to use directly web kit user media
       getUserMedia(mediaConstraints, onUserMediaSuccess, onUserMediaError);
       //
       LOG.info('Requested access to local media with mediaConstraints:\n', mediaConstraints);

@@ -28,7 +28,7 @@ html(lang="en")
       include  snippets/modalBrowserUnsupported.html
       include  snippets/logo.html
       div.absolute-center.background#link-container
-        p.info-msg Share this link to start a call.
+        p.info-msg Share this link to start a video call.
         div#link-message
           p.text-center https://www.squiddy.io/#{roomId}
       include  snippets/popUp.html
@@ -59,6 +59,15 @@ html(lang="en")
           Connected  peers : <strong><%=connectedPeers %></strong><br>
           Local Streams : <%=streams %><br>
           </p> </div>
+
+    script(type="text/template")#error-template
+        <div class="alert alert-warning alert-dismissable my-alert fad in ">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true"> &times; </button>
+        <%=msg %>
+        <%if (obj.link && obj.linkText) { %>
+        <a href='<%=link %>' class="alert-link"> <%=linkText %></a>
+        <% } %>
+        </div>
 
 script(src="javascripts/model/PeerConnection.js")
 script(src="javascripts/helpers/SignalingServiceFrontEnd.js")

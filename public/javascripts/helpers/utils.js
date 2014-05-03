@@ -72,3 +72,7 @@ function get_time() {
     //
     return sdp;
 }
+
+function renderError(error) {
+    return _.template($('#error-template').html(), error);
+}

@@ -53,10 +53,12 @@ var app = app || {};
             // Local stream
             this.listenTo(this.peerSession, 'localStream', this.addLocalStream);
             this.listenTo(this.peerSession, 'removedLocalStream', this.removeLocalStream);
+            this.listenTo(this.peerSession, 'error', this.renderError);
             //
             _.bindAll(this, "handleUserChangeInLocalStream");
             _.bindAll(this, "centerVideo");
             _.bindAll(this, "hidePopup");
+            _.bindAll(this, "renderError");
         },
 
         installMenuBar: function () {
@@ -264,6 +266,10 @@ var app = app || {};
             var height = this.$localVideo.css('height');
             var margin = - ( parseInt(height) -200) /2;
             this.$localVideo.css('margin-top', margin);
+        },
+        renderError : function(error) {
+
+            this.$el.append(renderError(error));
         }
 
     });
