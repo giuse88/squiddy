@@ -10,6 +10,6 @@
     "socket.io" : " >=  0.8", 
     "underscore" : "*", 
     "log4js" : "*", 
-    "jade": "*",
+    "jade": "*"
   }
 }
