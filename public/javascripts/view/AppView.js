@@ -122,11 +122,15 @@ var app = app || {};
             //
         },
 
-        render: function() {
-            _.each(this.views, function (view){
+        render: function(removedPeer) {
+            // remove animation if there is one peer
+            if ( this.views.length > 1 || removedPeer) {
+             _.each(this.views, function (view){
                 view.transform(sizeToPeerNumber[new String(this.views.length)]);
-            }, this);
-
+               }, this);
+            } else if ( this.views.length == 1) {
+                $("#" + this.views[0].getPeerId()).css(sizeToPeerNumber[new String(this.views.length)]);
+            }
             LOG.info("Rendering view for peer " + this.peerSession.getMyPeerId() +  ".");
         },
 
@@ -138,7 +142,7 @@ var app = app || {};
             this.views.push(view);
             LOG.info ("< AppView > New peer " + peerConnection.getPeerId());
             //
-            this.render();
+            this.render(false);
          },
 
         removeBackgroundObjects:function() {
@@ -162,7 +166,7 @@ var app = app || {};
 
             LOG.info ("< AppView > Removed peer : " + peerConnection);
             //
-            this.render();
+            this.render(true);
         },
 
         addLocalStream: function(stream) {
@@ -268,7 +272,6 @@ var app = app || {};
             this.$localVideo.css('margin-top', margin);
         },
         renderError : function(error) {
-
             this.$el.append(renderError(error));
         }
 
