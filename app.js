@@ -23,11 +23,11 @@ app.use(app.router);
 
 // DB access
 // Maybe initialize it
-var dao = require('./dao/dao');
+//var dao = require('./dao/dao');
 
 // records into the db all messages exchanged by peers in the initialization phase
-var MessagingService = require('./services/MessageService');
-var messagingService = new MessagingService(dao);
+//var MessagingService = require('./services/MessageService');
+//var messagingService = new MessagingService(dao);
 
 // eventService
 
@@ -41,7 +41,7 @@ var io = require('socket.io').listen(server, {log: false});
 var roomService = require('./services/ChatRoomService').getRoomService(LOGGER);
 
 // kick off the signaling service
-    require('./services/SignalingService').initialize(io, roomService,messagingService, LOGGER);
+    require('./services/SignalingService').initialize(io, roomService, null, LOGGER);
 
 
 //=================================

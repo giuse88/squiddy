@@ -1,4 +1,4 @@
-(function(exports,LOG) {
+/*(function(exports,LOG) {
 
     var pg = require('pg');
     var connectionString = process.env.DATABASE_URL || 'postgres://giuseppe@localhost/jelly_db'
@@ -22,3 +22,4 @@
     exports.insert = insert;
 
 })(exports,LOGGER);
+*/

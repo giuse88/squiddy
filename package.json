@@ -11,6 +11,5 @@
     "underscore" : "*", 
     "log4js" : "*", 
     "jade": "*",
-    "pg"  :"*"
   }
 }
