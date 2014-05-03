@@ -479,11 +479,14 @@ var app = app || {};
    //
     var status = this._extractStatusForICEStateChange(event);
     this.set('iceConnectionState', status);
+    var self= this;
 
     if( status === "failed") {
         //var restartIceConnection = {mandatory: {IceRestart: true}};
         this._err("Connection to remote peer failed. Attempting a new connection");
-        this.scheduleRenegotiation();
+        this.scheduleRenegotiation(function(){
+            return self.getIceConnectionState() === "failed";
+        });
     }
       /*
         THIS MUST TESTED
@@ -537,15 +540,16 @@ var app = app || {};
    //             RENEGOTIATION           //
    //=====================================//
 
-    scheduleRenegotiation : function() {
+    scheduleRenegotiation : function(conditionForRenegotiation ) {
 
        var self = this;
        this._log("Scheduling renegotiation.");
        var restartIceConnection = {mandatory: {IceRestart: true}};
+       var _conditionForRenegotiation =  conditionForRenegotiation ||  self._isFullStable;
 
         var performRenegotiation  = function() {
             self.set("isRenegotiationScheduled", true);
-            if (self._isFullStable()) {
+            if (_conditionForRenegotiation.call(self)) {
                 // start renegotiation
                 self._log("Performing renegotiation.");
                 self.doOffer(null,null, restartIceConnection);

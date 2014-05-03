@@ -26,7 +26,6 @@ describe("Create Peer connection test suite", function() {
         "a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\n" +
         "a=recvonly\r\n" +
         "a=rtcp-mux\r\n" +
-        "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:gC/fmSmErYS1MaaCQnXZRtKR6l8yWMc5zbOpdVT8\r\n" +
         "a=rtpmap:111 opus/48000/2\r\n" +
         "a=fmtp:111 minptime=10\r\n" +
         "a=rtpmap:103 ISAC/16000\r\n" +
@@ -51,7 +50,6 @@ describe("Create Peer connection test suite", function() {
         "a=extmap:3 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\n" +
         "a=recvonly\r\n" +
         "a=rtcp-mux\r\n" +
-        "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:gC/fmSmErYS1MaaCQnXZRtKR6l8yWMc5zbOpdVT8\r\n" +
         "a=rtpmap:100 VP8/90000\r\n" +
         "a=rtcp-fb:100 ccm fir\r\n" +
         "a=rtcp-fb:100 nack\r\n" +
@@ -247,7 +245,7 @@ describe("Create Peer connection test suite", function() {
           peerReceiver._setRemoteDescription(mockOffer, successRemote,failure);
       });
 
-   xit("Test the signalStatus machine when a peer sends an offer", function(done){
+   it("Test the signalStatus machine when a peer sends an offer", function(done){
           var peerSender  = new app.PeerConnection("mock_sender", session, false);
 
           var successRemote = function(){
