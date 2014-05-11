@@ -5,7 +5,7 @@ var app = app || {};
 (function() {
 
     var  SET_LOCAL_DESCRIPTION_DELAY  = 1000;
-    var  DEFAULT_CONNECTION_ATTEMPTS = 3;
+    var  DEFAULT_CONNECTION_ATTEMPTS = 5;
     var  RENEGOTIATION_DELAY = 1000;
 
     app.PeerConnection = Backbone.Model.extend({
@@ -137,15 +137,16 @@ var app = app || {};
   close: function() {
     this.set('isStarted', false);
     var pc = this.get('remoteConnection');
+      pc.close();
     pc.onicecandidate = null;
     pc.oniceconnectionstatechange= null;
     pc.onsignalingstatechange =null;
     pc.onaddstream = null;
     pc.onremovestream = null;
     pc.onnegotiationneeded = null;
-    pc.close();
     this.set('remoteConnection', null);
-    //remoteStream = null;
+    //
+    // remoteStream = null;
     //msgQueue.length = 0;
     this._log("Closed connection");
   },
@@ -304,7 +305,7 @@ var app = app || {};
          errorCB && errorCB(err);
       }
 
-      if ( attempt  > 0 &&  !(pc.signalingState == "have-local-offer")){
+      if ( pc.signalingState != "have-local-offer" && pc.iceGatheringState !== "gathering"){
         //
         try{
           pc.setLocalDescription(new RTCSessionDescription(localSDP), success, error);
@@ -510,15 +511,15 @@ var app = app || {};
 
   _createPeerConnection: function() {
   var self = this;
-  var pcConfig = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]}
+  var pcConfig = {"iceServers":[{"urls":"stun:stun.l.google.com:19302"},{"urls":["turn:23.251.136.126:3478?transport=udp","turn:23.251.136.126:3478?transport=tcp","turn:23.251.136.126:3479?transport=udp","turn:23.251.136.126:3479?transport=tcp"],"credential":"a8X2ybYY8miwLzpj6g2bj0l5JMY=","username":"1399898976:48963617"}]};
   var pcConstraints   = {"optional": [{"DtlsSrtpKeyAgreement": true}]};
-  //var pcConstraints = {"optional": []};
   try{
     this.attributes.remoteConnection = new RTCPeerConnection(pcConfig, pcConstraints);
     var pc =  this.attributes.remoteConnection;
         pc.onicecandidate = function(e) { self.onIceCandidate(e, pc.iceGatheringState)};
         pc.oniceconnectionstatechange= function(e) { self.onIceConnectionStatusStateChange(e)};
         pc.onsignalingstatechange = function(e) {self.onSignalingStateChange(e)};
+
 
   console.log('Created RTCPeerConnnection with:\n' +
               'config: \'' + JSON.stringify(pcConfig) + '\';\n' +
@@ -551,7 +552,8 @@ var app = app || {};
 
        var self = this;
        this._log("Scheduling renegotiation.");
-       var restartIceConnection = {mandatory: {IceRestart: true}};
+       //var restartIceConnection = {mandatory: {IceRestart: true}};
+       var restartIceConnection = {};
        var _conditionForRenegotiation =  conditionForRenegotiation ||  self._isFullStable;
 
         var performRenegotiation  = function() {

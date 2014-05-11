@@ -507,8 +507,12 @@ describe("Create Peer connection test suite", function() {
 
            pc1.on("change", check);
            pc2.on("change", check);
-            // Kick off
    });
+
+   it("consecutive offers", function() {
+      var pc1 = new app.PeerConnection(PEER_ID_1, session, true);
+      pc1.doOffer();
+    });
 
 
    });
