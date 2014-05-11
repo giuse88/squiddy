@@ -286,7 +286,7 @@ var app = app || {};
       var pc = this.get('remoteConnection');
       var attempt = this.get('connectionAttempts');
 
-      console.log(pc);
+      console.log(localSDP);
       this._status();
 
       var success = function() {
@@ -335,6 +335,7 @@ var app = app || {};
       var pc = this.get('remoteConnection');
       var self = this;
 
+      console.log(remoteSDP);
       var success = function () {
           self._log("Remote descriptor successfully installed.");
           self._log("Signal State : ", pc.signalingState);
@@ -368,6 +369,7 @@ var app = app || {};
 
     var sussessOffer = function (localSDP) {
         localSDP.sdp = removeAllCryptoLines(localSDP.sdp);
+        localSDP.sdp =  maybeAddLineBreakToEnd(localSDP.sdp);
         self._log("Obtained local session descriptor : ");
         self._setLocalDescriptor(localSDP, function(){
             self._sendOffer(localSDP);

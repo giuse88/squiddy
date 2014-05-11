@@ -72,6 +72,15 @@ function get_time() {
     //
     return sdp;
 }
+// Workaround for crbug/322756.
+function maybeAddLineBreakToEnd(sdp) {
+    var endWithLineBreak = new RegExp(/\n$/);
+    if (!endWithLineBreak.test(sdp)) {
+        return sdp + '\n';
+    }
+    return sdp;
+}
+
 
 function renderError(error) {
     return _.template($('#error-template').html(), error);
